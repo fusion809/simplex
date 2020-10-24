@@ -137,9 +137,10 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     tempStr += "<tr>";
     tempStr += "<td rowspan='2'></td>";
     tempStr += "<td>z<sub>j</sub></td>";
-    for (let i = 0; i < mn + 1; i++) {
+    for (let i = 0; i < mn; i++) {
         tempStr += "<td>" + fracHandler(z[i]) + "</td>";
     }
+    tempStr += "<td rowspan='2'>" + fracHandler(z[mn]) + "</td>";
     tempStr += "</tr>";
     tempStr += "<tr>";
     tempStr += "<td>z<sub>j</sub>-c<sub>j</sub></td>";
