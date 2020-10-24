@@ -374,9 +374,10 @@ function isOptAndFeas(b, zc) {
  * @param cB     1d array of basis variable objective function coefficients. 
  * @param z      1d array of zj row contents.
  * @param zc     1d array of zj-cj row contents.
- * @return       [A, b, xB, pivotCol, pivotEl, pivotRIdx]
+ * @return       [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, 
+ * isPermInf]
  */
-function simplex(A, b, cj, x, xB, cB, z, zc) {
+function simplex(A, b, cj, x, xB, zc) {
     // Initialize required variables
     var m = A.length;
     var mn = A[0].length;
@@ -474,13 +475,16 @@ function simplex(A, b, cj, x, xB, cB, z, zc) {
  * Performs all the iterations of simplex required to find the
  * optimum solution.
  * 
- * @param A      2d array of constraint coefficients.
- * @param b      1d array of constraint RHS.
- * @param cj     1d array of objective function coefficients.
- * @param x      1d array of decision variable names.
- * @param xB     1d array of basis variable names.
+ * @param A             2d array of constraint coefficients.
+ * @param b             1d array of constraint RHS.
+ * @param cj            1d array of objective function coefficients.
+ * @param x             1d array of decision variable names.
+ * @param xB            1d array of basis variable names.
+ * @param serialTab     Boolean representing whether the user wants an 
+ * additional tabulation. Useful for sensitivity analysis.
+ * @return              Nothing.
  */
-function simplexIterator(A, b, cj, x, xB) {
+function simplexIterator(A, b, cj, x, xB, serialTab) {
     var m = A.length;
     var pivotRIdx;
     var pivotEl;
@@ -490,10 +494,11 @@ function simplexIterator(A, b, cj, x, xB) {
     var iter = 0;
     var isInitInfeas = false;
     var isUnbounded = false;
+    var arr;
     while ((!isOptim) && (!isUnbounded)) {
         [cB, z, zc] = calcEntries(A, b, cj, x, xB);
-        [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf] = simplex(A, b, 
-            cj, x, xB, cB, z, zc);
+        arr = simplex(A, b, cj, x, xB, zc);
+        [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf] = arr;
         [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
         if ((iter == 0) && (!isFeas)) {
             isInitInfeas = true;
@@ -511,9 +516,10 @@ function simplexIterator(A, b, cj, x, xB) {
         }
     }
 
-    // Strangely, simplex shows the final tableau if the initial problem is 
-    // feasible, but not if it is not.
-    if (isInitInfeas && !isUnbounded && !isPermInf) {
+    // Generate a serial table if necessary
+    if (serialTab) {
+        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl);
+    } else if (isInitInfeas && !isUnbounded && !isPermInf) {
         genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl);
     }
 }
