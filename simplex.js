@@ -92,11 +92,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     for (let i = 0; i < cj.length; i++) {
         tempStr += "<td>" + fracHandler(cj[i]) + "</td>";
     }
-    if (isFeas && !isOptim) {
-        tempStr += "<td colspan='2'></td>";
-    } else {
-        tempStr += "<td></td>";
-    }
     tempStr += "</tr>";
     tempStr += "<tr>";
     tempStr += "<td>c<sub><b>B</b></sub></td>";
@@ -135,7 +130,11 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         tempStr += "</tr>";
     }
     tempStr += "<tr>";
-    tempStr += "<td rowspan='2'></td>";
+    if (ratio != undefined && !isNaN(pivotEl) && !isFeas) {
+        tempStr += "<td rowspan='3'></td>";
+    } else {
+        tempStr += "<td rowspan='2'></td>";
+    }
     tempStr += "<td>z<sub>j</sub></td>";
     for (let i = 0; i < mn; i++) {
         tempStr += "<td>" + fracHandler(z[i]) + "</td>";
@@ -152,7 +151,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     if (ratio != undefined && !isNaN(pivotEl)) {
         if (!isFeas) {
             tempStr += "<tr>";
-            tempStr += "<td></td>";
             tempStr += "<td>Ratio</td>";
             for (let i = 0; i < mn; i++) {
                 if (ratio[i] != Number.POSITIVE_INFINITY) {
