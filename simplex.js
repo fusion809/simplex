@@ -169,7 +169,11 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         pivotRIdx++;
         for (let i = 0; i < m; i++) {
             if (pivotRIdx - 1 == i) {
-                tempStr += "<div>" + fracHandler(1 / pivotEl) + "R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
+                if (pivotEl != 1) {
+                    tempStr += "<div>" + fracHandler(1 / pivotEl) + "R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
+                } else {
+                    tempStr += "<div>R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
+                }
             } else {
                 if (pivotCol[i] == -1) {
                     tempStr += "<div>R<sub>" + (i + 1) + "</sub> + " + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
