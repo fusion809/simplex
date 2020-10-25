@@ -62,8 +62,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         return;
     }
     var mn = A[0].length;
-    var n = mn - m;
-    var loc = basisIndex(x, xB);
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
 
     // The following is to prevent departing/entering variable
@@ -76,6 +74,8 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     // Generate table
     document.getElementById("tableau").innerHTML = "";
     tempStr += "<table>";
+
+    // Objective function coefficient row
     tempStr += "<tr>";
     tempStr += "<td></td>";
     tempStr += "<td>c<sub>j</sub></td>";
@@ -83,6 +83,8 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         tempStr += "<td>" + fracHandler(cj[i]) + "</td>";
     }
     tempStr += "</tr>";
+
+    // Header row
     tempStr += "<tr>";
     tempStr += "<td>c<sub><b>B</b></sub></td>";
     tempStr += "<td>x<sub><b>B</b></sub></td>";
@@ -97,10 +99,12 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     if (isFeas && !isOptim) {
         tempStr += "<td>Ratio</td>";
     }
+
+    // A & b rows
     tempStr += "</tr>";
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
-        tempStr += "<td>" + fracHandler(cj[loc[i]]) + "</td>";
+        tempStr += "<td>" + fracHandler(cB[i]) + "</td>";
         if (( pivotRIdx != i) || (isNaN(pivotCIdx)) ) {
             tempStr += "<td>" + subscripts(xB[i]) + "</td>";
         } else {
@@ -119,6 +123,8 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         }
         tempStr += "</tr>";
     }
+
+    // zj row
     tempStr += "<tr>";
     if (ratio != undefined && !isNaN(pivotEl) && !isFeas) {
         tempStr += "<td rowspan='3'></td>";
@@ -129,15 +135,20 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     for (let i = 0; i < mn; i++) {
         tempStr += "<td>" + fracHandler(z[i]) + "</td>";
     }
+
+    // Objective function value
     tempStr += "<td rowspan='2'>" + fracHandler(z[mn]) + "</td>";
     tempStr += "</tr>";
+
+    // zj-cj row
     tempStr += "<tr>";
     tempStr += "<td>z<sub>j</sub>-c<sub>j</sub></td>";
     for (let i = 0; i < mn; i++) {
-        let zci = math.fraction(zc[i]);
         tempStr += "<td>" + fracHandler(zc[i]) + "</td>";
     }
     tempStr += "</tr>";
+    
+    // Ratio row
     if (ratio != undefined && !isNaN(pivotEl)) {
         if (!isFeas) {
             tempStr += "<tr>";
@@ -154,6 +165,8 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     }
     tempStr += "</table>";
     tempStr += "<br/>";
+
+    // Show row operations
     if (!isOptim && !isUnbounded && !isNaN(pivotRIdx) && !isNaN(pivotEl)) {
         pivotRIdx++;
         for (let i = 0; i < m; i++) {
