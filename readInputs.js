@@ -5,7 +5,7 @@
  * @return    A, the 2d array of constraint coefficients.
  */
 function findA() {
-    var arr = document.getElementById("A").value.split(", ");
+    var arr = document.getElementById("A").value.split(/[, ][\s]*/);
     var A = [[]];
     var k = 0;
 
@@ -13,13 +13,16 @@ function findA() {
     for (let i = 0; i < arr.length; i++) {
         var elRb = arr[i].replace(/\[/g, '');
         var el = elRb.replace(/\]/g, '');
+
         // We're using MATLAB notation for arrays
         if (/[0-9]\s*;/.test(elRb)) {
-            var elArr = el.split(/;[ \n]/);
+            var elArr = el.split(/;/);
             A[k].push(parseFloat(elArr[0]));
             k++;
-            A.push([]);
-            A[k].push(parseFloat(elArr[1]));
+            console.log(i)
+            if (i != arr.length - 1) {
+                A.push([]);
+            }
         } else {
             A[k].push(parseFloat(el));
         }
@@ -35,7 +38,7 @@ function findA() {
  * @return         1d array containing the numerical data in name.
  */
 function find1dNumArr(name) {
-    var htmlEl = document.getElementById(name).value.split(/[,;][\s*]/);
+    var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     console.log(htmlEl)
     var arr = new Array(htmlEl.length);
 
@@ -54,7 +57,7 @@ function find1dNumArr(name) {
  * @return         1d array containing the string data in name.
  */
 function find1dStrArr(name) {
-    var htmlEl = document.getElementById(name).value.split(/[,;][\s*]/);
+    var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     var arr = new Array(htmlEl.length);
 
     for (let i = 0 ; i < arr.length; i++) {
