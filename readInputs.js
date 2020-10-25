@@ -11,11 +11,11 @@ function findA() {
 
     // Loop over each element and add to A
     for (let i = 0; i < arr.length; i++) {
-        var el = arr[i].replace(/\[/g, '').replace(/\]/g, '');
-
+        var elRb = arr[i].replace(/\[/g, '');
+        var el = elRb.replace(/\]/g, '');
         // We're using MATLAB notation for arrays
-        if (/;/.test(el)) {
-            var elArr = el.split('; ');
+        if (/[0-9]\s*;/.test(elRb)) {
+            var elArr = el.split(/;[ \n]/);
             A[k].push(parseFloat(elArr[0]));
             k++;
             A.push([]);
@@ -29,13 +29,14 @@ function findA() {
 }
 
 /**
- * Create a 1d array from data in element specified by name.
+ * Create a 1d array from numerical data in HTML element specified by name.
  * 
  * @param name     A string that is equal to the name of the element you want to use.
  * @return         1d array containing the numerical data in name.
  */
 function find1dNumArr(name) {
-    var htmlEl = document.getElementById(name).value.split(', ');
+    var htmlEl = document.getElementById(name).value.split(/[,;][\s*]/);
+    console.log(htmlEl)
     var arr = new Array(htmlEl.length);
 
     for (let i = 0 ; i < arr.length; i++) {
@@ -46,8 +47,14 @@ function find1dNumArr(name) {
     return arr;
 }
 
+/**
+ * Create a 1d array from string data in HTML element specified by name.
+ * 
+ * @param name     A string that is equal to the name of the element you want to use.
+ * @return         1d array containing the string data in name.
+ */
 function find1dStrArr(name) {
-    var htmlEl = document.getElementById(name).value.split(', ');
+    var htmlEl = document.getElementById(name).value.split(/[,;][\s*]/);
     var arr = new Array(htmlEl.length);
 
     for (let i = 0 ; i < arr.length; i++) {
