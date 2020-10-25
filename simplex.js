@@ -483,6 +483,17 @@ function simplex(A, b, cj, x, xB, zc) {
  * @return              Nothing.
  */
 function simplexIterator(A, b, cj, x, xB, serialTab) {
+    if (b.length != xB.length ) {
+        alert("The lengths of b and xB do not match!");
+        return;
+    }
+    if (A.length != b.length) {
+        alert("The number of rows in A does not match the number of rows in b!");
+        return;
+    }
+    if (A[0].length != x.length) {
+        alert("x (decision variable array) has a different number of columns to A!")
+    }
     var m = A.length;
     var pivotRIdx;
     var pivotEl;
@@ -520,4 +531,8 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
     } else if (isInitInfeas && !isUnbounded && !isPermInf) {
         genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl);
     }
+}
+
+function removeTableaux() {
+    document.getElementById("tableau").innerHTML = "";
 }
