@@ -39,6 +39,14 @@ function fracHandler(number) {
     }
 }
 
+function subscripts(decVar) {
+    var corrected = decVar.replace(/\d+/, function(x) {
+        return "<sub>" + x + "</sub>";
+    });
+
+    return corrected;
+}
+
 /**
  * Generate simplex tableau based on specified data.
  * 
@@ -98,9 +106,9 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     tempStr += "<td>x<sub><b>B</b></sub></td>";
     for (let i = 0; i < x.length; i++) {
         if (i != pivotCIdx) {
-            tempStr += "<td>" + x[i] + "</td>";
+            tempStr += "<td>" + subscripts(x[i]) + "</td>";
         } else {
-            tempStr += "<td><b>" + x[i] + "</b>&darr;</td>";
+            tempStr += "<td><b>" + subscripts(x[i]) + "</b>&darr;</td>";
         }
     }
     tempStr += "<td><b>b</b></td>";
@@ -112,9 +120,9 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         tempStr += "<tr>";
         tempStr += "<td>" + fracHandler(cj[loc[i]]) + "</td>";
         if (( pivotRIdx != i) || (isNaN(pivotCIdx)) ) {
-            tempStr += "<td>" + xB[i] + "</td>";
+            tempStr += "<td>" + subscripts(xB[i]) + "</td>";
         } else {
-            tempStr += "<td>&larr;<b>" + xB[i] + "</b></td>";
+            tempStr += "<td>&larr;<b>" + subscripts(xB[i]) + "</b></td>";
         }
         for (let j = 0; j < mn; j++) {
             tempStr += "<td>" + fracHandler(A[i][j]) + "</td>";
