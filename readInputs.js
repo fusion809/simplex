@@ -132,6 +132,7 @@ function findx() {
  * @return    Nothing.
  */
 function getParameters() {
+    // Change objective function coefficient(s)
     if ( document.getElementById("changec").checked) {
         // Set globals
         var A = finalA;
@@ -140,8 +141,10 @@ function getParameters() {
         var cj = findc();
         var x = finalx;
         tempStr += "Objective function coefficient changed. ";
-        document.getElementById("changec").checked = false;
-    } else if ( document.getElementById("newConstr").checked) {
+    } 
+    // Add new constraint
+    else if ( document.getElementById("newConstr").checked) {
+        // Set globals
         var A = finalA;
         var b = finalb;
         var xB = finalxB;
@@ -171,7 +174,10 @@ function getParameters() {
         }
 
         tempStr += "Adding new constraint. ";
-    } else if (document.getElementById("rscChg").checked) {
+    } 
+    // Resource change (i.e. RHS of constraint)
+    else if (document.getElementById("rscChg").checked) {
+        // Set globals
         var A = finalA;
         var b = findb();
         var xB = finalxB;
@@ -181,11 +187,13 @@ function getParameters() {
         b = bUp;
 
         tempStr += "Resource value changed. ";
-    } else if (document.getElementById("LHSChg").checked) {
+    } 
+    // LHS constraint coefficient change
+    else if (document.getElementById("LHSChg").checked) {
+        // Set globals
         var A = findA();
         var AT = transpose(A);
         var finalAT = transpose(finalA);
-        // var initialAT = transpose(initialA);
         var m = A.length;
         var mn = A[0].length;
         var b = finalb;
@@ -208,13 +216,18 @@ function getParameters() {
             }
         }
         var A = transpose(finalAT);
-    } else {
+    } 
+    // Extract relevant values from form
+    else {
+        // Set globals
         var A = findA();
         var b = findb();
         var xB = findxB();
         var cj = findc();
         var x = findx();
     }
+
+    // Update globals
     finalA = A;
     if (l == 0) {
         initialAT = transpose(A);
@@ -224,10 +237,12 @@ function getParameters() {
     finalxB = xB;
     finalx = x;
     finalcj = cj;
+
+    // Uncheck buttons
     document.getElementById("changec").checked = false;
     document.getElementById("newConstr").checked = false;
     document.getElementById("rscChg").checked = false;
-
+    document.getElementById("LHSChg").checked = false;
     return [A, b, cj, x, xB, false];
 }
 
