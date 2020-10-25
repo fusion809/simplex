@@ -1,5 +1,9 @@
-// Initialize our only global variable
+// Initialize globals
 var tempStr = "";
+var finalA = [[]];
+var finalb = [];
+var finalxB = [];
+var finalcj = [];
 
 /**
  * Create an array of where each element in x appears in xB. Useful for 
@@ -277,8 +281,9 @@ function simplex(A, b, cj, x, xB, zc) {
         }
     } else {
         // Method for working with non-optimal, but feasible solutions
-        var [pivotEl, pivotCol, pivotCIdx, pivotRIdx, ratio, isUnbounded] = findPivots(A, b,
+        var arr = findPivots(A, b,
              zc);
+        [pivotEl, pivotCol, pivotCIdx, pivotRIdx, ratio, isUnbounded] = arr;
         genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl, ratio,
             pivotRIdx, pivotCIdx, isUnbounded);
         b[pivotRIdx] /= pivotEl;
@@ -324,7 +329,9 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
         return;
     }
     if (A[0].length != x.length) {
-        alert("x (decision variable array) has a different number of columns to A!")
+        var msg = "A has a number of columns that exceeds the number of";
+        msg += " elements in x!";
+        alert(msg);
     }
     var m = A.length;
     var pivotRIdx;
@@ -337,10 +344,14 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
     var isUnbounded = false;
     var arr;
     while ((!isOptim) && (!isUnbounded)) {
+        // Apply simplex
         [cB, z, zc] = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
         [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf] = arr;
+        // Determine whether problem is now optimal and feasible
         [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+        // Problems that start infeasible for some reason do not have the final
+        // tableau displayed
         if ((iter == 0) && (!isFeas)) {
             isInitInfeas = true;
         }
@@ -363,8 +374,29 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
     } else if (isInitInfeas && !isUnbounded && !isPermInf) {
         genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl);
     }
+    finalA = A;
+    finalb = b;
+    finalxB = xB;
+    finalcj = cj;
+    finalx = x;
 }
 
+/**
+ * Apply simplexIterator() to arguments obtained from getParameters()
+ * 
+ * @params    None.
+ * @return    Nothing.
+ */
+function solveProblem() {
+    var [A, b, cj, x, xB, serialTab] = getParameters();
+    simplexIterator(A, b, cj, x, xB, serialTab);
+}
+
+/**
+ * Remove simplex tableaux
+ * @params    None.
+ * @return    Nothing.
+ */
 function removeTableaux() {
     document.getElementById("tableau").innerHTML = "";
 }

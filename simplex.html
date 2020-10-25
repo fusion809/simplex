@@ -37,47 +37,39 @@
         <form>
             <table width="100%">
             <tr>
+                <td colspan="2"><input type="radio" id="reuse">Reuse final tableau?</input><input type="radio" id="newConstr">Add constraint?</input></td>
+            </tr>
+            <tr>
                 <td>Input</td>
                 <td>Contents</td>
             </tr> 
             <tr>
                 <td>A</td>
-                <td width="100%"><textarea id="A" name="A" style="width: 100%; height: 130px;">[-5, -5, -3, 1, 0, 0, 0, 0, 0, 0; 
--1, -1, 1, 0, 1, 0, 0, 0, 0, 0; 
--7, -6, 9, 0, 0, 1, 0, 0, 0, 0; 
--5, -5, -5, 0, 0, 0, 1, 0, 0, 0; 
--2, -4, 15, 0, 0, 0, 0, 1, 0, 0; 
--12, -10, 0, 0, 0, 0, 0, 0, 1, 0; 
-0, -1, 10, 0, 0, 0, 0, 0, 0, 1]</textarea></td>
+                <td width="100%"><textarea id="A" name="A" style="width: 100%; height: 130px;">[9, 3, 1, 0, 0;
+1, 0, 0, 1, 0;
+0, 1, 0, 0, 1];
+                    </textarea></td>
             </tr>
             <tr>
                 <td><b>b</b></td>
-                <td><textarea id="b" name="b" style="width: 100%; height: 130px;">[-50;
--20;
--30;
--35;
--10;
--90; 
--20]</textarea></td>
+                <td><textarea id="b" name="b" style="width: 100%; height: 130px;">[90000;
+8000;
+12000];</textarea></td>
             </tr>
             <tr>
                 <td><b>c</b></td>
-                <td><input type="text" id="c" name="c" style="width: 100%;" value="[-5, -6, -3, 0, 0, 0, 0, 0, 0, 0]"></input></td>
+                <td><input type="text" id="c" name="c" style="width: 100%;" value="[0.6, 0.6, 0, 0, 0]"></input></td>
             </tr>
             <tr>
                 <td><b>x</b></td>
-                <td><input type="text" id="x" name="x" style="width: 100%;" value='[x, y, z, s1, s2, s3, s4, s5, s6, s7]''></input></td>
+                <td><input type="text" id="x" name="x" style="width: 100%;" value='[x1, x2, s1, s2, s3]'></input></td>
             </tr>
             <tr>
                 <td>x<sub><b>B</b></sub></td>
                 <td>
                     <textarea id="xB" name="xB" style="width: 100%; height: 130px;">[s1;
 s2;
-s3;
-s4;
-s5;
-s6;
-s7]</textarea>
+s3]</textarea>
 </td>
             </tr>
             <tr>
@@ -86,7 +78,7 @@ s7]</textarea>
             </tr>
             </table>
         </form>
-        <button onclick="simplexIterator(findA(), find1dNumArr('b'), find1dNumArr('c'), find1dStrArr('x'), find1dStrArr('xB'), readSerialTab())">Click to solve problem</button>
+        <button onclick="solveProblem()">Click to solve problem</button>
         <button onclick="removeTableaux()">Remove tableaux</button>
         <div id = "tableau">
         </div>
