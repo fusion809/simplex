@@ -95,6 +95,7 @@ function find1dStrArr(name) {
     var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     var arr = [];
 
+    // Loop over each element of htmlEl, and add what needs to be added to arr
     for (let i = 0 ; i < htmlEl.length; i++) {
         var el = htmlEl[i].replace(/\[/, '').replace(/\]/, '').replace(/"/g, '');
         if (/[_a-zA-Z0-9]+/.test(el)) {
