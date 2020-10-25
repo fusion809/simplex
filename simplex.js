@@ -1,9 +1,12 @@
 // Initialize globals
 var tempStr = "";
 var finalA = [[]];
+var initialAT = [[]];
 var finalb = [];
 var finalxB = [];
 var finalcj = [];
+var finalV = [[]];
+var l = 0;
 
 /**
  * Create an array of where each element in x appears in xB. Useful for 
@@ -279,7 +282,7 @@ function simplex(A, b, cj, x, xB, zc) {
             }
 
         }
-    } else {
+    } else if (!isOptim) {
         // Method for working with non-optimal, but feasible solutions
         var arr = findPivots(A, b,
              zc);
@@ -302,6 +305,12 @@ function simplex(A, b, cj, x, xB, zc) {
             }
         }
         isPermInf = false;
+    }
+
+    var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+
+    if (isOptim) {
+        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl, ratio, pivotRIdx, pivotCIdx, isUnbounded);
     }
     return [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf];
 }
@@ -342,8 +351,17 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
     var iter = 0;
     var isInitInfeas = false;
     var isUnbounded = false;
+    var isPermInf = false;
     var arr;
-    while ((!isOptim) && (!isUnbounded)) {
+
+    // If problem is already optimal, just tabulate the solution
+    if (isOptim) {
+        tempStr += "Solution is already optimal.";
+        genTableau(A, b, cj, x, xB, isFeas, isOptim);
+    }
+
+    // Use simplex to solve the problem
+    while ((!isOptim) && (!isUnbounded) && (!isPermInf)) {
         // Apply simplex
         [cB, z, zc] = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
@@ -368,17 +386,13 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
         }
     }
 
-    // Generate a serial table if necessary
-    if (serialTab) {
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl);
-    } else if (isInitInfeas && !isUnbounded && !isPermInf) {
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl);
-    }
+    // Update final values
     finalA = A;
     finalb = b;
     finalxB = xB;
     finalcj = cj;
     finalx = x;
+    finalV = findV(A);
 }
 
 /**
@@ -388,15 +402,9 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
  * @return    Nothing.
  */
 function solveProblem() {
-    var [A, b, cj, x, xB, serialTab] = getParameters();
-    simplexIterator(A, b, cj, x, xB, serialTab);
-}
+    var [A, b, cj, x, xB, shouldDie] = getParameters();
 
-/**
- * Remove simplex tableaux
- * @params    None.
- * @return    Nothing.
- */
-function removeTableaux() {
-    document.getElementById("tableau").innerHTML = "";
+    if (!shouldDie) {
+        simplexIterator(A, b, cj, x, xB);
+    }
 }

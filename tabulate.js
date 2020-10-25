@@ -147,7 +147,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         tempStr += "<td>" + fracHandler(zc[i]) + "</td>";
     }
     tempStr += "</tr>";
-    
+
     // Ratio row
     if (ratio != undefined && !isNaN(pivotEl)) {
         if (!isFeas) {
@@ -194,4 +194,13 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         }
     }
     document.getElementById("tableau").innerHTML = tempStr;
+}
+
+/**
+ * Remove simplex tableaux
+ * @params    None.
+ * @return    Nothing.
+ */
+function removeTableaux() {
+    document.getElementById("tableau").innerHTML = "";
 }

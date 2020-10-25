@@ -16,7 +16,7 @@ function findA() {
             // Element (potentially) with right bracket
             var elRb = arr[i].replace(/\[/g, '');
             // Element without right bracket
-            var el = elRb.replace(/\][;]/g, '');
+            var el = elRb.replace(/\]/g, '');
 
             // We're using MATLAB notation for arrays
             if (/[0-9]\s*;/.test(elRb)) {
@@ -32,7 +32,6 @@ function findA() {
                     A[k].push(parseFloat(elArr[1]));
                 }
             } else if (!isNaN(el) && !/^$/.test(el)) {
-                console.log("el at line 31 is " + el);
                 A[k].push(parseFloat(el));
             }
         }
@@ -127,47 +126,31 @@ function findx() {
 }
 
 /**
- * Read serialTab argument from input table.
+ * Obtain and return parameters of the problem from the form.
  * 
  * @params    None.
  * @return    Nothing.
  */
-function readSerialTab() {
-    var htmlEl = document.getElementById("serialTab").value;
-
-    if (htmlEl.toLowerCase() == "true") {
-        return true;
-    } else if (htmlEl.toLowerCase() == "false") {
-        return false;
-    }
-}
-
 function getParameters() {
-    var A;
-    var b;
-    var cj;
-    var serialTab = readSerialTab();
-    if ( document.getElementById("reuse").checked) {
-        A = finalA;
-        b = finalb;
-        xB = finalxB;
-        cj = finalcj;
-        x = finalx;
-    } else {
-        A = findA();
-        b = findb();
-        xB = findxB();
-        cj = findc();
-        x = findx();
-    }
-
-    if ( document.getElementById("newConstr").checked) {
+    if ( document.getElementById("changec").checked) {
+        // Set globals
+        var A = finalA;
+        var b = finalb;
+        var xB = finalxB;
+        var cj = findc();
+        var x = finalx;
+        tempStr += "Objective function coefficient changed. ";
+        document.getElementById("changec").checked = false;
+    } else if ( document.getElementById("newConstr").checked) {
+        var A = finalA;
+        var b = finalb;
+        var xB = finalxB;
+        var cj = finalcj;
+        var x = finalx;
         var newARows = findA();
         var newbRows = findb();
         var newcRows = findc();
         var newxBrows = findxB();
-        serialTab = true;
-        document.getElementById("serialTab").value = true;
 
         // Adds new column for new slack variable
         for (let i = 0; i < A.length; i++) {
@@ -186,13 +169,76 @@ function getParameters() {
             x.push(newxBrows[i]);
             cj.push(newcRows[i]);
         }
-        
-        
+
+        tempStr += "Adding new constraint. ";
+    } else if (document.getElementById("rscChg").checked) {
+        var A = finalA;
+        var b = findb();
+        var xB = finalxB;
+        var cj = finalcj;
+        var x = finalx;
+        var b = matMult(finalV, b);
+        b = bUp;
+
+        tempStr += "Resource value changed. ";
+    } else if (document.getElementById("LHSChg").checked) {
+        var A = findA();
+        var AT = transpose(A);
+        var finalAT = transpose(finalA);
+        // var initialAT = transpose(initialA);
+        var m = A.length;
+        var mn = A[0].length;
+        var b = finalb;
+        var xB = finalxB;
+        var cj = finalcj;
+        var x = finalx;
+        var loc = basisIndex(x, xB);
+        for (let j = 0; j < mn ; j++) {
+            if (!find(loc, j)) {
+                finalAT[j] = matMult(finalV, AT[j]);
+            } else {
+                for (let i = 0 ; i < m ; i++) {
+                    if (AT[j][i] != initialAT[j][i]) {
+                        console.log(AT[j][i]);
+                        console.log(initialAT[j][i]);
+                        alert("If the coefficients of basic variables change, you must solve the problem from scratch again!");
+                        return [A, b, cj, x, xB, true];
+                    }
+                }
+            }
+        }
+        var A = transpose(finalAT);
+    } else {
+        var A = findA();
+        var b = findb();
+        var xB = findxB();
+        var cj = findc();
+        var x = findx();
     }
     finalA = A;
+    if (l == 0) {
+        initialAT = transpose(A);
+    }
+    l++;
     finalb = b;
     finalxB = xB;
     finalx = x;
+    finalcj = cj;
+    document.getElementById("changec").checked = false;
+    document.getElementById("newConstr").checked = false;
+    document.getElementById("rscChg").checked = false;
 
-    return [A, b, cj, x, xB, serialTab];
+    return [A, b, cj, x, xB, false];
+}
+
+/**
+ * Uncheck specified radio button if it is checked.
+ * 
+ * @param name     Name of the radio button's HTML element.
+ * @return         Nothing.
+ */
+function uncheck(name) {
+    if (document.getElementById(name).checked) { 
+        document.getElementById(name).checked = false; 
+    }
 }
