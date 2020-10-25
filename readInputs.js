@@ -19,7 +19,6 @@ function findA() {
             var elArr = el.split(/;/);
             A[k].push(parseFloat(elArr[0]));
             k++;
-            console.log(i)
             if (i != arr.length - 1) {
                 A.push([]);
             }
