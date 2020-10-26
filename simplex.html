@@ -27,9 +27,7 @@
         <h1>Simplex method solver</h1>
         
         <div>
-            This webpage essentially just solves a non-integer linear programming problem specified in matrix form using the simplex method and shows full working.<br/>
-
-            The problem must be in canonical form, that is:
+            This webpage essentially just solves a non-integer linear programming problem specified in matrix form using the simplex method and shows full working. The problem must be in canonical form, that is:
 
             \[
             \begin{aligned}
@@ -40,51 +38,52 @@
             \end{aligned}
             \]
 
-            The various matrices can be entered in using Julia/MATLAB/Octave/Scilab notation. In the case of A, semicolons are used to separate rows and commas or spaces to separate individual row elements. \(\mathbf{b}\), \(\mathbf{c}\), \(\mathbf{x}\) and \(x_{\mathbf{B}}\) can have individual elements separated by commas, semicolons or spaces. serialTab is a Boolean that decides whether an additional table is shown at the end, sometimes the final tableau is not solved due to a known bug. 
+            The various matrices can be entered in using MATLAB notation. In the case of A, semicolons are used to separate rows and commas or spaces to separate individual row elements. \(\mathbf{b}\), \(\mathbf{c}\), \(\mathbf{x}\) and \(x_{\mathbf{B}}\) can have individual elements separated by commas, semicolons or spaces.
         </div>
         <form>
             <table width="100%">
             <tr>
-            <td colspan="2">
-                <input type="radio" id="changec">Change objective function coefficients?</input>
-                <input type="radio" id="newConstr">Add constraint?</input>
-                <input type="radio" id="rscChg">Resource change?</input>
-                <input type="radio" id="LHSChg">Constraint LHS change?</input>
-                <input type="radio" id="newVar">New variable?</input>
-            </td>
-            </tr>
-            <tr>
-                <td>Input</td>
-                <td>Contents</td>
+                <th>Input</th>
+                <th>Contents</th>
             </tr> 
-            <tr>
+            <tr width="100%">
                 <td>A</td>
-                <td width="100%"><textarea id="A" name="A" style="width: 100%; height: 130px;">[9, 3, 1, 0, 0;
+                <td width="100%"><textarea id="A" name="A" style="width: 100%; height: 120px;">[9, 3, 1, 0, 0;
 1, 0, 0, 1, 0;
 0, 1, 0, 0, 1]</textarea></td>
             </tr>
             <tr>
                 <td><b>b</b></td>
-                <td><textarea id="b" name="b" style="width: 100%; height: 130px;">[90000;
+                <td><textarea id="b" name="b" style="width: 100%; height: 120px;">[90000;
 8000;
 12000]</textarea></td>
             </tr>
             <tr>
                 <td><b>c</b></td>
-                <td><input type="text" id="c" name="c" style="width: 100%;" value="[0.6, 0.6, 0, 0, 0]"></input></td>
+                <td><textarea id="c" name="c" style="width: 100%;">[0.6, 0.6, 0, 0, 0]</textarea></td>
             </tr>
             <tr>
                 <td><b>x</b></td>
-                <td><input type="text" id="x" name="x" style="width: 100%;" value='[x1, x2, s1, s2, s3]'></input></td>
+                <td><textarea id="x" name="x" style="width: 100%;">[x1, x2, s1, s2, s3]</textarea></td>
             </tr>
             <tr>
                 <td>x<sub><b>B</b></sub></td>
                 <td>
-                    <textarea id="xB" name="xB" style="width: 100%; height: 130px;">[s1;
+                    <textarea id="xB" name="xB" style="width: 100%; height: 120px;">[s1;
 s2;
 s3]</textarea>
 </td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <b>Sensitivity analysis</b>:<br/>
+                    <input type="radio" id="changec">Change objective function coefficient(s)?</input>
+                    <input type="radio" id="newConstr">Add constraint(s)?</input>
+                    <input type="radio" id="rscChg">Resource change?</input>
+                    <input type="radio" id="LHSChg">Constraint LHS change?</input>
+                    <input type="radio" id="newVar">New variable(s)?</input>
+                </td>
+                </tr>
             </table>
         </form>
         <button onclick="solveProblem()">Click to solve problem</button>
@@ -95,7 +94,7 @@ s3]</textarea>
             table, tr, th, td {
                 border: 1px solid black;
                 border-collapse: collapse;
-                max-width: 100%;
+                max-width: 95%;
             }
         </style>
     </body>
