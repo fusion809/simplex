@@ -21,7 +21,8 @@ function findA() {
             // We're using MATLAB notation for arrays
             if (/[0-9/]*\s*;/.test(elRb)) {
                 var elArr = el.split(/;/);
-                if (!isNaN(elArr[0])) {
+                console.log(elArr);
+                if (/[0-9/]*/.test(elArr[0])) {
                     var fraction = math.fraction(elArr[0]);
                     A[k].push(fraction.s*fraction.n/fraction.d);
                 }
@@ -29,7 +30,7 @@ function findA() {
                 if (i != arr.length - 1) {
                     A.push([]);
                 }
-                if (!isNaN(elArr[1])) {
+                if (/[0-9/]*/.test(elArr[1])) {
                     var fraction = math.fraction(elArr[1]);
                     A[k].push(fraction.s*fraction.n/fraction.d);
                 }
