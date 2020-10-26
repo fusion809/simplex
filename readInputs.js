@@ -21,7 +21,6 @@ function findA() {
             // We're using MATLAB notation for arrays
             if (/[0-9/]*\s*;/.test(elRb)) {
                 var elArr = el.split(/;/);
-                console.log(elArr);
                 if (/[0-9/]*/.test(elArr[0])) {
                     var fraction = math.fraction(elArr[0]);
                     A[k].push(fraction.s*fraction.n/fraction.d);
