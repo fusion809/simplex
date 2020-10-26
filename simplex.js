@@ -147,6 +147,7 @@ function simplexIterator(A, b, cj, x, xB, serialTab) {
     var pivotEl;
     var pivotCol = new Array(m);
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+    console.log(A)
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
     var iter = 0;
     var isInitInfeas = false;

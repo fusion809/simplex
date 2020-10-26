@@ -203,4 +203,5 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
  */
 function removeTableaux() {
     document.getElementById("tableau").innerHTML = "";
+    tempStr = "";
 }

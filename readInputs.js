@@ -19,20 +19,23 @@ function findA() {
             var el = elRb.replace(/\]/g, '');
 
             // We're using MATLAB notation for arrays
-            if (/[0-9]\s*;/.test(elRb)) {
+            if (/[0-9/]*\s*;/.test(elRb)) {
                 var elArr = el.split(/;/);
                 if (!isNaN(elArr[0])) {
-                    A[k].push(parseFloat(elArr[0]));
+                    var fraction = math.fraction(elArr[0]);
+                    A[k].push(fraction.s*fraction.n/fraction.d);
                 }
                 k++;
                 if (i != arr.length - 1) {
                     A.push([]);
                 }
                 if (!isNaN(elArr[1])) {
-                    A[k].push(parseFloat(elArr[1]));
+                    var fraction = math.fraction(elArr[1]);
+                    A[k].push(fraction.s*fraction.n/fraction.d);
                 }
-            } else if (!isNaN(el) && !/^$/.test(el)) {
-                A[k].push(parseFloat(el));
+            } else if (/[0-9/]*\s*/.test(elRb)) {
+                var fraction = math.fraction(el);
+                A[k].push(fraction.s*fraction.n/fraction.d);
             }
         }
     } else {
@@ -208,8 +211,6 @@ function getParameters() {
             } else {
                 for (let i = 0 ; i < m ; i++) {
                     if (AT[j][i] != initialAT[j][i]) {
-                        console.log(AT[j][i]);
-                        console.log(initialAT[j][i]);
                         alert("If the coefficients of basic variables change, you must solve the problem from scratch again!");
                         return [A, b, cj, x, xB, true];
                     }
