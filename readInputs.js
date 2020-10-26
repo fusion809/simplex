@@ -6,7 +6,7 @@
  */
 function findA() {
     var htmlEl = document.getElementById("A").value;
-    if (htmlEl.match(';')) {
+    if (htmlEl.match(',')) {
         var arr = htmlEl.split(/[, ][\s]*/);
         var A = [[]];
         var k = 0;
@@ -217,7 +217,34 @@ function getParameters() {
             }
         }
         var A = transpose(finalAT);
-    } 
+    }
+    else if (document.getElementById("newVar").checked) {
+        // Set globals
+        var A = finalA;
+        var m = A.length;
+        var mn = A[0].length;
+        var n = mn - m;
+        var b = finalb;
+        var xB = finalxB;
+        var cj = finalcj;
+        var x = finalx;
+        var newACol = find1dNumArr("A");
+        var newcCol = findc();
+        var newxRow = findx();
+        var newAColCor = matMult(finalV, newACol)
+
+        // Adds new column for new slack variable
+        for (let i = 0; i < A.length; i++) {
+            A[i].splice(n, 0, newAColCor[i]);
+        }
+
+        for (let j = 0 ; j < newcCol.length; j++) {
+            cj.splice(n, 0, newcCol[j]);
+            x.splice(n, 0, newxRow[j]);
+        }
+
+        tempStr += "Adding new variable. ";
+    }
     // Extract relevant values from form
     else {
         // Set globals

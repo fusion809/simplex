@@ -6,11 +6,12 @@
  * @return         Matrix product between finalV and b
  */
 function matMult(finalV, b) {
-    var bUp = new Array(b.length);
-    for (let i = 0; i < b.length ; i++) {
+    var m = b.length;
+    var bUp = new Array(m);
+    for (let i = 0; i < m; i++) {
         bUp[i] = 0;
-        for (let j = 0 ; j < b.length; j++) {
-            bUp[i] += finalV[i][j]*b[j];
+        for (let j = 0; j < m; j++) {
+            bUp[i] += finalV[i][j] * b[j];
         }
     }
     return bUp;
@@ -27,12 +28,12 @@ function transpose(A) {
     var mn = A[0].length;
     var AA = new Array(mn);
 
-    for (let i = 0 ; i < mn; i++) {
+    for (let i = 0; i < mn; i++) {
         AA[i] = new Array(m);
     }
 
-    for (let i = 0 ; i < m; i++) {
-        for (let j = 0 ; j < mn; j++) {
+    for (let i = 0; i < m; i++) {
+        for (let j = 0; j < mn; j++) {
             AA[j][i] = A[i][j];
         }
     }
@@ -50,10 +51,10 @@ function findV(A) {
     var m = A.length;
     var V = new Array(m);
 
-    for (let i = 0 ; i < m ; i++) {
+    for (let i = 0; i < m; i++) {
         V[i] = new Array(m);
-        for (let j = 0; j < m ; j++) {
-            V[i][j] = A[i][m+j-1];
+        for (let j = 0; j < m; j++) {
+            V[i][j] = A[i][m + j - 1];
         }
     }
 
