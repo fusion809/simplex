@@ -22,20 +22,17 @@ function findA() {
             if (/[0-9/]*\s*;/.test(elRb)) {
                 var elArr = el.split(/;/);
                 if (/[0-9/]*/.test(elArr[0])) {
-                    var fraction = math.fraction(elArr[0]);
-                    A[k].push(fraction.s*fraction.n/fraction.d);
+                    A[k].push(fracToDecimal(elArr[0]));
                 }
                 k++;
                 if (i != arr.length - 1) {
                     A.push([]);
                 }
                 if (/[0-9/]*/.test(elArr[1])) {
-                    var fraction = math.fraction(elArr[1]);
-                    A[k].push(fraction.s*fraction.n/fraction.d);
+                    A[k].push(fracToDecimal(elArr[1]));
                 }
             } else if (/[0-9/]*\s*/.test(elRb)) {
-                var fraction = math.fraction(el);
-                A[k].push(fraction.s*fraction.n/fraction.d);
+                A[k].push(fracToDecimal(el));
             }
         }
     } else {
@@ -55,13 +52,11 @@ function find1dNumArr(name) {
     var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     var arr = [];
 
-    for (let i = 0 ; i < htmlEl.length; i++) {
+    for (let i = 0; i < htmlEl.length; i++) {
         var el = htmlEl[i].replace(/\[/, '').replace(/\]/, '');
         if (/[\-0-9./]+/.test(el)) {
             // Using math.fraction is required in case users input fractions
-            el = math.fraction(el);
-            el = el.s*el.n/el.d;
-            arr.push(el);
+            arr.push(fracToDecimal(el));
         }
     }
 
@@ -99,7 +94,7 @@ function find1dStrArr(name) {
     var arr = [];
 
     // Loop over each element of htmlEl, and add what needs to be added to arr
-    for (let i = 0 ; i < htmlEl.length; i++) {
+    for (let i = 0; i < htmlEl.length; i++) {
         var el = htmlEl[i].replace(/\[/, '').replace(/\]/, '').replace(/"/g, '');
         if (/[_a-zA-Z0-9]+/.test(el)) {
             arr.push(el);
@@ -137,114 +132,23 @@ function findx() {
  */
 function getParameters() {
     // Change objective function coefficient(s)
-    if ( document.getElementById("changec").checked) {
-        // Set globals
-        var A = finalA;
-        var b = finalb;
-        var xB = finalxB;
-        var cj = findc();
-        var x = finalx;
-        tempStr += "Objective function coefficient changed. ";
-    } 
+    if (document.getElementById("changec").checked) {
+        var [A, b, xB, cj, x] = objectiveChange();
+    }
     // Add new constraint
-    else if ( document.getElementById("newConstr").checked) {
-        // Set globals
-        var A = finalA;
-        var b = finalb;
-        var xB = finalxB;
-        var cj = finalcj;
-        var x = finalx;
-        var newARows = findA();
-        var newbRows = findb();
-        var newcRows = findc();
-        var newxBrows = findxB();
-
-        // Adds new column for new slack variable
-        for (let i = 0; i < A.length; i++) {
-            for (let j = 0 ; j < newbRows.length; j++) {
-                A[i].push(0);
-            }
-        }
-
-        if (newARows.length != newbRows.length) {
-            alert("An equal number of rows must be added to A and b")
-        }
-        for (let i = 0; i < newARows.length; i++) {
-            A.push(newARows[i]);
-            b.push(newbRows[i]);
-            xB.push(newxBrows[i]);
-            x.push(newxBrows[i]);
-            cj.push(newcRows[i]);
-        }
-
-        tempStr += "Adding new constraint. ";
-    } 
+    else if (document.getElementById("newConstr").checked) {
+        var [A, b, xB, cj, x] = newConstraint();
+    }
     // Resource change (i.e. RHS of constraint)
     else if (document.getElementById("rscChg").checked) {
-        // Set globals
-        var A = finalA;
-        var b = findb();
-        var xB = finalxB;
-        var cj = finalcj;
-        var x = finalx;
-        var b = matMult(finalV, b);
-        b = bUp;
-
-        tempStr += "Resource value changed. ";
-    } 
+        var [A, b, xB, cj, x] = resourceChange();
+    }
     // LHS constraint coefficient change
     else if (document.getElementById("LHSChg").checked) {
-        // Set globals
-        var A = findA();
-        var AT = transpose(A);
-        var finalAT = transpose(finalA);
-        var m = A.length;
-        var mn = A[0].length;
-        var b = finalb;
-        var xB = finalxB;
-        var cj = finalcj;
-        var x = finalx;
-        var loc = basisIndex(x, xB);
-        for (let j = 0; j < mn ; j++) {
-            if (!find(loc, j)) {
-                finalAT[j] = matMult(finalV, AT[j]);
-            } else {
-                for (let i = 0 ; i < m ; i++) {
-                    if (AT[j][i] != initialAT[j][i]) {
-                        alert("If the coefficients of basic variables change, you must solve the problem from scratch again!");
-                        return [A, b, cj, x, xB, true];
-                    }
-                }
-            }
-        }
-        var A = transpose(finalAT);
+        var [A, b, xB, cj, x] = constrCoeffsChange();
     }
     else if (document.getElementById("newVar").checked) {
-        // Set globals
-        var A = finalA;
-        var m = A.length;
-        var mn = A[0].length;
-        var n = mn - m;
-        var b = finalb;
-        var xB = finalxB;
-        var cj = finalcj;
-        var x = finalx;
-        var newACol = find1dNumArr("A");
-        var newcCol = findc();
-        var newxRow = findx();
-        var newAColCor = matMult(finalV, newACol)
-
-        // Adds new column for new slack variable
-        for (let i = 0; i < A.length; i++) {
-            A[i].splice(n, 0, newAColCor[i]);
-        }
-
-        for (let j = 0 ; j < newcCol.length; j++) {
-            cj.splice(n, 0, newcCol[j]);
-            x.splice(n, 0, newxRow[j]);
-        }
-
-        tempStr += "Adding new variable. ";
+        var [A, b, xB, cj, x] = addVariable();
     }
     // Extract relevant values from form
     else {
@@ -257,21 +161,10 @@ function getParameters() {
     }
 
     // Update globals
-    finalA = A;
-    if (l == 0) {
-        initialAT = transpose(A);
-    }
-    l++;
-    finalb = b;
-    finalxB = xB;
-    finalx = x;
-    finalcj = cj;
+    updateGlobals(A, b, xB, x, cj);
 
     // Uncheck buttons
-    document.getElementById("changec").checked = false;
-    document.getElementById("newConstr").checked = false;
-    document.getElementById("rscChg").checked = false;
-    document.getElementById("LHSChg").checked = false;
+    uncheckAll();
     return [A, b, cj, x, xB, false];
 }
 
@@ -282,7 +175,14 @@ function getParameters() {
  * @return         Nothing.
  */
 function uncheck(name) {
-    if (document.getElementById(name).checked) { 
-        document.getElementById(name).checked = false; 
+    if (document.getElementById(name).checked) {
+        document.getElementById(name).checked = false;
     }
+}
+
+function uncheckAll() {
+    document.getElementById("changec").checked = false;
+    document.getElementById("newConstr").checked = false;
+    document.getElementById("rscChg").checked = false;
+    document.getElementById("LHSChg").checked = false;
 }

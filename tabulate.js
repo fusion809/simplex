@@ -1,20 +1,4 @@
 /**
- * Create a string representation of a specified number expressed 
- * as either an integer or fraction.
- * 
- * @param number Number to express.
- * @return       String integer/fraction representation of number.
- */
-function fracHandler(number) {
-    var numberFrac = math.fraction(number);
-    if (numberFrac.d != 1) {
-        return (numberFrac.s * numberFrac.n) + "/" + numberFrac.d;
-    } else {
-        return "" + (numberFrac.s * numberFrac.n);
-    }
-}
-
-/**
  * Place numbers in specified decision variable in a subscript.
  * 
  * @param decVar   Decision variable whose numerical components are to be 
@@ -80,7 +64,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     tempStr += "<td></td>";
     tempStr += "<td>c<sub>j</sub></td>";
     for (let i = 0; i < cj.length; i++) {
-        tempStr += "<td>" + fracHandler(cj[i]) + "</td>";
+        tempStr += "<td>" + decimalToFrac(cj[i]) + "</td>";
     }
     tempStr += "</tr>";
 
@@ -104,19 +88,19 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     tempStr += "</tr>";
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
-        tempStr += "<td>" + fracHandler(cB[i]) + "</td>";
+        tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
         if (( pivotRIdx != i) || (isNaN(pivotCIdx)) ) {
             tempStr += "<td>" + subscripts(xB[i]) + "</td>";
         } else {
             tempStr += "<td>&larr;<b>" + subscripts(xB[i]) + "</b></td>";
         }
         for (let j = 0; j < mn; j++) {
-            tempStr += "<td>" + fracHandler(A[i][j]) + "</td>";
+            tempStr += "<td>" + decimalToFrac(A[i][j]) + "</td>";
         }
-        tempStr += "<td>" + fracHandler(b[i]) + "</td>";
+        tempStr += "<td>" + decimalToFrac(b[i]) + "</td>";
         if (isFeas && !isOptim) {
             if (ratio[i] != Number.POSITIVE_INFINITY && ratio[i] >= 0) {
-                tempStr += "<td>" + fracHandler(ratio[i]) + "</td>";
+                tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
             } else {
                 tempStr += "<td>NA</td>";
             }
@@ -133,18 +117,18 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     }
     tempStr += "<td>z<sub>j</sub></td>";
     for (let i = 0; i < mn; i++) {
-        tempStr += "<td>" + fracHandler(z[i]) + "</td>";
+        tempStr += "<td>" + decimalToFrac(z[i]) + "</td>";
     }
 
     // Objective function value
-    tempStr += "<td rowspan='2'>" + fracHandler(z[mn]) + "</td>";
+    tempStr += "<td rowspan='2'>" + decimalToFrac(z[mn]) + "</td>";
     tempStr += "</tr>";
 
     // zj-cj row
     tempStr += "<tr>";
     tempStr += "<td>z<sub>j</sub>-c<sub>j</sub></td>";
     for (let i = 0; i < mn; i++) {
-        tempStr += "<td>" + fracHandler(zc[i]) + "</td>";
+        tempStr += "<td>" + decimalToFrac(zc[i]) + "</td>";
     }
     tempStr += "</tr>";
 
@@ -155,7 +139,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
             tempStr += "<td>Ratio</td>";
             for (let i = 0; i < mn; i++) {
                 if (ratio[i] != Number.POSITIVE_INFINITY) {
-                    tempStr += "<td>" + fracHandler(ratio[i]) + "</td>";
+                    tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
                 } else {
                     tempStr += "<td></td>";
                 }
@@ -176,19 +160,19 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
                 } else if (pivotEl == -1) {
                     tempStr += "<div>-R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
                 } else {
-                    tempStr += "<div>" + fracHandler(1 / pivotEl) + "R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
+                    tempStr += "<div>" + decimalToFrac(1 / pivotEl) + "R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
                 }
             } else {
                 if (pivotCol[i] == -1) {
                     tempStr += "<div>R<sub>" + (i + 1) + "</sub> + " + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
                 } else if ( pivotCol[i] < 0) {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> + " + (fracHandler(-pivotCol[i])) + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
+                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> + " + (decimalToFrac(-pivotCol[i])) + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
                 } else if (pivotCol[i] == 0) {
                     tempStr += "<div>R<sub>" + (i + 1) + "</sub> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
                 } else if (pivotCol[i] == 1) {
                     tempStr += "<div>R<sub>" + (i + 1) + "</sub> - " + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
                 } else {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> - " + (fracHandler(pivotCol[i])) + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
+                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> - " + (decimalToFrac(pivotCol[i])) + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
                 }
             }
         }
