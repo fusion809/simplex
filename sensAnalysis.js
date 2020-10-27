@@ -135,10 +135,11 @@ function resourceChange() {
 }
 
 /**
- * Change constraint coefficients
+ * Change constraint coefficients.
  * 
- * @params    None.
- * @return    [A, b, xB, cj, x]
+ * @params    None. Gets all its data from globals and the form.
+ * @return    [A, b, xB, cj, x, shouldDie]. shouldDie decides whether simplex 
+ * will exit.
  */
 function constrCoeffsChange() {
     // Set globals
@@ -180,7 +181,7 @@ function constrCoeffsChange() {
     // Mention what's changed since previous iterations of simplex
     tempStr += "Constraint coefficients have changed. ";
 
-    return [A, b, xB, cj, x];
+    return [A, b, xB, cj, x, false];
 }
 
 /**

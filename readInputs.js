@@ -2,9 +2,11 @@
  * Obtain and return parameters of the problem from the form.
  * 
  * @params    None.
- * @return    Nothing.
+ * @return    [A, b, cj, x, xB, shouldDie]
  */
 function getParameters() {
+    var shouldDie = false;
+
     // Change objective function coefficient(s)
     if (document.getElementById("changec").checked) {
         var [A, b, xB, cj, x] = objectiveChange();
@@ -19,7 +21,7 @@ function getParameters() {
     }
     // LHS constraint coefficient change
     else if (document.getElementById("LHSChg").checked) {
-        var [A, b, xB, cj, x] = constrCoeffsChange();
+        var [A, b, xB, cj, x, shouldDie] = constrCoeffsChange();
     }
     else if (document.getElementById("newVar").checked) {
         var [A, b, xB, cj, x] = addVariable();
@@ -39,7 +41,7 @@ function getParameters() {
 
     // Uncheck buttons
     uncheckAll();
-    return [A, b, cj, x, xB, false];
+    return [A, b, cj, x, xB, shouldDie];
 }
 
 /**
