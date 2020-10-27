@@ -9,6 +9,10 @@ function fracToDecimal(str) {
     return fraction.s * fraction.n/fraction.d;
 }
 
+function sign(number) {
+    return Math.sign(number).toString().replace(/\d/, '');
+}
+
 /**
  * Convert a decimal to a fraction or integer string.
  * 
@@ -18,8 +22,8 @@ function fracToDecimal(str) {
 function decimalToFrac(number) {
     var numberFrac = math.fraction(number);
     if (numberFrac.d != 1) {
-        return (numberFrac.s * numberFrac.n) + "/" + numberFrac.d;
+        return katex.renderToString(sign(numberFrac.s) + "\\dfrac{" + (numberFrac.n) + "}{" + numberFrac.d + "}");
     } else {
-        return "" + (numberFrac.s * numberFrac.n);
+        return katex.renderToString("" + (numberFrac.s * numberFrac.n));
     }
 }

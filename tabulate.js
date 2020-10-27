@@ -5,12 +5,28 @@
  * turned into a subscript.
  * @return         decVar with numbers in subscript.
  */
-function subscripts(decVar) {
+function subscripts(decVar, formatting) {
     var corrected = decVar.replace(/\d+/, function(x) {
-        return "<sub>" + x + "</sub>";
+        return "_" + x;
     });
 
-    return corrected;
+    var {isBold, isLeftArrow, isDownArrow} = formatting;
+
+    if (isBold) {
+        if (isLeftArrow) {
+            return katexRow("\\leftarrow \\mathbf{" + corrected + "}");
+        } else if (isDownArrow) {
+            return katexRow("\\mathbf{" + corrected + "} \\downarrow");
+        } else {
+            return katexRow("\\mathbf{" + corrected + "}");
+        }
+    } else {
+        return katexRow(corrected);
+    }
+}
+
+function katexRow(str) {
+    return "<td>" + katex.renderToString(str) + "</td>";
 }
 
 /**
@@ -62,7 +78,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     // Objective function coefficient row
     tempStr += "<tr>";
     tempStr += "<td></td>";
-    tempStr += "<td>c<sub>j</sub></td>";
+    tempStr += katexRow("c_j");
     for (let i = 0; i < cj.length; i++) {
         tempStr += "<td>" + decimalToFrac(cj[i]) + "</td>";
     }
@@ -70,16 +86,16 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
 
     // Header row
     tempStr += "<tr>";
-    tempStr += "<td>c<sub><b>B</b></sub></td>";
-    tempStr += "<td>x<sub><b>B</b></sub></td>";
+    tempStr += katexRow("c_{\\mathbf{B}}");
+    tempStr += katexRow("x_{\\mathbf{B}}");
     for (let i = 0; i < x.length; i++) {
         if (i != pivotCIdx) {
-            tempStr += "<td>" + subscripts(x[i]) + "</td>";
+            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
         } else {
-            tempStr += "<td><b>" + subscripts(x[i]) + "</b>&darr;</td>";
+            tempStr += subscripts(x[i], {isBold: true, isLeftArrow: false, isDownArrow: true});
         }
     }
-    tempStr += "<td><b>b</b></td>";
+    tempStr += katexRow("\\mathbf{b}");
     if (isFeas && !isOptim) {
         tempStr += "<td>Ratio</td>";
     }
@@ -90,9 +106,9 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
         if (( pivotRIdx != i) || (isNaN(pivotCIdx)) ) {
-            tempStr += "<td>" + subscripts(xB[i]) + "</td>";
+            tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
         } else {
-            tempStr += "<td>&larr;<b>" + subscripts(xB[i]) + "</b></td>";
+            tempStr += subscripts(xB[i], {isBold: true, isLeftArrow: true, isDownArrow: false});
         }
         for (let j = 0; j < mn; j++) {
             tempStr += "<td>" + decimalToFrac(A[i][j]) + "</td>";
@@ -115,7 +131,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     } else {
         tempStr += "<td rowspan='2'></td>";
     }
-    tempStr += "<td>z<sub>j</sub></td>";
+    tempStr += katexRow("z_j");
     for (let i = 0; i < mn; i++) {
         tempStr += "<td>" + decimalToFrac(z[i]) + "</td>";
     }
@@ -126,7 +142,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
 
     // zj-cj row
     tempStr += "<tr>";
-    tempStr += "<td>z<sub>j</sub>-c<sub>j</sub></td>";
+    tempStr += katexRow("z_j - c_j");
     for (let i = 0; i < mn; i++) {
         tempStr += "<td>" + decimalToFrac(zc[i]) + "</td>";
     }
