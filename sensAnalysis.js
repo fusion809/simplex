@@ -40,7 +40,7 @@ function uncorrected(newARows, loc) {
     return coords;
 }
 
-// Part of attempt to allow multiple new constraints
+// Part of attempt to allow unmodified constraints to be added
 // var R1;
 // var R2;
 // var scal;
@@ -78,7 +78,7 @@ function newConstraint() {
         }
     }
 
-    // Attempt at adding support for multiple new constraints
+    // Attempt at adding support for multiple new unmodified constraints
     // Failed as newARows for some reason was full of NaNs
     // newAR = newARows;
     // var loc = basisIndex(x, xB);
