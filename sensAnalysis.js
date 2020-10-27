@@ -178,7 +178,7 @@ function constrCoeffsChange() {
     var A = transpose(finalAT);
 
     // Mention what's changed since previous iterations of simplex
-    tempStr += "Constraint coefficients have changed.";
+    tempStr += "Constraint coefficients have changed. ";
 
     return [A, b, xB, cj, x];
 }
