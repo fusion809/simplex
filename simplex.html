@@ -41,6 +41,28 @@
 
             The various matrices can be entered in using MATLAB notation. In the case of \(A\), semicolons are used to separate rows and commas or spaces to separate individual row elements. \(\mathbf{b}\), \(\mathbf{c}\), \(\mathbf{x}\) and \(x_{\mathbf{B}}\) can have individual elements separated by commas, semicolons or spaces.
         </div>
+
+        <h2>Sensitivity analysis</h2>
+        <h3>Add constraint(s)</h3>
+        <div>
+            To add new constraint(s) to the problem after first solving it, you must first ensure there are zeros in every column corresponding to an existing basic variable (excluding the slack variables for the new constraint(s)), and then you must replace the entry for \(A\) with the new rows for \(A\) corresponding to these new constraints. You must also replace \(\mathbf{b}\), \(\mathbf{c}\) and \(x_{\mathbf{B}}\) with the new entries to be added to the problem. Then finally click the circle next to "Add constraint(s)?" and click the "Click to solve problem" button.
+        </div>
+        <h3>Add variable(s)</h3>
+        <div>
+            To add new variable(s) to the problem after the original problem has been solved, just replace \(A\), \(\mathbf{b}\), \(\mathbf{c}\) and \(\mathbf{x}\) with what is to be added to them. 
+        </div>
+        <h3>Change constraint coefficient(s)</h3>
+        <div>
+            To change the constraint coefficient(s) after the solver has solved the original problem, just change the relevant entries in \(\mathbf{A}\) (remembering that sensitivity analysis can only be performed for coefficients of non-basic variables), then click the circle next to "Constraint LHS change?" and click the "Click to solve problem" button.
+        </div>
+        <h3>Change objective function coefficient(s)</h3>
+        <div>
+            To change objective function coefficient(s) after the solver has solved the original problem, just change the relevant entries in \(\mathbf{c}\), click the circle to the left of "Change objective function coefficient(s)?" and click the "Click to solve problem" button.
+        </div>
+        <h3>Resource change</h3>
+        <div>
+            To change resource value(s) (\(\mathbf{b}\) values) after the solver has solved the original problem, merely change the relevant entries in \(\mathbf{b}\), click the circle next to "Resource change?" and click the "Click to solve problem" button.
+        </div>
         <form>
             <table width="100%">
             <tr>
@@ -79,7 +101,7 @@ s3]</textarea>
                 <td colspan="2">
                     <b>Sensitivity analysis</b>:<br/>
                     <input type="radio" id="changec">Change objective function coefficient(s)?</input>
-                    <input type="radio" id="newConstr">Add constraint?</input>
+                    <input type="radio" id="newConstr">Add constraint(s)?</input>
                     <input type="radio" id="rscChg">Resource change?</input>
                     <input type="radio" id="LHSChg">Constraint LHS change?</input>
                     <input type="radio" id="newVar">New variable(s)?</input>

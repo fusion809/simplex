@@ -204,7 +204,6 @@ function addVariable() {
     var newcCols = findc();
     var newxRows = findx();
     var newAColsCor = matMult(finalV, newACols);
-    console.log(newAColsCor)
 
     // Adds new columns to A just before the slack variables
     for (let i = 0; i < A.length; i++) {

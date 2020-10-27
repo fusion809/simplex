@@ -295,9 +295,10 @@ function zcRow(zc) {
  * Write zj row to tempStr.
  * 
  * @param pivotEl  Pivot element.
- * @param isFeas   
- * @param ratio 
- * @param z 
+ * @param isFeas   Boolean indicating whether the problem is feasible.
+ * @param ratio    Array of the ratio of b to the pivot column.
+ * @param z        Array of zj values.
+ * @return         Nothing, simply writes the row to the tempStr global.
  */
 function zRow(pivotEl, isFeas, ratio, z) {
     // Calculate mn from z
