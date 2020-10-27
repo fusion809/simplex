@@ -45,6 +45,9 @@ function simplex(A, b, cj, x, xB, zc) {
                 ratio[j] = Number.POSITIVE_INFINITY;
             }
         }
+
+        // If k is still 0 then no elements of A[minIndex] that were less than
+        // 0 were found
         if (k == 0) {
             isPermInf = true;
         }
@@ -57,8 +60,14 @@ function simplex(A, b, cj, x, xB, zc) {
         var isUnbounded = false;
 
         // Generate the tableau before we apply simplex
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl, ratio, 
-            pivotRIdx, pivotCIdx, isUnbounded, isPermInf);
+        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf, 
+            pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx);
+
+        // Time to exit function if permanently infeasible, as there's no way
+        // to solve the problem
+        if (isPermInf) {
+            return [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf];
+        }
 
         // Update the basis, must be done after genTableau is run otherwise
         // genTableau will give an error as the way we check whether entering
@@ -84,11 +93,16 @@ function simplex(A, b, cj, x, xB, zc) {
         }
     } else if (!isOptim) {
         // Method for working with non-optimal, but feasible solutions
-        var arr = findPivots(A, b,
-             zc);
+        // If the problem is feasible, it's not permanently infeasible
+        isPermInf = false;
+        // Obtain pivot information
+        var arr = findPivots(A, b, zc);
         [pivotEl, pivotCol, pivotCIdx, pivotRIdx, ratio, isUnbounded] = arr;
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl, ratio,
-            pivotRIdx, pivotCIdx, isUnbounded);
+        // Tabulate previous iteration
+        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf,
+            pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx);
+        
+        // Apply feasible problem simplex algorithm
         b[pivotRIdx] /= pivotEl;
         xB[pivotRIdx] = x[pivotCIdx];
         for (let i = 0; i < mn; i++) {
@@ -104,14 +118,17 @@ function simplex(A, b, cj, x, xB, zc) {
                 }
             }
         }
-        isPermInf = false;
     }
 
+    // If the solution is now optimal, tabulate it, otherwise proceed to next
+    // iteration
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
-
     if (isOptim) {
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl, ratio, pivotRIdx, pivotCIdx, isUnbounded);
+        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf, 
+            pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx);
     }
+
+    // Return data needed by simplexIterator
     return [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf];
 }
 
@@ -148,8 +165,6 @@ function simplexIterator(A, b, cj, x, xB) {
     var pivotCol = new Array(m);
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
-    var iter = 0;
-    var isInitInfeas = false;
     var isUnbounded = false;
     var isPermInf = false;
     var arr;
@@ -168,12 +183,6 @@ function simplexIterator(A, b, cj, x, xB) {
         [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf] = arr;
         // Determine whether problem is now optimal and feasible
         [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
-        // Problems that start infeasible for some reason do not have the final
-        // tableau displayed
-        if ((iter == 0) && (!isFeas)) {
-            isInitInfeas = true;
-        }
-        iter++;
 
         // Show an appropriate message if the problem is infeasible or
         // unbounded

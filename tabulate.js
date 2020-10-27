@@ -1,16 +1,17 @@
 /**
  * Place numbers in specified decision variable in a subscript.
  * 
- * @param decVar   Decision variable whose numerical components are to be 
- * turned into a subscript.
- * @return         decVar with numbers in subscript.
+ * @param decVar   Decision variable to be formatted.
+ * @param format   An object containing formatting-related Booleans.
+ * @return         decVar in a row with numbers as subscripts and specified 
+ * formatting.
  */
-function subscripts(decVar, formatting) {
+function subscripts(decVar, format) {
     var corrected = decVar.replace(/\d+/, function(x) {
         return "_" + x;
     });
 
-    var {isBold, isLeftArrow, isDownArrow} = formatting;
+    var {isBold, isLeftArrow, isDownArrow} = format;
 
     if (isBold) {
         if (isLeftArrow) {
@@ -25,6 +26,12 @@ function subscripts(decVar, formatting) {
     }
 }
 
+/**
+ * Generate a row with the input string rendered with KaTeX.
+ * 
+ * @param str      String to render.
+ * @return         Row HTML with KaTeX-rendered string.
+ */
 function katexRow(str) {
     return "<td>" + katex.renderToString(str) + "</td>";
 }
@@ -32,36 +39,22 @@ function katexRow(str) {
 /**
  * Generate simplex tableau based on specified data.
  * 
- * @param A         Constraint coefficient in a 2d array.
- * @param b         RHS of the constraints in a 1d array.
- * @param cj        1d array of objective function coefficients.
- * @param x         1d array of decision variable names.
- * @param xB        1d array of basis variable names.
- * @param isFeas    Boolean indicating whether problem is feasible.
- * @param isOptim   Boolean indicating whether problem is 
- * optimized.
- * @param ratio     Ratio array used to decide entering/departing
- * variables.
- * @param pivotCol  Pivot column.
- * @param pivotEl   Pivot element.
- * @param pivotRIdx Pivot row index.
- * @param pivotCIdx Pivot column index.
+ * @param A           Constraint coefficient in a 2d array.
+ * @param b           RHS of the constraints in a 1d array.
+ * @param cj          1d array of objective function coefficients.
+ * @param x           1d array of decision variable names.
+ * @param xB          1d array of basis variable names.
+ * @param isFeas      Boolean indicating whether problem is feasible.
+ * @param isOptim     Boolean indicating whether problem is optimized.
+ * @param isUnbound   Boolean indicating whether the problem is unbounded.
+ * @param pivotCol    Pivot column.
+ * @param ratio       Ratio array used to decide entering/departing variables.
+ * @param pivotEl     Pivot element.
+ * @param pivotRIdx   Pivot row index.
+ * @param pivotCIdx   Pivot column index.
+ * @return            Nothing, simply writes the tableaux to HTML.
  */
-function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl, 
-    ratio, pivotRIdx, pivotCIdx, isUnbounded) {
-    var m = A.length;
-    if (m != xB.length) {
-        document.getElementById("tableau").innerHTML = "";
-        tempStr += "A and xB do no match in their dimensions. Remember";
-        tempStr += " A must have the basic structure:<br/>";
-        tempStr += "A = [[a11, a12, a13, ..., a1m+n], [a21, a22, a23,";
-        tempStr += "..., a2m+n], [a31, a32, a33, ..., a3m+n], ..., ";
-        tempStr += "[am1, am2, am3, ..., am(m+n)]]<br/>";
-        tempStr += "Where there are m constraints to the problem."
-        document.getElementById("tableau").innerHTML = tempStr;
-        return;
-    }
-    var mn = A[0].length;
+function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf, pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
 
     // The following is to prevent departing/entering variable
@@ -76,36 +69,67 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     tempStr += "<table>";
 
     // Objective function coefficient row
-    tempStr += "<tr>";
-    tempStr += "<td></td>";
-    tempStr += katexRow("c_j");
-    for (let i = 0; i < cj.length; i++) {
-        tempStr += "<td>" + decimalToFrac(cj[i]) + "</td>";
-    }
-    tempStr += "</tr>";
+    objectiveRow(cj);
 
     // Header row
-    tempStr += "<tr>";
-    tempStr += katexRow("c_{\\mathbf{B}}");
-    tempStr += katexRow("x_{\\mathbf{B}}");
-    for (let i = 0; i < x.length; i++) {
-        if (i != pivotCIdx) {
-            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
-        } else {
-            tempStr += subscripts(x[i], {isBold: true, isLeftArrow: false, isDownArrow: true});
-        }
-    }
-    tempStr += katexRow("\\mathbf{b}");
-    if (isFeas && !isOptim) {
-        tempStr += "<td>Ratio</td>";
-    }
+    headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf);
 
     // A & b rows
+    AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, isPermInf);
+
+    // zj row
+    zRow(pivotEl, isFeas, ratio, z);
+
+    // zj-cj row
+    zcRow(zc);
+
+    // Ratio row
+    ratRow(pivotEl, ratio, isFeas, isPermInf)
+    tempStr += "</table>";
+    tempStr += "<br/>";
+
+    // Show row operations
+    if (!isOptim && !isUnbound && !isNaN(pivotRIdx) && !isNaN(pivotEl) && !isPermInf) {
+        pivotRIdx++;
+        rowOperations(pivotRIdx, pivotCol, pivotEl);
+    }
+    writeTempStr();
+}
+
+/**
+ * Write tempStr to tableau HTML element.
+ * 
+ * @params    None.
+ * @return    Nothing.
+ */
+function writeTempStr() {
+    document.getElementById("tableau").innerHTML = tempStr;
+}
+
+/**
+ * Write A and b rows to tempStr.
+ * 
+ * @param A             Array of constraint coefficients.
+ * @param b             Array containing solution column elements.
+ * @param xB            Basis variable array.
+ * @param cB            Array of cB column elements.
+ * @param ratio         Ratio of b to pivot column elements.
+ * @param pivotRIdx     Pivot row index.
+ * @param pivotCIdx     Pivot column index.
+ * @param isFeas        Boolean indicating the feasibility of the solution.
+ * @param isOptim       Boolean indicating the optimality of the solution.
+ * @param isPermInf     Boolean indicating whether the problem is permanently 
+ * infeasible.
+ * @return              Nothing, writes data to tempStr.
+ */
+function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, isPermInf) {
+    var m = A.length;
+    var mn = A[0].length;
     tempStr += "</tr>";
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
-        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) ) {
+        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf ) {
             tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
         } else {
             tempStr += subscripts(xB[i], {isBold: true, isLeftArrow: true, isDownArrow: false});
@@ -123,8 +147,137 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
         }
         tempStr += "</tr>";
     }
+}
 
-    // zj row
+/**
+ * Write header row to tempStr.
+ * 
+ * @param x             x array containing decision variable names.
+ * @param pivotCIdx     Pivot column index.
+ * @param isFeas        Boolean indicating whether problem is feasible.
+ * @param isOptim       Boolean indicating whether problem is optimal.
+ * @param isPermInf     Boolean indicating whether problem is permanently 
+ * infeasible.
+ * @return              Nothing, changes are written to the tempStr global.
+ */
+function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
+    tempStr += "<tr>";
+    tempStr += katexRow("c_{\\mathbf{B}}");
+    tempStr += katexRow("x_{\\mathbf{B}}");
+    for (let i = 0; i < x.length; i++) {
+        if (i != pivotCIdx || isPermInf) {
+            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
+        } else {
+            tempStr += subscripts(x[i], {isBold: true, isLeftArrow: false, isDownArrow: true});
+        }
+    }
+    tempStr += katexRow("\\mathbf{b}");
+    if (isFeas && !isOptim) {
+        tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
+    }
+}
+
+/**
+ * Write objective function row to tempStr.
+ * 
+ * @param cj  c array.
+ * @return    Nothing. Writes objective function row to tempStr.
+ */
+function objectiveRow(cj) {
+    tempStr += "<tr>";
+    tempStr += "<td></td>";
+    tempStr += katexRow("c_j");
+    for (let i = 0; i < cj.length; i++) {
+        tempStr += "<td>" + decimalToFrac(cj[i]) + "</td>";
+    }
+    tempStr += "</tr>";
+}
+
+/**
+ * Adds ratio row to tempStr.
+ * 
+ * @param pivotEl       Pivot element.
+ * @param ratio         Ratio of zj-cj to the elements of the pivot row.
+ * @param isFeas        Boolean indicating the feasibility of the solution.
+ * @param isPermInf     Boolean indicating whether the solution is permanently
+ * infeasible.
+ * @return              Nothing, the row is just written to tempStr.
+ */
+function ratRow(pivotEl, ratio, isFeas, isPermInf) {
+    var mn = ratio.length;
+    if (ratio != undefined && !isNaN(pivotEl) && !isFeas && !isPermInf) {
+        tempStr += "<tr>";
+        tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
+        for (let i = 0; i < mn; i++) {
+            if (ratio[i] != Number.POSITIVE_INFINITY) {
+                tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
+            } else {
+                tempStr += "<td></td>";
+            }
+        }
+        tempStr += "</tr>";
+    }
+}
+
+/**
+ * Show row operations.
+ * 
+ * @param pivotRIdx Pivot row index.
+ * @param pivotCol  Pivot column.
+ * @param pivotEl   Pivot element.
+ * @return          Nothing, adds the row operations to tempStr.
+ */
+function rowOperations(pivotRIdx, pivotCol, pivotEl) {
+    var m = pivotCol.length;
+    for (let i = 0; i < m; i++) {
+        if (pivotRIdx - 1 == i) {
+            if (pivotEl == 1) {
+                tempStr += "<div>" + katex.renderToString("R_{" + pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
+            } else if (pivotEl == -1) {
+                tempStr += "<div>" + katex.renderToString("-R_{" + pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
+            } else {
+                var fraction = math.fraction(1/pivotEl);
+                tempStr += "<div>" + katex.renderToString(sign(fraction.s) + "\\dfrac{" + fraction.n + "}{" + fraction.d + "}" + " R_{" + pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
+            }
+        } else {
+            if (pivotCol[i] == -1) {
+                tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} + " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+            } else if ( pivotCol[i] < 0) {
+                var fraction = math.fraction(-pivotCol[i]);
+                if (fraction.d != 1) {
+                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} + \\dfrac{" + fraction.n + "}{" + fraction.d + "} R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+                } else {
+                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} + " + fraction.n + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+                }
+            } else if (pivotCol[i] == 0) {
+                tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+            } else if (pivotCol[i] == 1) {
+                tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} - " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+            } else {
+                var fraction = math.fraction(pivotCol[i]);
+                if (fraction.d != 1) {
+                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} - \\dfrac{" + fraction.n + "}{" + fraction.d + "}R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+                } else {
+                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + "} - " + fraction.n + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Write zj row to tempStr.
+ * 
+ * @param pivotEl  Pivot element.
+ * @param isFeas   
+ * @param ratio 
+ * @param z 
+ */
+function zRow(pivotEl, isFeas, ratio, z) {
+    // Calculate mn from z
+    var mn = z.length - 1;
+
+    // Start row
     tempStr += "<tr>";
     if (ratio != undefined && !isNaN(pivotEl) && !isFeas) {
         tempStr += "<td rowspan='3'></td>";
@@ -139,61 +292,22 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, pivotCol, pivotEl,
     // Objective function value
     tempStr += "<td rowspan='2'>" + decimalToFrac(z[mn]) + "</td>";
     tempStr += "</tr>";
+}
 
-    // zj-cj row
+/**
+ * Write zj-cj row to tempStr.
+ * 
+ * @param zc  Array containing zj-cj data.
+ * @return    Nothing, just modifies the tempStr global.
+ */
+function zcRow(zc) {
+    var mn = zc.length;
     tempStr += "<tr>";
     tempStr += katexRow("z_j - c_j");
     for (let i = 0; i < mn; i++) {
         tempStr += "<td>" + decimalToFrac(zc[i]) + "</td>";
     }
     tempStr += "</tr>";
-
-    // Ratio row
-    if (ratio != undefined && !isNaN(pivotEl)) {
-        if (!isFeas) {
-            tempStr += "<tr>";
-            tempStr += "<td>Ratio</td>";
-            for (let i = 0; i < mn; i++) {
-                if (ratio[i] != Number.POSITIVE_INFINITY) {
-                    tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
-                } else {
-                    tempStr += "<td></td>";
-                }
-            }
-            tempStr += "</tr>";
-        }
-    }
-    tempStr += "</table>";
-    tempStr += "<br/>";
-
-    // Show row operations
-    if (!isOptim && !isUnbounded && !isNaN(pivotRIdx) && !isNaN(pivotEl)) {
-        pivotRIdx++;
-        for (let i = 0; i < m; i++) {
-            if (pivotRIdx - 1 == i) {
-                if (pivotEl == 1) {
-                    tempStr += "<div>R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
-                } else if (pivotEl == -1) {
-                    tempStr += "<div>-R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
-                } else {
-                    tempStr += "<div>" + decimalToFrac(1 / pivotEl) + "R<sub>" + pivotRIdx + "</sub> &rarr; R<sub>" + pivotRIdx + "</sub><sup>'</sup>";
-                }
-            } else {
-                if (pivotCol[i] == -1) {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> + " + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
-                } else if ( pivotCol[i] < 0) {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> + " + (decimalToFrac(-pivotCol[i])) + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
-                } else if (pivotCol[i] == 0) {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
-                } else if (pivotCol[i] == 1) {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> - " + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
-                } else {
-                    tempStr += "<div>R<sub>" + (i + 1) + "</sub> - " + (decimalToFrac(pivotCol[i])) + "R<sub>" + pivotRIdx + "</sub><sup>'</sup> &rarr; R<sub>" + (i + 1) + "</sub><sup>'</sup>";
-                }
-            }
-        }
-    }
-    document.getElementById("tableau").innerHTML = tempStr;
 }
 
 /**

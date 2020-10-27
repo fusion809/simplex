@@ -77,7 +77,7 @@ function newConstraint() {
             A[i].push(0);
         }
     }
-
+    
     // Attempt at adding support for multiple new unmodified constraints
     // Failed as newARows for some reason was full of NaNs
     // newAR = newARows;
