@@ -27,14 +27,14 @@
         <h1>Simplex method solver</h1>
         
         <div>
-            This webpage essentially just solves a non-integer linear programming problem specified in matrix form using the simplex method and shows full working. The problem must be in canonical form, that is:
+            This webpage essentially just solves a linear programming problem specified in matrix form using the simplex method and shows full working. The problem must be in canonical matrix form, that is:
 
             \[
             \begin{aligned}
-            &\max{z} = \mathbf{c}^T \mathbf{x} \\
-            &\mathrm{st.}\\
-            &A\mathbf{x} = \mathbf{b} \\
-            &\mathbf{x} \geq 0
+            &\mathrm{Maximize\hspace{0.1cm}z} &&= \mathbf{c}^T \mathbf{x} \\
+            &\mathrm{Subject\hspace{0.1cm}to:}\\
+            &A\mathbf{x} &&= \mathbf{b} \\
+            &\mathbf{x} &&\geq 0
             \end{aligned}
             \]
 
@@ -44,7 +44,7 @@
             <table width="100%">
             <tr>
                 <th>Input</th>
-                <th>Contents</th>
+                <th width="100%">Contents</th>
             </tr> 
             <tr width="100%">
                 <td>A</td>
@@ -54,17 +54,17 @@
             </tr>
             <tr>
                 <td><b>b</b></td>
-                <td><textarea id="b" name="b" style="width: 100%; height: 120px;">[90000;
+                <td width="100%"><textarea id="b" name="b" style="width: 100%; height: 120px;">[90000;
 8000;
 12000]</textarea></td>
             </tr>
             <tr>
                 <td><b>c</b></td>
-                <td><textarea id="c" name="c" style="width: 100%;">[0.6, 0.6, 0, 0, 0]</textarea></td>
+                <td><textarea id="c" name="c" style="width: 100%">[0.6, 0.6, 0, 0, 0]</textarea></td>
             </tr>
             <tr>
                 <td><b>x</b></td>
-                <td><textarea id="x" name="x" style="width: 100%;">[x1, x2, s1, s2, s3]</textarea></td>
+                <td><textarea id="x" name="x" style="width: 100%">[x1, x2, s1, s2, s3]</textarea></td>
             </tr>
             <tr>
                 <td>x<sub><b>B</b></sub></td>
@@ -78,7 +78,7 @@ s3]</textarea>
                 <td colspan="2">
                     <b>Sensitivity analysis</b>:<br/>
                     <input type="radio" id="changec">Change objective function coefficient(s)?</input>
-                    <input type="radio" id="newConstr">Add constraint(s)?</input>
+                    <input type="radio" id="newConstr">Add constraint?</input>
                     <input type="radio" id="rscChg">Resource change?</input>
                     <input type="radio" id="LHSChg">Constraint LHS change?</input>
                     <input type="radio" id="newVar">New variable(s)?</input>
@@ -95,6 +95,10 @@ s3]</textarea>
                 border: 1px solid black;
                 border-collapse: collapse;
                 max-width: 95%;
+            }
+            h1 {
+                margin: 0px;
+                padding: 0px;
             }
         </style>
     </body>

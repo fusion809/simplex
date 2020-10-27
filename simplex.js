@@ -124,23 +124,23 @@ function simplex(A, b, cj, x, xB, zc) {
  * @param cj            1d array of objective function coefficients.
  * @param x             1d array of decision variable names.
  * @param xB            1d array of basis variable names.
- * @param serialTab     Boolean representing whether the user wants an 
- * additional tabulation. Useful for sensitivity analysis.
  * @return              Nothing.
  */
-function simplexIterator(A, b, cj, x, xB, serialTab) {
+function simplexIterator(A, b, cj, x, xB) {
     if (b.length != xB.length ) {
         alert("The lengths of b and xB do not match!");
         return;
     }
     if (A.length != b.length) {
-        alert("The number of rows in A does not match the number of rows in b!");
+        var msg1 = "The number of rows in A does not match the number of rows"; 
+        msg1 += "in b!";
+        alert(msg1);
         return;
     }
     if (A[0].length != x.length) {
-        var msg = "A has a number of columns that exceeds the number of";
-        msg += " elements in x!";
-        alert(msg);
+        var msg2 = "A has a number of columns that exceeds the number of";
+        msg2 += " elements in x!";
+        alert(msg2);
     }
     var m = A.length;
     var pivotRIdx;

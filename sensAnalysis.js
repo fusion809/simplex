@@ -18,6 +18,35 @@ function objectiveChange() {
     return [A, b, xB, cj, x];
 }
 
+function subtractRow(row1, row2, scalarMult) {
+    for (let i = 0 ; i < row1.length; i++) {
+        row1[i] -= scalarMult*row2[i];
+    }
+    return row1;
+}
+
+function uncorrected(newARows, loc) {
+    var coords = [];
+
+    for (let i = 0 ; i < newARows.length; i++) {
+        for (let j = 0 ; j < loc.length; j++) {
+            var lloc = loc[j];
+            if (newARows[i][lloc] != 0) {
+                coords.push([i, j, newARows[i][lloc]]);
+            }
+        }
+    }
+
+    return coords;
+}
+
+// Part of attempt to allow multiple new constraints
+// var R1;
+// var R2;
+// var scal;
+// var newAR;
+// var NAInd;
+
 /**
  * Add new constraint.
  * 
@@ -49,6 +78,26 @@ function newConstraint() {
         }
     }
 
+    // Attempt at adding support for multiple new constraints
+    // Failed as newARows for some reason was full of NaNs
+    // newAR = newARows;
+    // var loc = basisIndex(x, xB);
+    // var coords = uncorrected(newARows, loc);
+    // for (let i = 0 ; i < coords.length; i++) {
+    //     var [newARowsIndex, ARowIndex, pivotElement] = coords[i];
+    //     if (i == 0) {
+    //         NAInd = newARowsIndex;
+    //         R1 = newARows[newARowsIndex];
+    //         R2 = A[ARowIndex];
+    //         scal = pivotElement;
+    //     }
+    //     newARows[newARowsIndex] = subtractRow(newARows[newARowsIndex], A[ARowIndex], pivotElement);
+    //     newbRows[newARowsIndex] -= pivotElement*b[ARowIndex];
+    //     console.log(newARows[newARowsIndex]);
+    // }
+
+    // console.log(newARows);
+    // console.log(newbRows);
     // New constraint elements to A, b, xB, x and cj
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
