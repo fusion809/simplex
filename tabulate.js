@@ -32,9 +32,9 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, isPe
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
         if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf ) {
-            tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
+            tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false, notRow: false});
         } else {
-            tempStr += subscripts(xB[i], {isBold: true, isLeftArrow: true, isDownArrow: false});
+            tempStr += subscripts(xB[i], {isBold: true, isLeftArrow: true, isDownArrow: false, notRow: false});
         }
         for (let j = 0; j < mn; j++) {
             tempStr += "<td>" + decimalToFrac(A[i][j]) + "</td>";
@@ -101,7 +101,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf, pivo
     // Ratio row
     ratRow(pivotEl, ratio, isFeas, isPermInf)
     tempStr += "</table>";
-    tempStr += "<br/>";
 
     // Show row operations
     if (!isOptim && !isUnbound && !isNaN(pivotRIdx) && !isNaN(pivotEl) && !isPermInf) {
@@ -250,7 +249,7 @@ function subscripts(decVar, format) {
         return "_" + x;
     });
 
-    var {isBold, isLeftArrow, isDownArrow} = format;
+    var {isBold, isLeftArrow, isDownArrow, notRow} = format;
 
     if (isBold) {
         if (isLeftArrow) {
@@ -260,6 +259,8 @@ function subscripts(decVar, format) {
         } else {
             return katexRow("\\mathbf{" + corrected + "}");
         }
+    } else if (notRow) {
+        return katex.renderToString(corrected);
     } else {
         return katexRow(corrected);
     }
