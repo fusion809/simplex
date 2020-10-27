@@ -48,7 +48,10 @@ function find1dStrArr(name) {
  */
 function findA() {
     var htmlEl = document.getElementById("A").value;
-    if (htmlEl.match(/[, ]/)) {
+
+    // If A has both , or space separating elements and semicolons separating 
+    // them, then it's a 2d array.
+    if (htmlEl.match(/[0-9][, ]*[0-9]/) && htmlEl.match(/[;]/)) {
         var arr = htmlEl.split(/[, ][\s]*/);
         var A = [[]];
         var k = 0;
@@ -60,20 +63,28 @@ function findA() {
             // Element without right bracket
             var el = elRb.replace(/\]/g, '');
 
-            // We're using MATLAB notation for arrays
+            // First condition yields true if a semicolon separate two numbers
             if (/[0-9/]*[\s]*;/.test(elRb)) {
                 var elArr = el.split(/;/);
+
+                // Add first element to last row
                 if (/[0-9/]*/.test(elArr[0])) {
                     A[k].push(fracToDecimal(elArr[0]));
                 }
                 k++;
+
+                // Add new blank row
                 if (i != arr.length - 1) {
                     A.push([]);
                 }
+
+                // Add second element to new row
                 if (/[0-9/]*/.test(elArr[1])) {
                     A[k].push(fracToDecimal(elArr[1]));
                 }
-            } else if (/[0-9/]*[\s]*/.test(elRb)) {
+            } 
+            // This condition yields true for any other number
+            else if (/[0-9/]*[\s]*/.test(elRb)) {
                 A[k].push(fracToDecimal(el));
             }
         }
