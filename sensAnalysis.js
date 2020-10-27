@@ -91,7 +91,8 @@ function newConstraint() {
     //         R2 = A[ARowIndex];
     //         scal = pivotElement;
     //     }
-    //     newARows[newARowsIndex] = subtractRow(newARows[newARowsIndex], A[ARowIndex], pivotElement);
+    //     newARows[newARowsIndex] = subtractRow(newARows[newARowsIndex], 
+    // A[ARowIndex], pivotElement);
     //     newbRows[newARowsIndex] -= pivotElement*b[ARowIndex];
     //     console.log(newARows[newARowsIndex]);
     // }

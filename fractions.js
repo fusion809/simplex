@@ -7,7 +7,8 @@
 function decimalToFrac(number) {
     var numberFrac = math.fraction(number);
     if (numberFrac.d != 1) {
-        return katex.renderToString(sign(numberFrac.s) + "\\dfrac{" + (numberFrac.n) + "}{" + numberFrac.d + "}");
+        return katex.renderToString(sign(numberFrac.s) + "\\dfrac{" + 
+        (numberFrac.n) + "}{" + numberFrac.d + "}");
     } else {
         return katex.renderToString("" + (numberFrac.s * numberFrac.n));
     }

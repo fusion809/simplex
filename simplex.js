@@ -148,7 +148,7 @@ function simplexIterator(A, b, cj, x, xB) {
         return;
     }
     if (A.length != b.length) {
-        var msg1 = "The number of rows in A does not match the number of rows"; 
+        var msg1 = "The number of rows in A does not match the number of rows";
         msg1 += "in b!";
         alert(msg1);
         return;
@@ -215,7 +215,8 @@ function showSolution(A, b, x, xB, z, zc) {
     tempStr += "Optimal solution is ";
     // List basic variable values
     for (let i = 0 ; i < xB.length; i++) {
-        tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false, notRow: true}) + " = " + b[i] + ", ";
+        tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
+            isDownArrow: false, notRow: true}) + " = " + b[i] + ", ";
     }
     var k = 0;
     var m = A.length;
@@ -227,7 +228,8 @@ function showSolution(A, b, x, xB, z, zc) {
             if (k != 0) {
                 tempStr += ", ";
             }
-            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, isDownArrow: false, notRow: true}) + " = " + 0;               
+            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
+                isDownArrow: false, notRow: true}) + " = " + 0;               
             k++;
             if (k == n) {
                 tempStr += " and " + katex.renderToString("z = " + z[mn]) + ".";

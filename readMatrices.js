@@ -31,7 +31,8 @@ function find1dStrArr(name) {
 
     // Loop over each element of htmlEl, and add what needs to be added to arr
     for (let i = 0; i < htmlEl.length; i++) {
-        var el = htmlEl[i].replace(/\[/, '').replace(/\]/, '').replace(/"/g, '');
+        var el = htmlEl[i].replace(/\[/, '').replace(/\]/, '');
+        var el = el.replace(/"/g, '');
         if (/[_a-zA-Z0-9]+/.test(el)) {
             arr.push(el);
         }
