@@ -1,0 +1,282 @@
+diff --git a/globals.js b/globals.js
+index 81dcb1b..b50fb0b 100644
+--- a/globals.js
++++ b/globals.js
+@@ -1,5 +1,4 @@
+ // Initialize globals
+-var tempStr = "";
+ var finalA = [[]];
+ var initialAT = [[]];
+ var finalb = [];
+diff --git a/sensAnalysis.js b/sensAnalysis.js
+index c35d71e..09fe71b 100644
+--- a/sensAnalysis.js
++++ b/sensAnalysis.js
+@@ -11,9 +11,11 @@ function objectiveChange() {
+     var xB = finalxB;
+     var cj = findc();
+     var x = finalx;
++    var tempStr = document.getElementById("tableau").innerHTML;
+ 
+     // Mention what's happening in output
+     tempStr += "Objective function coefficient changed. ";
++    document.getElementById("tableau").innerHTML = tempStr;
+ 
+     return [A, b, xB, cj, x];
+ }
+@@ -64,6 +66,7 @@ function newConstraint() {
+     var newbRows = findb();
+     var newcRows = findc();
+     var newxBrows = findxB();
++    var tempStr = document.getElementById("tableau").innerHTML;
+ 
+     // If the number of rows to be added to A and b do not match, return an
+     // error
+@@ -110,6 +113,7 @@ function newConstraint() {
+ 
+     // Mention what's happening in output
+     tempStr += "Adding new constraint. ";
++    document.getElementById("tableau").innerHTML = tempStr;
+ 
+     return [A, b, xB, cj, x];
+ }
+@@ -128,9 +132,11 @@ function resourceChange() {
+     var cj = finalcj;
+     var x = finalx;
+     var b = matMult(finalV, b);
++    var tempStr = document.getElementById("tableau").innerHTML;
+ 
+     // Mentioning what's happened since previous iterations of simplex
+     tempStr += "Resource value changed. ";
++    document.getElementById("tableau").innerHTML = tempStr;
+ 
+     return [A, b, xB, cj, x];
+ }
+@@ -159,6 +165,7 @@ function constrCoeffsChange() {
+     var x = finalx;
+     // Determine the location of basis variables within x
+     var loc = basisIndex(x, xB);
++    var tempStr = document.getElementById("tableau").innerHTML;
+ 
+     // Multiply non-basis elements of A by V from final simplex iteration
+     for (let j = 0; j < mn; j++) {
+@@ -181,6 +188,7 @@ function constrCoeffsChange() {
+ 
+     // Mention what's changed since previous iterations of simplex
+     tempStr += "Constraint coefficients have changed. ";
++    document.getElementById("tableau").innerHTML = tempStr;
+ 
+     return [A, b, xB, cj, x, false];
+ }
+@@ -205,6 +213,7 @@ function addVariable() {
+     var newcCols = findc();
+     var newxRows = findx();
+     var newAColsCor = matMult(finalV, newACols);
++    var tempStr = document.getElementById("tableau").innerHTML;
+ 
+     // Adds new columns to A just before the slack variables
+     for (let i = 0; i < A.length; i++) {
+@@ -221,6 +230,7 @@ function addVariable() {
+ 
+     // Print message letting the user know what is being computed
+     tempStr += "Adding new variable. ";
++    document.getElementById("tableau").innerHTML = tempStr;
+ 
+     return [A, b, xB, cj, x];
+ }
+diff --git a/simplex.js b/simplex.js
+index 920fd67..2e49bda 100644
+--- a/simplex.js
++++ b/simplex.js
+@@ -143,6 +143,8 @@ function simplex(A, b, cj, x, xB, zc) {
+  * @return              Nothing.
+  */
+ function simplexIterator(A, b, cj, x, xB) {
++    var tempStr = document.getElementById("tableau").innerHTML;
++
+     if (b.length != xB.length ) {
+         alert("The lengths of b and xB do not match!");
+         return;
+@@ -167,6 +169,7 @@ function simplexIterator(A, b, cj, x, xB) {
+     // If problem is already optimal, just tabulate the solution
+     if (isOptim) {
+         tempStr += "Solution is already optimal.";
++        document.getElementById("tableau").innerHTML = tempStr;
+         genTableau(A, b, cj, x, xB, isFeas, isOptim);
+     }
+ 
+@@ -212,6 +215,7 @@ function simplexIterator(A, b, cj, x, xB) {
+  * @return    Nothing, just writes the solution to tempStr global.
+  */
+ function showSolution(A, b, x, xB, z, zc) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     tempStr += "Optimal solution is ";
+     // List basic variable values
+     for (let i = 0 ; i < xB.length; i++) {
+diff --git a/tabulate.js b/tabulate.js
+index 3ec7249..66bc45e 100644
+--- a/tabulate.js
++++ b/tabulate.js
+@@ -26,6 +26,7 @@ function katexRow(str) {
+  */
+ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
+     isPermInf) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     var m = A.length;
+     var mn = A[0].length;
+     tempStr += "</tr>";
+@@ -52,6 +53,7 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
+         }
+         tempStr += "</tr>";
+     }
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -74,6 +76,7 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
+  */
+ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf, 
+     pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+ 
+     // The following is to prevent departing/entering variable
+@@ -84,7 +87,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
+     }
+ 
+     // Generate table
+-    document.getElementById("tableau").innerHTML = "";
+     tempStr += "<table>";
+ 
+     // Objective function coefficient row
+@@ -113,7 +115,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
+         pivotRIdx++;
+         rowOperations(pivotRIdx, pivotCol, pivotEl);
+     }
+-    writeTempStr();
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -128,6 +130,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
+  * @return              Nothing, changes are written to the tempStr global.
+  */
+ function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     tempStr += "<tr>";
+     tempStr += katexRow("c_{\\mathbf{B}}");
+     tempStr += katexRow("x_{\\mathbf{B}}");
+@@ -144,6 +147,7 @@ function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
+     if (isFeas && !isOptim) {
+         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
+     }
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -153,6 +157,7 @@ function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
+  * @return    Nothing. Writes objective function row to tempStr.
+  */
+ function objectiveRow(cj) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     tempStr += "<tr>";
+     tempStr += "<td></td>";
+     tempStr += katexRow("c_j");
+@@ -160,6 +165,7 @@ function objectiveRow(cj) {
+         tempStr += "<td>" + decimalToFrac(cj[i]) + "</td>";
+     }
+     tempStr += "</tr>";
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -173,6 +179,7 @@ function objectiveRow(cj) {
+  * @return              Nothing, the row is just written to tempStr.
+  */
+ function ratRow(pivotEl, ratio, isFeas, isPermInf) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     if (ratio != undefined && !isNaN(pivotEl) && !isFeas && !isPermInf) {
+         var mn = ratio.length;
+         tempStr += "<tr>";
+@@ -186,16 +193,7 @@ function ratRow(pivotEl, ratio, isFeas, isPermInf) {
+         }
+         tempStr += "</tr>";
+     }
+-}
+-
+-/**
+- * Remove simplex tableaux
+- * @params    None.
+- * @return    Nothing.
+- */
+-function removeTableaux() {
+-    document.getElementById("tableau").innerHTML = "";
+-    tempStr = "";
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -208,6 +206,7 @@ function removeTableaux() {
+  */
+ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
+     var m = pivotCol.length;
++    var tempStr = document.getElementById("tableau").innerHTML;
+     for (let i = 0; i < m; i++) {
+         if (pivotRIdx - 1 == i) {
+             if (pivotEl == 1) {
+@@ -262,6 +261,7 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
+             }
+         }
+     }
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -294,16 +294,6 @@ function subscripts(decVar, format) {
+     }
+ }
+ 
+-/**
+- * Write tempStr to tableau HTML element.
+- * 
+- * @params    None.
+- * @return    Nothing.
+- */
+-function writeTempStr() {
+-    document.getElementById("tableau").innerHTML = tempStr;
+-}
+-
+ /**
+  * Write zj-cj row to tempStr.
+  * 
+@@ -311,6 +301,7 @@ function writeTempStr() {
+  * @return    Nothing, just modifies the tempStr global.
+  */
+ function zcRow(zc) {
++    var tempStr = document.getElementById("tableau").innerHTML;
+     var mn = zc.length;
+     tempStr += "<tr>";
+     tempStr += katexRow("z_j - c_j");
+@@ -318,6 +309,7 @@ function zcRow(zc) {
+         tempStr += "<td>" + decimalToFrac(zc[i]) + "</td>";
+     }
+     tempStr += "</tr>";
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+ 
+ /**
+@@ -332,6 +324,7 @@ function zcRow(zc) {
+ function zRow(pivotEl, isFeas, ratio, z) {
+     // Calculate mn from z
+     var mn = z.length - 1;
++    var tempStr = document.getElementById("tableau").innerHTML;
+ 
+     // Start row
+     tempStr += "<tr>";
+@@ -348,4 +341,5 @@ function zRow(pivotEl, isFeas, ratio, z) {
+     // Objective function value
+     tempStr += "<td rowspan='2'>" + decimalToFrac(z[mn]) + "</td>";
+     tempStr += "</tr>";
++    document.getElementById("tableau").innerHTML = tempStr;
+ }
+\ No newline at end of file
