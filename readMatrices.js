@@ -48,7 +48,7 @@ function find1dStrArr(name) {
  */
 function findA() {
     var htmlEl = document.getElementById("A").value;
-    if (htmlEl.match(',')) {
+    if (htmlEl.match(/[, ]/)) {
         var arr = htmlEl.split(/[, ][\s]*/);
         var A = [[]];
         var k = 0;
@@ -61,7 +61,7 @@ function findA() {
             var el = elRb.replace(/\]/g, '');
 
             // We're using MATLAB notation for arrays
-            if (/[0-9/]*\s*;/.test(elRb)) {
+            if (/[0-9/]*[\s]*;/.test(elRb)) {
                 var elArr = el.split(/;/);
                 if (/[0-9/]*/.test(elArr[0])) {
                     A[k].push(fracToDecimal(elArr[0]));
@@ -73,7 +73,7 @@ function findA() {
                 if (/[0-9/]*/.test(elArr[1])) {
                     A[k].push(fracToDecimal(elArr[1]));
                 }
-            } else if (/[0-9/]*\s*/.test(elRb)) {
+            } else if (/[0-9/]*[\s]*/.test(elRb)) {
                 A[k].push(fracToDecimal(el));
             }
         }
