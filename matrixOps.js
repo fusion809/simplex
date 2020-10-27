@@ -53,23 +53,3 @@ function transpose(A) {
 
     return AA;
 }
-
-/**
- * Extract the V matrix from the A matrix.
- * 
- * @param A   Constraint decision variable coefficient matrix.
- * @return    V
- */
-function findV(A) {
-    var m = A.length;
-    var V = new Array(m);
-
-    for (let i = 0; i < m; i++) {
-        V[i] = new Array(m);
-        for (let j = 0; j < m; j++) {
-            V[i][j] = A[i][m + j - 1];
-        }
-    }
-
-    return V;
-}

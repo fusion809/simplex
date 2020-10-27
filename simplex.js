@@ -66,7 +66,7 @@ function simplex(A, b, cj, x, xB, zc) {
         // Time to exit function if permanently infeasible, as there's no way
         // to solve the problem
         if (isPermInf) {
-            return [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf];
+            return [A, b, xB, isUnbounded, isPermInf];
         }
 
         // Update the basis, must be done after genTableau is run otherwise
@@ -89,7 +89,6 @@ function simplex(A, b, cj, x, xB, zc) {
                 }
                 b[i] -= pivotCol[i] * b[pivotRIdx];
             }
-
         }
     } else if (!isOptim) {
         // Method for working with non-optimal, but feasible solutions
@@ -129,7 +128,7 @@ function simplex(A, b, cj, x, xB, zc) {
     }
 
     // Return data needed by simplexIterator
-    return [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf];
+    return [A, b, xB, isUnbounded, isPermInf];
 }
 
 /**
@@ -159,10 +158,6 @@ function simplexIterator(A, b, cj, x, xB) {
         msg2 += " elements in x!";
         alert(msg2);
     }
-    var m = A.length;
-    var pivotRIdx;
-    var pivotEl;
-    var pivotCol = new Array(m);
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
     var isUnbounded = false;
@@ -180,7 +175,7 @@ function simplexIterator(A, b, cj, x, xB) {
         // Apply simplex
         [cB, z, zc] = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
-        [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, isPermInf] = arr;
+        [A, b, xB, isUnbounded, isPermInf] = arr;
         // Determine whether problem is now optimal and feasible
         [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
 

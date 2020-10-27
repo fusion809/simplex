@@ -1,32 +1,4 @@
 /**
- * Place numbers in specified decision variable in a subscript.
- * 
- * @param decVar   Decision variable to be formatted.
- * @param format   An object containing formatting-related Booleans.
- * @return         decVar in a row with numbers as subscripts and specified 
- * formatting.
- */
-function subscripts(decVar, format) {
-    var corrected = decVar.replace(/\d+/, function(x) {
-        return "_" + x;
-    });
-
-    var {isBold, isLeftArrow, isDownArrow} = format;
-
-    if (isBold) {
-        if (isLeftArrow) {
-            return katexRow("\\leftarrow \\mathbf{" + corrected + "}");
-        } else if (isDownArrow) {
-            return katexRow("\\mathbf{" + corrected + "} \\downarrow");
-        } else {
-            return katexRow("\\mathbf{" + corrected + "}");
-        }
-    } else {
-        return katexRow(corrected);
-    }
-}
-
-/**
  * Generate a row with the input string rendered with KaTeX.
  * 
  * @param str      String to render.
@@ -34,6 +6,49 @@ function subscripts(decVar, format) {
  */
 function katexRow(str) {
     return "<td>" + katex.renderToString(str) + "</td>";
+}
+
+/**
+ * Write A and b rows to tempStr.
+ * 
+ * @param A             Array of constraint coefficients.
+ * @param b             Array containing solution column elements.
+ * @param xB            Basis variable array.
+ * @param cB            Array of cB column elements.
+ * @param ratio         Ratio of b to pivot column elements.
+ * @param pivotRIdx     Pivot row index.
+ * @param pivotCIdx     Pivot column index.
+ * @param isFeas        Boolean indicating the feasibility of the solution.
+ * @param isOptim       Boolean indicating the optimality of the solution.
+ * @param isPermInf     Boolean indicating whether the problem is permanently 
+ * infeasible.
+ * @return              Nothing, writes data to tempStr.
+ */
+function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, isPermInf) {
+    var m = A.length;
+    var mn = A[0].length;
+    tempStr += "</tr>";
+    for (let i = 0; i < m; i++) {
+        tempStr += "<tr>";
+        tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
+        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf ) {
+            tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
+        } else {
+            tempStr += subscripts(xB[i], {isBold: true, isLeftArrow: true, isDownArrow: false});
+        }
+        for (let j = 0; j < mn; j++) {
+            tempStr += "<td>" + decimalToFrac(A[i][j]) + "</td>";
+        }
+        tempStr += "<td>" + decimalToFrac(b[i]) + "</td>";
+        if (isFeas && !isOptim) {
+            if (ratio[i] != Number.POSITIVE_INFINITY && ratio[i] >= 0) {
+                tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
+            } else {
+                tempStr += "<td>NA</td>";
+            }
+        }
+        tempStr += "</tr>";
+    }
 }
 
 /**
@@ -97,59 +112,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf, pivo
 }
 
 /**
- * Write tempStr to tableau HTML element.
- * 
- * @params    None.
- * @return    Nothing.
- */
-function writeTempStr() {
-    document.getElementById("tableau").innerHTML = tempStr;
-}
-
-/**
- * Write A and b rows to tempStr.
- * 
- * @param A             Array of constraint coefficients.
- * @param b             Array containing solution column elements.
- * @param xB            Basis variable array.
- * @param cB            Array of cB column elements.
- * @param ratio         Ratio of b to pivot column elements.
- * @param pivotRIdx     Pivot row index.
- * @param pivotCIdx     Pivot column index.
- * @param isFeas        Boolean indicating the feasibility of the solution.
- * @param isOptim       Boolean indicating the optimality of the solution.
- * @param isPermInf     Boolean indicating whether the problem is permanently 
- * infeasible.
- * @return              Nothing, writes data to tempStr.
- */
-function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, isPermInf) {
-    var m = A.length;
-    var mn = A[0].length;
-    tempStr += "</tr>";
-    for (let i = 0; i < m; i++) {
-        tempStr += "<tr>";
-        tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
-        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf ) {
-            tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, isDownArrow: false});
-        } else {
-            tempStr += subscripts(xB[i], {isBold: true, isLeftArrow: true, isDownArrow: false});
-        }
-        for (let j = 0; j < mn; j++) {
-            tempStr += "<td>" + decimalToFrac(A[i][j]) + "</td>";
-        }
-        tempStr += "<td>" + decimalToFrac(b[i]) + "</td>";
-        if (isFeas && !isOptim) {
-            if (ratio[i] != Number.POSITIVE_INFINITY && ratio[i] >= 0) {
-                tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
-            } else {
-                tempStr += "<td>NA</td>";
-            }
-        }
-        tempStr += "</tr>";
-    }
-}
-
-/**
  * Write header row to tempStr.
  * 
  * @param x             x array containing decision variable names.
@@ -204,8 +166,8 @@ function objectiveRow(cj) {
  * @return              Nothing, the row is just written to tempStr.
  */
 function ratRow(pivotEl, ratio, isFeas, isPermInf) {
-    var mn = ratio.length;
     if (ratio != undefined && !isNaN(pivotEl) && !isFeas && !isPermInf) {
+        var mn = ratio.length;
         tempStr += "<tr>";
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
         for (let i = 0; i < mn; i++) {
@@ -217,6 +179,16 @@ function ratRow(pivotEl, ratio, isFeas, isPermInf) {
         }
         tempStr += "</tr>";
     }
+}
+
+/**
+ * Remove simplex tableaux
+ * @params    None.
+ * @return    Nothing.
+ */
+function removeTableaux() {
+    document.getElementById("tableau").innerHTML = "";
+    tempStr = "";
 }
 
 /**
@@ -266,6 +238,60 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
 }
 
 /**
+ * Place numbers in specified decision variable in a subscript.
+ * 
+ * @param decVar   Decision variable to be formatted.
+ * @param format   An object containing formatting-related Booleans.
+ * @return         decVar in a row with numbers as subscripts and specified 
+ * formatting.
+ */
+function subscripts(decVar, format) {
+    var corrected = decVar.replace(/\d+/, function(x) {
+        return "_" + x;
+    });
+
+    var {isBold, isLeftArrow, isDownArrow} = format;
+
+    if (isBold) {
+        if (isLeftArrow) {
+            return katexRow("\\leftarrow \\mathbf{" + corrected + "}");
+        } else if (isDownArrow) {
+            return katexRow("\\mathbf{" + corrected + "} \\downarrow");
+        } else {
+            return katexRow("\\mathbf{" + corrected + "}");
+        }
+    } else {
+        return katexRow(corrected);
+    }
+}
+
+/**
+ * Write tempStr to tableau HTML element.
+ * 
+ * @params    None.
+ * @return    Nothing.
+ */
+function writeTempStr() {
+    document.getElementById("tableau").innerHTML = tempStr;
+}
+
+/**
+ * Write zj-cj row to tempStr.
+ * 
+ * @param zc  Array containing zj-cj data.
+ * @return    Nothing, just modifies the tempStr global.
+ */
+function zcRow(zc) {
+    var mn = zc.length;
+    tempStr += "<tr>";
+    tempStr += katexRow("z_j - c_j");
+    for (let i = 0; i < mn; i++) {
+        tempStr += "<td>" + decimalToFrac(zc[i]) + "</td>";
+    }
+    tempStr += "</tr>";
+}
+
+/**
  * Write zj row to tempStr.
  * 
  * @param pivotEl  Pivot element.
@@ -292,30 +318,4 @@ function zRow(pivotEl, isFeas, ratio, z) {
     // Objective function value
     tempStr += "<td rowspan='2'>" + decimalToFrac(z[mn]) + "</td>";
     tempStr += "</tr>";
-}
-
-/**
- * Write zj-cj row to tempStr.
- * 
- * @param zc  Array containing zj-cj data.
- * @return    Nothing, just modifies the tempStr global.
- */
-function zcRow(zc) {
-    var mn = zc.length;
-    tempStr += "<tr>";
-    tempStr += katexRow("z_j - c_j");
-    for (let i = 0; i < mn; i++) {
-        tempStr += "<td>" + decimalToFrac(zc[i]) + "</td>";
-    }
-    tempStr += "</tr>";
-}
-
-/**
- * Remove simplex tableaux
- * @params    None.
- * @return    Nothing.
- */
-function removeTableaux() {
-    document.getElementById("tableau").innerHTML = "";
-    tempStr = "";
 }

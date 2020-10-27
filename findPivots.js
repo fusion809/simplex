@@ -1,35 +1,5 @@
 
 /**
- * Find the index of the smallest element or smallest positive element in a 1d 
- * array.
- * 
- * @param vec       1d array to find the smallest element/positive element in.
- * @param isPosReq  A Boolean that decides whether the element must be 
- * positive.
- * @return          Index of the element with the smallest value/positive 
- * value.
- */
-function minEl(vec, isPosReq) {
-    var min = Number.POSITIVE_INFINITY;
-    var index = 0;
-    for (let i = 0; i < vec.length; i++) {
-        if (isPosReq) {
-            if ((vec[i] < min) && (vec[i] >= 0)) {
-                min = vec[i];
-                index = i;
-            }
-        } else {
-            if (vec[i] < min) {
-                min = vec[i];
-                index = i;
-            }
-        }
-    }
-
-    return index;
-}
-
-/**
  * Returns pivot element, column, column index, row index and an array of
  * adjusted ratios between b and pivot column entries.
  * 
@@ -69,4 +39,34 @@ function findPivots(A, b, zc) {
     var pivotEl = pivotCol[pivotRIdx];
 
     return [pivotEl, pivotCol, pivotCIdx, pivotRIdx, ratio, isUnbounded];
+}
+
+/**
+ * Find the index of the smallest element or smallest positive element in a 1d 
+ * array.
+ * 
+ * @param vec       1d array to find the smallest element/positive element in.
+ * @param isPosReq  A Boolean that decides whether the element must be 
+ * positive.
+ * @return          Index of the element with the smallest value/positive 
+ * value.
+ */
+function minEl(vec, isPosReq) {
+    var min = Number.POSITIVE_INFINITY;
+    var index = 0;
+    for (let i = 0; i < vec.length; i++) {
+        if (isPosReq) {
+            if ((vec[i] < min) && (vec[i] >= 0)) {
+                min = vec[i];
+                index = i;
+            }
+        } else {
+            if (vec[i] < min) {
+                min = vec[i];
+                index = i;
+            }
+        }
+    }
+
+    return index;
 }
