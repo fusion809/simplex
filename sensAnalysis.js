@@ -25,8 +25,10 @@ function objectiveChange() {
  * @param ARow       Row of A we are subtracting from newARow
  * @param multiplier What ARow is to be multiplied before it is subtracted 
  * from newARow.
+ * @return           Corrected newARow.
  */
 function correctionOp(newARow, ARow, multiplier) {
+    // Correct newARow by subtracting ARow*multiplier from it
     for (let i = 0; i < newARow.length; i++) {
         newARow[i] -= ARow[i]*multiplier;
     }
@@ -70,8 +72,8 @@ function newConstraint() {
     var loc = basisIndex(x, xB);
     for (let i = 0; i < newARows.length; i++) {
         var newARow = newARows[i];
-        // Loop over loc, checking whether the jth basis variable's columns 
-        // have zero entries and if they don't correcting that.
+        // Loop over loc, looking for a column in newARow that's for a basis 
+        // variable and is non-zero. Correct newARow and newbRow accordingly.
         for (let j = 0; j < loc.length; j++) {
             var ARow = A[j];
             var basisCol = loc[j];
@@ -155,8 +157,8 @@ function constrCoeffsChange() {
                 if (AT[j][i] != initialAT[j][i]) {
                     // Return an error if elements of A corresponding to basis 
                     // variables have been modified
-                    var msg = "If the coefficients of basic variables change, ";
-                    msg += "you must solve the problem from scratch again!";
+                    var msg = "If the coefficients of basic variables change,";
+                    msg += " you must solve the problem from scratch again!";
                     alert(msg);
                     return [A, b, cj, x, xB, true];
                 }

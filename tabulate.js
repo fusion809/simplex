@@ -26,9 +26,11 @@ function katexRow(str) {
  */
 function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
     isPermInf) {
+    // Initialize dimensionality variables
     var m = A.length;
     var mn = A[0].length;
-    tempStr += "</tr>";
+
+    // Start row
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
@@ -83,7 +85,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
         pivotCIdx = NaN;
     }
 
-    // Generate table
+    // Start tableau
     document.getElementById("tableau").innerHTML = "";
     tempStr += "<table>";
 
@@ -105,6 +107,8 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
 
     // Ratio row
     ratRow(pivotEl, ratio, isFeas, isPermInf)
+
+    // End tableau
     tempStr += "</table>";
 
     // Show row operations
@@ -144,6 +148,7 @@ function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
     if (isFeas && !isOptim) {
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
     }
+    tempStr += "</tr>";
 }
 
 /**
@@ -174,7 +179,10 @@ function objectiveRow(cj) {
  */
 function ratRow(pivotEl, ratio, isFeas, isPermInf) {
     if (ratio != undefined && !isNaN(pivotEl) && !isFeas && !isPermInf) {
+        // Gathering dimensionality data
         var mn = ratio.length;
+
+        // Start row
         tempStr += "<tr>";
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
         for (let i = 0; i < mn; i++) {
@@ -207,8 +215,13 @@ function removeTableaux() {
  * @return          Nothing, adds the row operations to tempStr.
  */
 function rowOperations(pivotRIdx, pivotCol, pivotEl) {
+    // Initialize dimensionality variable
     var m = pivotCol.length;
+
+    // Loop over rows and write the operations to be performed to them to 
+    // tempStr
     for (let i = 0; i < m; i++) {
+        // Pivot row operation
         if (pivotRIdx - 1 == i) {
             if (pivotEl == 1) {
                 tempStr += "<div>" + katex.renderToString("R_{" + pivotRIdx +
@@ -223,7 +236,9 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
                 pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + 
                 "</div>";
             }
-        } else {
+        } 
+        // Row operations for non-pivot rows
+        else {
             if (pivotCol[i] == -1) {
                 tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + 
                 "} + " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + 
@@ -247,7 +262,9 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
                 tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + 
                 "} - " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
-            } else {
+            }
+            // pivotCol[i] > 0 and not equal to 1
+            else {
                 var fraction = math.fraction(pivotCol[i]);
                 if (fraction.d != 1) {
                     tempStr += "<div>" + katex.renderToString("R_{" + (i + 1)
@@ -273,12 +290,15 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
  * formatting.
  */
 function subscripts(decVar, format) {
+    // Move numbers in variables with a subscript
     var corrected = decVar.replace(/\d+/, function(x) {
-        return "_" + x;
+        return "_{" + x + "}";
     });
 
+    // Gather Booleans from format
     var {isBold, isLeftArrow, isDownArrow, notRow} = format;
 
+    // Adjust formatting according to value of Booleans.
     if (isBold) {
         if (isLeftArrow) {
             return katexRow("\\leftarrow \\mathbf{" + corrected + "}");
@@ -311,7 +331,10 @@ function writeTempStr() {
  * @return    Nothing, just modifies the tempStr global.
  */
 function zcRow(zc) {
+    // Initialize dimensionality variables
     var mn = zc.length;
+
+    // Add row
     tempStr += "<tr>";
     tempStr += katexRow("z_j - c_j");
     for (let i = 0; i < mn; i++) {

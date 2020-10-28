@@ -15,17 +15,25 @@
  * isPermInf]
  */
 function simplex(A, b, cj, x, xB, zc) {
-    // Initialize required variables
+    // Initialize dimensionality variables
     var m = A.length;
     var mn = A[0].length;
+
+    // Initialize pivot variables
     var pivotRIdx;
     var pivotCIdx;
     var pivotEl;
-    var pivotCol = new Array(m);
-    var minRat = Number.POSITIVE_INFINITY;
-    var ratio = new Array(zc.length);
+    
+    // Initialize Booleans
     var isPermInf = false;
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+
+    // Initialize minRat for the below loop
+    var minRat = Number.POSITIVE_INFINITY;
+
+    // Initialize relevant variables
+    var pivotCol = new Array(m);
+    var ratio = new Array(zc.length);
 
     if (!isFeas) {
         // The method for working with infeasible solutions
@@ -147,21 +155,33 @@ function simplex(A, b, cj, x, xB, zc) {
  * @return              Nothing.
  */
 function simplexIterator(A, b, cj, x, xB) {
+    // Error messages
     if (b.length != xB.length ) {
         alert("The lengths of b and xB do not match!");
         return;
-    }
-    if (A.length != b.length) {
-        var msg1 = "The number of rows in A does not match the number of rows";
-        msg1 += "in b!";
-        alert(msg1);
+    } else if (A.length != b.length) {
+        var msg = "The number of rows in A does not match the number of rows";
+        msg += "in b!";
+        alert(msg);
         return;
+    } else if (A[0].length != x.length) {
+        var msg = "A has a number of columns that exceeds the number of";
+        msg += " elements in x!";
+        alert(msg);
+        return;
+    } else if (A.length != xB.length) {
+        var msg = "xB has a number of elements that exceeds the number of";
+        msg += " elements in A!";
+        alert(msg);
+        return;
+    } else if (cj.length != A[0].length) {
+        var msg = "A has a number of columns that exceeds the number of ";
+        msg += "elements in c."
+        alert(msg);
+        return; 
     }
-    if (A[0].length != x.length) {
-        var msg2 = "A has a number of columns that exceeds the number of";
-        msg2 += " elements in x!";
-        alert(msg2);
-    }
+
+    // Initialize global variables
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
     var isUnbounded = false;

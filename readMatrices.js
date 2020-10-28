@@ -13,6 +13,21 @@ function read1dNumArr(name) {
         if (/[\-0-9./]+/.test(el)) {
             // Using math.fraction is required in case users input fractions
             arr.push(fracToDecimal(el));
+        } else if (name == "b") {
+            var msg = "b has unsuitable elements in it. Remember b is meant";
+            msg += " to be full of members separated by commas, spaces or ";
+            msg += "semicolons."
+            alert(msg);
+        } else if (name == "c") {
+            var msg = "c has unsuitable elements in it. Remember c is meant";
+            msg += " to be full of numbers separated by commas, spaces or ";
+            msg += "semicolons.";
+            alert(msg);
+        } else if (name == "A") {
+            var msg = "A has unsuitable elements in it. Remember A is meant";
+            msg += " to be full of numbers separated by commas, spaces or ";
+            msg += "semicolons.";
+            alert(msg);
         }
     }
 
@@ -87,6 +102,11 @@ function readA() {
             // This condition yields true for any other number
             else if (/[0-9/]*[\s]*/.test(elRb)) {
                 A[k].push(fracToDecimal(el));
+            } else {
+                var msg = "A has unsuitable elements in it. Remember A is ";
+                msg += "meant to be full of numbers separated by commas, ";
+                msg += "spaces or semicolons.";
+                alert(msg);
             }
         }
     } else {
@@ -123,13 +143,19 @@ function readc() {
  * @return    V
  */
 function extractV(A) {
+    // Determine dimensionality
     var m = A.length;
     var mn = A[0].length;
     var n = mn - m;
+
+    // Initialize array
     var V = new Array(m);
 
     for (let i = 0; i < m; i++) {
+        // Add second dimension to array
         V[i] = new Array(m);
+        
+        // Obtain V's elements from A
         for (let j = 0; j < m; j++) {
             V[i][j] = A[i][n + j];
         }

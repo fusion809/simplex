@@ -10,16 +10,22 @@
  */
 function showSolution(A, b, x, xB, z, zc) {
     tempStr += "Optimal solution is ";
+
     // List basic variable values
     for (let i = 0 ; i < xB.length; i++) {
         tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
             isDownArrow: false, notRow: true}) + " = " + decimalToFrac(b[i]) + ", ";
     }
-    var k = 0;
+    
+    // Initialize dimensionality variables
     var m = A.length;
     var mn = A[0].length;
     var n = mn - m;
-    // List values of non-basic variables
+    
+    // Initialize counter for basis variables displayed.
+    var k = 0;
+
+    // Display values of non-basic variables and z
     for (let i = 0 ; i < x.length; i++) {
         if (!find(xB, x[i])) {
             if (k != 0) {
@@ -33,12 +39,16 @@ function showSolution(A, b, x, xB, z, zc) {
             }
         }
     }
+
+    // Determine and display whether an alternate solution exists
     for (let i = 0; i < mn; i++) {
-        // Checks if a variable is NOT in the basis and for it zj-cj=0 
-        // (implying alternate solutions)
+        // Checks whether for a non-basic variable the zj-cj element = 0, which
+        // suggests alternate solutions exist
         if (!find(xB, x[i]) && zc[i] == 0) {
             tempStr += "Alternate solution exists. "
         }
     }
+
+    // Write to tableau element
     document.getElementById("tableau").innerHTML = tempStr;
 }

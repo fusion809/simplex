@@ -2,17 +2,25 @@
  * Multiply square matrix by column vector
  * 
  * @param V        2d array representing a matrix.
- * @param b        1d array representing a column vector.
- * @return         Matrix product between finalV and b
+ * @param b        1d/2d array.
+ * @return         Matrix product between V and b
  */
 function matMult(V, b) {
+    // Initialize dimensionality variables
     var m = b.length;
     var n = b[0].length;
+
+    // Initialize array that will store the matrix product
     var bUp = new Array(m);
+
+    // Different algorithms for different dimensionalities
     if (n > 1) {
+        // Loop over the rows of b
         for (let i = 0; i < m; i++) {
             bUp[i] = new Array(n);
+            // Loop over the columns of b
             for (let j = 0 ; j < n; j++) {
+                // Perform matrix product
                 bUp[i][j] = 0;
                 for (let k = 0; k < m; k++) {
                     bUp[i][j] += V[i][k] * b[k][j];
@@ -20,7 +28,9 @@ function matMult(V, b) {
             }
         }
     } else {
+        // Loop over rows in b
         for (let i = 0; i < m; i++) {
+            // Multiply matrices
             bUp[i] = 0;
             for (let j = 0; j < m; j++) {
                 bUp[i] += V[i][j] * b[j];
@@ -37,19 +47,22 @@ function matMult(V, b) {
  * @return    A^T
  */
 function transpose(A) {
+    // Dimensionality info
     var m = A.length;
     var mn = A[0].length;
-    var AA = new Array(mn);
 
-    for (let i = 0; i < mn; i++) {
-        AA[i] = new Array(m);
-    }
+    // Create transpose matrix
+    var AT = new Array(mn);
 
-    for (let i = 0; i < m; i++) {
-        for (let j = 0; j < mn; j++) {
-            AA[j][i] = A[i][j];
+    for (let j = 0; j < mn; j++) {
+        // Make it 2d
+        AT[j] = new Array(m);
+
+        // Populate AT with data
+        for (let i = 0; i < m; i++) {
+            AT[j][i] = A[i][j];
         }
     }
 
-    return AA;
+    return AT;
 }
