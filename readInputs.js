@@ -27,6 +27,7 @@ function getParameters() {
         var [A, b, xB, cj, x, shouldDie] = constrCoeffsChange();
         uncheck("LHSChg"); 
     }
+    // New variable
     else if (document.getElementById("newVar").checked) {
         var [A, b, xB, cj, x] = addVariable();
         uncheck("newVar");
