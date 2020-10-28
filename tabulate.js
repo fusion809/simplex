@@ -231,10 +231,16 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
                 "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
             } else {
                 var fraction = math.fraction(1/pivotEl);
-                tempStr += "<div>" + katex.renderToString(sign(fraction.s) + 
-                "\\dfrac{" + fraction.n + "}{" + fraction.d + "}" + " R_{" + 
-                pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + 
-                "</div>";
+                if (fraction.d != 1) {
+                    tempStr += "<div>" + katex.renderToString(sign(fraction.s) 
+                    + "\\dfrac{" + fraction.n + "}{" + fraction.d + "}" + 
+                    " R_{" + pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + 
+                    "}^{'}") + "</div>";
+                } else {
+                    tempStr += "<div>" + katex.renderToString(sign(fraction.s) 
+                    + fraction.n + " R_{" + pivotRIdx + "} \\rightarrow R_{" 
+                    + pivotRIdx + "}^{'}") + "</div>";
+                }
             }
         } 
         // Row operations for non-pivot rows
