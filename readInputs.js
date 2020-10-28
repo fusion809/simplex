@@ -10,21 +10,26 @@ function getParameters() {
     // Change objective function coefficient(s)
     if (document.getElementById("changec").checked) {
         var [A, b, xB, cj, x] = objectiveChange();
+        document.getElementById("changec").checked = false;
     }
     // Add new constraint
     else if (document.getElementById("newConstr").checked) {
         var [A, b, xB, cj, x] = newConstraint();
+        uncheck("newConstr");
     }
     // Resource change (i.e. RHS of constraint)
     else if (document.getElementById("rscChg").checked) {
         var [A, b, xB, cj, x] = resourceChange();
+        uncheck("rscChg");
     }
     // LHS constraint coefficient change
     else if (document.getElementById("LHSChg").checked) {
         var [A, b, xB, cj, x, shouldDie] = constrCoeffsChange();
+        uncheck("LHSChg"); 
     }
     else if (document.getElementById("newVar").checked) {
         var [A, b, xB, cj, x] = addVariable();
+        uncheck("newVar");
     }
     // Extract relevant values from form
     else {
@@ -40,7 +45,6 @@ function getParameters() {
     updateGlobals(A, b, xB, x, cj);
 
     // Uncheck buttons
-    uncheckAll();
     return [A, b, cj, x, xB, shouldDie];
 }
 
@@ -54,17 +58,4 @@ function uncheck(name) {
     if (document.getElementById(name).checked) {
         document.getElementById(name).checked = false;
     }
-}
-
-/**
- * Uncheck all radio buttons.
- * 
- * @params    None.
- * @return    Nothing.
- */
-function uncheckAll() {
-    document.getElementById("changec").checked = false;
-    document.getElementById("newConstr").checked = false;
-    document.getElementById("rscChg").checked = false;
-    document.getElementById("LHSChg").checked = false;
 }

@@ -76,10 +76,14 @@ function simplex(A, b, cj, x, xB, zc) {
         // The method for working with infeasible solutions
         pivotRIdx = minIndex;
         var k = 0;
-        // Find minRat and pivotCol
+        // Find minimum ratio, pivot element, pivot column index
         for (let j = 0; j < mn; j++) {
-            if (A[minIndex][j] < 0) {
-                ratio[j] = math.abs(zc[j] / A[minIndex][j]);
+            // The following is to prevent floating-point arithmetic from
+            // causing problems
+            var pivotRowEl = math.fraction(A[minIndex][j]);
+            pivotRowEl = pivotRowEl.s * pivotRowEl.n / pivotRowEl.d;
+            if (pivotRowEl < 0) {
+                ratio[j] = math.abs(zc[j] / pivotRowEl);
                 if (ratio[j] < minRat) {
                     minRat = ratio[j];
                     pivotCIdx = j;

@@ -21,7 +21,11 @@ function findPivots(A, b, zc) {
     // Find pivot
     for (let i = 0; i < b.length; i++) {
         pivotCol[i] = A[i][pivotCIdx];
-        if (pivotCol[i] <= 0) {
+        // Following is to prevent floating point arithmetic errors from 
+        // causing problems
+        var pivotColCor = math.fraction(pivotCol[i]);
+        pivotColCor = pivotColCor.s * pivotColCor.n / pivotColCor.d;
+        if (pivotColCor <= 0) {
             ratio[i] = Number.POSITIVE_INFINITY;
             k++;
         } else {
