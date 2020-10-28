@@ -231,10 +231,10 @@ function simplexIterator(A, b, cj, x, xB) {
         // Show an appropriate message if the problem is infeasible or
         // unbounded
         if (isUnbounded) {
-            tempStr += "Problem is unbounded!";
+            tempStr += "Problem is unbounded! ";
             document.getElementById("tableau").innerHTML = tempStr;
         } else if (isPermInf) {
-            tempStr += "Problem is infeasible!";
+            tempStr += "Problem is infeasible! ";
             document.getElementById("tableau").innerHTML = tempStr;
         } else if (isOptim) {
             [cB, z, zc] = calcEntries(A, b, cj, x, xB);

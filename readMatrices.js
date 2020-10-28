@@ -124,12 +124,14 @@ function findc() {
  */
 function findV(A) {
     var m = A.length;
+    var mn = A[0].length;
+    var n = mn - m;
     var V = new Array(m);
 
     for (let i = 0; i < m; i++) {
         V[i] = new Array(m);
         for (let j = 0; j < m; j++) {
-            V[i][j] = A[i][m + j - 1];
+            V[i][j] = A[i][n + j];
         }
     }
 
