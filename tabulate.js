@@ -178,11 +178,7 @@ function ratRow(pivotEl, ratio, isFeas, isPermInf) {
         tempStr += "<tr>";
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
         for (let i = 0; i < mn; i++) {
-            // This method of checking if pivotRow[i] < 0 is to ensure that
-            // floating point arithmetic errors do not cause problems
-            var pivotRowCor = math.fraction(pivotRow[i]);
-            pivotRowCor = pivotRowCor.s*pivotRowCor.n/pivotRowCor.d;
-            if (pivotRowCor < 0) {
+            if (ratio[i] != Number.POSITIVE_INFINITY) {
                 tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
             } else {
                 tempStr += "<td></td>";
