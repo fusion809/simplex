@@ -13,7 +13,7 @@ function showSolution(A, b, x, xB, z, zc) {
     // List basic variable values
     for (let i = 0 ; i < xB.length; i++) {
         tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
-            isDownArrow: false, notRow: true}) + " = " + b[i] + ", ";
+            isDownArrow: false, notRow: true}) + " = " + decimalToFrac(b[i]) + ", ";
     }
     var k = 0;
     var m = A.length;
@@ -29,7 +29,7 @@ function showSolution(A, b, x, xB, z, zc) {
                 isDownArrow: false, notRow: true}) + " = " + 0;               
             k++;
             if (k == n) {
-                tempStr += " and " + katex.renderToString("z = " + z[mn]) + ".";
+                tempStr += " and " + katex.renderToString("z = ") + " " + decimalToFrac(z[mn]) + ".<br/>";
             }
         }
     }
@@ -37,7 +37,7 @@ function showSolution(A, b, x, xB, z, zc) {
         // Checks if a variable is NOT in the basis and for it zj-cj=0 
         // (implying alternate solutions)
         if (!find(xB, x[i]) && zc[i] == 0) {
-            tempStr += " Alternate solution exists."
+            tempStr += "Alternate solution exists. "
         }
     }
     document.getElementById("tableau").innerHTML = tempStr;

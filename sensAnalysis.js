@@ -18,34 +18,21 @@ function objectiveChange() {
     return [A, b, xB, cj, x];
 }
 
-function subtractRow(row1, row2, scalarMult) {
-    for (let i = 0 ; i < row1.length; i++) {
-        row1[i] -= scalarMult*row2[i];
-    }
-    return row1;
-}
-
-function uncorrected(newARows, loc) {
-    var coords = [];
-
-    for (let i = 0 ; i < newARows.length; i++) {
-        for (let j = 0 ; j < loc.length; j++) {
-            var lloc = loc[j];
-            if (newARows[i][lloc] != 0) {
-                coords.push([i, j, newARows[i][lloc]]);
-            }
-        }
+/**
+ * Subtract multiplier*ARow from newARow. 
+ * 
+ * @param newARow    New row to be added to A.
+ * @param ARow       Row of A we are subtracting from newARow
+ * @param multiplier What ARow is to be multiplied before it is subtracted 
+ * from newARow.
+ */
+function correctionOp(newARow, ARow, multiplier) {
+    for (let i = 0; i < newARow.length; i++) {
+        newARow[i] -= ARow[i]*multiplier;
     }
 
-    return coords;
+    return newARow;
 }
-
-// Part of attempt to allow unmodified constraints to be added
-// var R1;
-// var R2;
-// var scal;
-// var newAR;
-// var NAInd;
 
 /**
  * Add new constraint.
@@ -78,24 +65,25 @@ function newConstraint() {
         }
     }
     
-    // Attempt at adding support for multiple new unmodified constraints
-    // Failed as newARows for some reason was full of NaNs
-    // newAR = newARows;
-    // var loc = basisIndex(x, xB);
-    // var coords = uncorrected(newARows, loc);
-    // for (let i = 0 ; i < coords.length; i++) {
-    //     var [newARowsIndex, ARowIndex, pivotElement] = coords[i];
-    //     if (i == 0) {
-    //         NAInd = newARowsIndex;
-    //         R1 = newARows[newARowsIndex];
-    //         R2 = A[ARowIndex];
-    //         scal = pivotElement;
-    //     }
-    //     newARows[newARowsIndex] = subtractRow(newARows[newARowsIndex], 
-    // A[ARowIndex], pivotElement);
-    //     newbRows[newARowsIndex] -= pivotElement*b[ARowIndex];
-    //     console.log(newARows[newARowsIndex]);
-    // }
+    // Correct newARows so that it is suitable for adding to A
+    var loc = basisIndex(x, xB);
+    for (let i = 0; i < newARows.length; i++) {
+        var newARow = newARows[i];
+        // Loop over loc, checking whether the jth basis variable's columns 
+        // have zero entries and if they don't correcting that.
+        for (let j = 0; j < loc.length; j++) {
+            var ARow = A[j];
+            var basisCol = loc[j];
+            // Entry in the basis column on ith row
+            var basisEl = newARow[basisCol];
+            console.log(basisEl)
+            if ( basisEl != 0) {
+                // From newARow subtract ARow[j]*basisEl
+                newARows[i] = correctionOp(newARow, ARow, basisEl);
+                newbRows[i] -= basisEl*b[j];
+             }
+        }
+    }
 
     // console.log(newARows);
     // console.log(newbRows);
