@@ -44,8 +44,10 @@ function showSolution(A, b, x, xB, z, zc) {
     for (let i = 0; i < mn; i++) {
         // Checks whether for a non-basic variable the zj-cj element = 0, which
         // suggests alternate solutions exist
-        if (!find(xB, x[i]) && zc[i] == 0) {
-            tempStr += "Alternate solution exists. "
+        var zcCor = math.fraction(zc[i]);
+        zcCor = zcCor.s * zcCor.n / zcCor.d;
+        if (!find(xB, x[i]) && zcCor == 0) {
+            tempStr += "Alternate solution(s) exists. "
         }
     }
 

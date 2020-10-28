@@ -13,7 +13,11 @@ function isOptAndFeas(b, zc) {
     // If zj-cj < 0 for any j and isOptim is set to true, set isOptim to false
     if (isOptim) {
         for (let j = 0; j < zc.length; j++) {
-            if (zc[j] < 0) {
+            // Ensure that floating point errors do not stuff up determination 
+            // of optimality
+            var zcCor = math.fraction(zc[j]);
+            zcCor = zcCor.s * zcCor.n / zcCor.d;
+            if (zcCor < 0) {
                 isOptim = false;
                 break;
             }
@@ -41,7 +45,11 @@ function minElIfLt0(b) {
     // Find minimum element if one such element is less than 0 and set isFeas
     // and isOptim to false if such an element is found.
     for (let i = 0; i < b.length; i++) {
-        if (b[i] < 0) {
+        // Ensure that floating point errors do not stuff up determination of
+        // feasibility
+        var bCor = math.fraction(b[i]);
+        bCor = bCor.s * bCor.n / bCor.d;
+        if (bCor < 0) {
             if (b[i] < min) {
                 minIndex = i;
                 min = b[i];
