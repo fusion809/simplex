@@ -13,7 +13,7 @@ function objectiveChange() {
     var x = finalx;
 
     // Mention what's happening in output
-    tempStr += "Objective function coefficient changed. ";
+    tempStr += "Objective function coefficient(s) changed. ";
 
     return [A, b, xB, cj, x];
 }
@@ -95,7 +95,7 @@ function newConstraint() {
     }
 
     // Mention what's happening in output
-    tempStr += "Adding new constraint. ";
+    tempStr += "Adding new constraint(s). ";
 
     return [A, b, xB, cj, x];
 }
@@ -116,7 +116,7 @@ function resourceChange() {
     var b = matMult(finalV, b);
 
     // Mentioning what's happened since previous iterations of simplex
-    tempStr += "Resource value changed. ";
+    tempStr += "Resource value(s) changed. ";
 
     return [A, b, xB, cj, x];
 }
@@ -166,7 +166,7 @@ function constrCoeffsChange() {
     var A = transpose(finalAT);
 
     // Mention what's changed since previous iterations of simplex
-    tempStr += "Constraint coefficients have changed. ";
+    tempStr += "Constraint coefficient(s) have changed. ";
 
     return [A, b, xB, cj, x, false];
 }
@@ -206,7 +206,7 @@ function addVariable() {
     }
 
     // Print message letting the user know what is being computed
-    tempStr += "Adding new variable. ";
+    tempStr += "Adding new variable(s). ";
 
     return [A, b, xB, cj, x];
 }
