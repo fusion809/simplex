@@ -77,7 +77,6 @@ function newConstraint() {
             var basisCol = loc[j];
             // Entry in the basis column on ith row
             var basisEl = newARow[basisCol];
-            console.log(basisEl)
             if ( basisEl != 0) {
                 // From newARow subtract ARow[j]*basisEl
                 newARows[i] = correctionOp(newARow, ARow, basisEl);

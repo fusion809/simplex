@@ -233,6 +233,7 @@ function simplexIterator(A, b, cj, x, xB) {
             tempStr += "Problem is infeasible!";
             document.getElementById("tableau").innerHTML = tempStr;
         } else if (isOptim) {
+            [cB, z, zc] = calcEntries(A, b, cj, x, xB);
             showSolution(A, b, x, xB, z, zc);
         }
     }
