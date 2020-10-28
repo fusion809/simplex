@@ -165,6 +165,9 @@ function simplexIterator(A, b, cj, x, xB) {
         alert(msg);
         return;
     } else if (A[0].length != x.length) {
+        console.log("A.length is " + A.length);
+        console.log("A[0].length is " + A[0].length);
+        console.log("x is " + x);
         var msg = "A has a number of columns that exceeds the number of";
         msg += " elements in x!";
         alert(msg);

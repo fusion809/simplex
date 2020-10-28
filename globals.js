@@ -1,7 +1,9 @@
 // Initialize globals
 var tempStr = "";
 var finalA = [[]];
+var initialA = [[]];
 var initialAT = [[]];
+var initialb = [];
 var finalb = [];
 var finalxB = [];
 var finalcj = [];

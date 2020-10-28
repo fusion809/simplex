@@ -2,7 +2,7 @@
  * Change objective function coefficients.
  * 
  * @params    None.
- * @return    [A, b, xB, cj, x]
+ * @return    [A, b, cj, x, xB]
  */
 function objectiveChange() {
     // Set globals
@@ -15,7 +15,7 @@ function objectiveChange() {
     // Mention what's happening in output
     tempStr += "Objective function coefficient(s) changed. ";
 
-    return [A, b, xB, cj, x];
+    return [A, b, cj, x, xB];
 }
 
 /**
@@ -40,7 +40,7 @@ function correctionOp(newARow, ARow, multiplier) {
  * Add new constraint.
  * 
  * @params    None.
- * @return    [A, b, xB, cj, x]
+ * @return    [A, b, cj, x, xB]
  */
 function newConstraint() {
     // Set globals
@@ -99,14 +99,14 @@ function newConstraint() {
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";
 
-    return [A, b, xB, cj, x];
+    return [A, b, cj, x, xB];
 }
 
 /**
  * Change RHS of constraints.
  * 
  * @params    None.
- * @return    [A, b, xB, cj, x]
+ * @return    [A, b, cj, x, xB]
  */
 function resourceChange() {
     // Set globals
@@ -120,14 +120,14 @@ function resourceChange() {
     // Mentioning what's happened since previous iterations of simplex
     tempStr += "Resource value(s) changed. ";
 
-    return [A, b, xB, cj, x];
+    return [A, b, cj, x, xB];
 }
 
 /**
  * Change constraint coefficients.
  * 
  * @params    None. Gets all its data from globals and the form.
- * @return    [A, b, xB, cj, x, shouldDie]. shouldDie decides whether simplex 
+ * @return    [A, b, cj, x, xB, shouldDie]. shouldDie decides whether simplex 
  * will exit.
  */
 function constrCoeffsChange() {
@@ -170,14 +170,14 @@ function constrCoeffsChange() {
     // Mention what's changed since previous iterations of simplex
     tempStr += "Constraint coefficient(s) have changed. ";
 
-    return [A, b, xB, cj, x, false];
+    return [A, b, cj, x, xB, false];
 }
 
 /**
  * Adding new variable
  * 
  * @params    None.
- * @return    [A, b, xB, cj, x]
+ * @return    [A, b, cj, x, xB]
  */
 function addVariable() {
     // Set globals
@@ -210,5 +210,5 @@ function addVariable() {
     // Print message letting the user know what is being computed
     tempStr += "Adding new variable(s). ";
 
-    return [A, b, xB, cj, x];
+    return [A, b, cj, x, xB];
 }
