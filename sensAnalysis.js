@@ -9,7 +9,7 @@ function objectiveChange() {
     var A = finalA;
     var b = finalb;
     var xB = finalxB;
-    var cj = findc();
+    var cj = readc();
     var x = finalx;
 
     // Mention what's happening in output
@@ -47,10 +47,10 @@ function newConstraint() {
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
-    var newARows = findA();
-    var newbRows = findb();
-    var newcRows = findc();
-    var newxBrows = findxB();
+    var newARows = readA();
+    var newbRows = readb();
+    var newcRows = readc();
+    var newxBrows = readxB();
 
     // If the number of rows to be added to A and b do not match, return an
     // error
@@ -109,7 +109,7 @@ function newConstraint() {
 function resourceChange() {
     // Set globals
     var A = finalA;
-    var b = findb();
+    var b = readb();
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
@@ -130,7 +130,7 @@ function resourceChange() {
  */
 function constrCoeffsChange() {
     // Set globals
-    var A = findA();
+    var A = readA();
     // Easier to work with transposes, as the first and easiest elements to 
     // obtain pertain are columns of the original matrix.
     var AT = transpose(A);
@@ -187,9 +187,9 @@ function addVariable() {
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
-    var newACols = findA();
-    var newcCols = findc();
-    var newxRows = findx();
+    var newACols = readA();
+    var newcCols = readc();
+    var newxRows = readx();
     var newAColsCor = matMult(finalV, newACols);
 
     // Adds new columns to A just before the slack variables

@@ -1,7 +1,7 @@
 /**
  * Multiply square matrix by column vector
  * 
- * @param finalV   2d array representing a matrix.
+ * @param V        2d array representing a matrix.
  * @param b        1d array representing a column vector.
  * @return         Matrix product between finalV and b
  */

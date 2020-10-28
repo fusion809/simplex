@@ -1,4 +1,3 @@
-
 /**
  * Returns pivot element, column, column index, row index and an array of
  * adjusted ratios between b and pivot column entries.

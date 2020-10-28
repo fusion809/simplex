@@ -4,7 +4,7 @@
  * @param name     Name of the element you want to get the data from (string).
  * @return         1d array containing the numerical data in name.
  */
-function find1dNumArr(name) {
+function read1dNumArr(name) {
     var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     var arr = [];
 
@@ -25,7 +25,7 @@ function find1dNumArr(name) {
  * @param name     Name of the element you want to get the data from (string).
  * @return         1d array containing the string data in name.
  */
-function find1dStrArr(name) {
+function read1dStrArr(name) {
     var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     var arr = [];
 
@@ -47,7 +47,7 @@ function find1dStrArr(name) {
  * @params    None.
  * @return    A, the 2d array of constraint coefficients.
  */
-function findA() {
+function readA() {
     var htmlEl = document.getElementById("A").value;
 
     // If A has both , or space separating elements and semicolons separating 
@@ -90,7 +90,7 @@ function findA() {
             }
         }
     } else {
-        var A = [find1dNumArr("A")];
+        var A = [read1dNumArr("A")];
     }
 
     return A;
@@ -102,8 +102,8 @@ function findA() {
  * @params    None.
  * @return    Nothing.
  */
-function findb() {
-    return find1dNumArr("b");
+function readb() {
+    return read1dNumArr("b");
 }
 
 /**
@@ -112,8 +112,8 @@ function findb() {
  * @params    None.
  * @return    Nothing.
  */
-function findc() {
-    return find1dNumArr("c");
+function readc() {
+    return read1dNumArr("c");
 }
 
 /**
@@ -122,7 +122,7 @@ function findc() {
  * @param A   Constraint decision variable coefficient matrix.
  * @return    V
  */
-function findV(A) {
+function extractV(A) {
     var m = A.length;
     var mn = A[0].length;
     var n = mn - m;
@@ -144,8 +144,8 @@ function findV(A) {
  * @params    None.
  * @return    Nothing.
  */
-function findx() {
-    return find1dStrArr("x");
+function readx() {
+    return read1dStrArr("x");
 }
 
 /**
@@ -154,6 +154,6 @@ function findx() {
  * @params    None.
  * @return    Nothing.
  */
-function findxB() {
-    return find1dStrArr("xB");
+function readxB() {
+    return read1dStrArr("xB");
 }

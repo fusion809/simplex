@@ -1,4 +1,3 @@
-
 /**
  * Create an array of where each element in x appears in xB. Useful for 
  * calculating cB later.

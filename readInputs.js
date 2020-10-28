@@ -34,11 +34,11 @@ function getParameters() {
     // Extract relevant values from form
     else {
         // Set globals
-        var A = findA();
-        var b = findb();
-        var xB = findxB();
-        var cj = findc();
-        var x = findx();
+        var A = readA();
+        var b = readb();
+        var xB = readxB();
+        var cj = readc();
+        var x = readx();
     }
 
     // Update globals
