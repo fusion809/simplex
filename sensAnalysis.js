@@ -65,7 +65,8 @@ function newConstraint() {
         }
     }
     
-    // Correct newARows so that it is suitable for adding to A
+    // Correct newARows and newbRows so that they can be added to the final 
+    // tableau
     var loc = basisIndex(x, xB);
     for (let i = 0; i < newARows.length; i++) {
         var newARow = newARows[i];
@@ -85,8 +86,6 @@ function newConstraint() {
         }
     }
 
-    // console.log(newARows);
-    // console.log(newbRows);
     // New constraint elements to A, b, xB, x and cj
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
