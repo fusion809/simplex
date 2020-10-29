@@ -8,11 +8,8 @@
  * @param cj     Objective function coefficients.
  * @param x      1d array of decision variable names.
  * @param xB     1d array of basis variable names.
- * @param cB     1d array of basis variable objective function coefficients. 
- * @param z      1d array of zj row contents.
  * @param zc     1d array of zj-cj row contents.
- * @return       [A, b, xB, pivotCol, pivotEl, pivotRIdx, isUnbounded, 
- * isPermInf]
+ * @return       [A, b, xB, isUnbounded, isPermInf]
  */
 function simplex(A, b, cj, x, xB, zc) {
     // Initialize dimensionality variables
@@ -152,7 +149,7 @@ function simplex(A, b, cj, x, xB, zc) {
  * @param cj            1d array of objective function coefficients.
  * @param x             1d array of decision variable names.
  * @param xB            1d array of basis variable names.
- * @return              Nothing.
+ * @return              [A, b, cj, x, xB, z]
  */
 function simplexIterator(A, b, cj, x, xB) {
     // Error messages
@@ -165,9 +162,6 @@ function simplexIterator(A, b, cj, x, xB) {
         alert(msg);
         return;
     } else if (A[0].length != x.length) {
-        console.log("A.length is " + A.length);
-        console.log("A[0].length is " + A[0].length);
-        console.log("x is " + x);
         var msg = "A has a number of columns that exceeds the number of";
         msg += " elements in x!";
         alert(msg);
@@ -222,12 +216,7 @@ function simplexIterator(A, b, cj, x, xB) {
     }
 
     // Update final values
-    finalA = A;
-    finalb = b;
-    finalxB = xB;
-    finalcj = cj;
-    finalx = x;
-    finalV = extractV(A);
+    return [A, b, cj, x, xB, z];
 }
 
 /**
@@ -240,6 +229,14 @@ function solveProblem() {
     var [A, b, cj, x, xB, shouldDie] = getParameters();
 
     if (!shouldDie) {
-        simplexIterator(A, b, cj, x, xB);
+        [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB);
     }
+
+    finalA = A;
+    finalb = b;
+    finalcj = cj;
+    finalx = x;
+    finalxB = xB;
+    finalz = z;
+    finalV = extractV(A);
 }

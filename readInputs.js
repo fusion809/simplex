@@ -9,17 +9,17 @@ function getParameters() {
 
     // Change objective function coefficient(s)
     if (document.getElementById("changec").checked) {
-        var [A, b, cj, x, xB] = objectiveChange();
+        var [A, b, cj, x, xB, shouldDie] = objectiveChange();
         document.getElementById("changec").checked = false;
     }
     // Add new constraint
     else if (document.getElementById("newConstr").checked) {
-        var [A, b, cj, x, xB] = newConstraint();
+        var [A, b, cj, x, xB, shouldDie] = newConstraint();
         uncheck("newConstr");
     }
     // Resource change (i.e. RHS of constraint)
     else if (document.getElementById("rscChg").checked) {
-        var [A, b, cj, x, xB] = resourceChange();
+        var [A, b, cj, x, xB, shouldDie] = resourceChange();
         uncheck("rscChg");
     }
     // LHS constraint coefficient change
@@ -29,7 +29,7 @@ function getParameters() {
     }
     // New variable
     else if (document.getElementById("newVar").checked) {
-        var [A, b, cj, x, xB] = addVariable();
+        var [A, b, cj, x, xB, shouldDie] = addVariable();
         uncheck("newVar");
     }
     // Extract relevant values from form

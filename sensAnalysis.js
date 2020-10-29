@@ -11,11 +11,18 @@ function objectiveChange() {
     var xB = finalxB;
     var cj = readc();
     var x = finalx;
+    var shouldDie = false;
+
+    if (cj.length != x.length) {
+        shouldDie = true;
+        alert("c and x do not match in length!");
+        return [A, b, cj, x, xB, shouldDie];        
+    }
 
     // Mention what's happening in output
     tempStr += "Objective function coefficient(s) changed. ";
 
-    return [A, b, cj, x, xB];
+    return [A, b, cj, x, xB, shouldDie];
 }
 
 /**
@@ -40,7 +47,7 @@ function correctionOp(newARow, ARow, multiplier) {
  * Add new constraint.
  * 
  * @params    None.
- * @return    [A, b, cj, x, xB]
+ * @return    [A, b, cj, x, xB, shouldDie]
  */
 function newConstraint() {
     // Set globals
@@ -49,15 +56,16 @@ function newConstraint() {
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
+    var shouldDie = false;
     var newARows = readA();
     var newbRows = readb();
-    var newcRows = readc();
-    var newxBrows = readxB();
 
     // If the number of rows to be added to A and b do not match, return an
     // error
     if (newARows.length != newbRows.length) {
-        alert("An equal number of rows must be added to A and b");
+        shouldDie = false;
+        alert("An equal number of rows must be added to A and b!");
+        return [A, b, cj, x, xB, shouldDie];
     }
 
     // Adds new column to existing A matrix
@@ -89,17 +97,19 @@ function newConstraint() {
 
     // New constraint elements to A, b, xB, x and cj
     for (let i = 0; i < newARows.length; i++) {
+        var newSlackVar = newSlackVariable(x);
         A.push(newARows[i]);
         b.push(newbRows[i]);
-        xB.push(newxBrows[i]);
-        x.push(newxBrows[i]);
-        cj.push(newcRows[i]);
+        xB.push(newSlackVar);
+        x.push(newSlackVar);
+        // New cj values for the new slack variables
+        cj.push(0);
     }
 
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";
 
-    return [A, b, cj, x, xB];
+    return [A, b, cj, x, xB, shouldDie];
 }
 
 /**
@@ -116,11 +126,18 @@ function resourceChange() {
     var cj = finalcj;
     var x = finalx;
     var b = matMult(finalV, b);
+    var shouldDie = false;
+
+    if (b.length != A.length) {
+        shouldDie = true;
+        alert("A and b do not match in their row length!");
+        return [A, b, cj, x, xB, shouldDie];
+    }
 
     // Mentioning what's happened since previous iterations of simplex
     tempStr += "Resource value(s) changed. ";
 
-    return [A, b, cj, x, xB];
+    return [A, b, cj, x, xB, shouldDie];  
 }
 
 /**
@@ -147,6 +164,15 @@ function constrCoeffsChange() {
     var x = finalx;
     // Determine the location of basis variables within x
     var loc = basisIndex(x, xB);
+    var shouldDie = false;
+
+    if ( (A.length != finalA.length) || (A[0].length != finalA[0].length) ) {
+        shouldDie = true;
+        var msg = "The dimensions of the new A do not match the dimensions";
+        msg += " of A in the final tableau.";
+        alert(msg);
+        return [A, b, cj, x, xB, shouldDie];
+    }
 
     // Multiply non-basis elements of A by V from final simplex iteration
     for (let j = 0; j < mn; j++) {
@@ -160,7 +186,8 @@ function constrCoeffsChange() {
                     var msg = "If the coefficients of basic variables change,";
                     msg += " you must solve the problem from scratch again!";
                     alert(msg);
-                    return [A, b, cj, x, xB, true];
+                    shouldDie = true;
+                    return [A, b, cj, x, xB, shouldDie];
                 }
             }
         }
@@ -170,7 +197,7 @@ function constrCoeffsChange() {
     // Mention what's changed since previous iterations of simplex
     tempStr += "Constraint coefficient(s) have changed. ";
 
-    return [A, b, cj, x, xB, false];
+    return [A, b, cj, x, xB, shouldDie];
 }
 
 /**
@@ -190,9 +217,27 @@ function addVariable() {
     var cj = finalcj;
     var x = finalx;
     var newACols = readA();
-    var newcCols = readc();
+    var newcRows = readc();
     var newxRows = readx();
     var newAColsCor = matMult(finalV, newACols);
+    var shouldDie = false;
+
+    // Test dimensionality of newACols
+    if (newACols.length != m) {
+        var msg = "The newly entered A does not have the same number of ";
+        msg += "rows as the original A";
+        alert(msg);
+        shouldDie = true;
+        return [A, b, cj, x, xB, shouldDie];
+    }
+
+    if (newcRows != newACols[0].length) {
+        var msg = "The number of columns in the c field does not equal the ";
+        msg += "number of columns in the A field.";
+        alert(msg);
+        shouldDie = true;
+        return [A, b, cj, x, xB, shouldDie];
+    }
 
     // Adds new columns to A just before the slack variables
     for (let i = 0; i < A.length; i++) {
@@ -202,13 +247,13 @@ function addVariable() {
     }
 
     // Adds new elements to cj and x
-    for (let j = 0; j < newcCols.length; j++) {
-        cj.splice(n+j, 0, newcCols[j]);
+    for (let j = 0; j < newcRows.length; j++) {
+        cj.splice(n+j, 0, newcRows[j]);
         x.splice(n+j, 0, newxRows[j]);
     }
 
     // Print message letting the user know what is being computed
     tempStr += "Adding new variable(s). ";
 
-    return [A, b, cj, x, xB];
+    return [A, b, cj, x, xB, shouldDie];
 }
