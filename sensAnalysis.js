@@ -29,7 +29,7 @@ function addVariable() {
         return [A, b, cj, x, xB, shouldDie];
     }
 
-    if (newcRows != newACols[0].length) {
+    if (newcRows.length != newACols[0].length) {
         var msg = "The number of columns in the c field does not equal the ";
         msg += "number of columns in the A field.";
         alert(msg);
