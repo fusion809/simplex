@@ -30,8 +30,16 @@ function addVariable() {
     }
 
     if (newcRows.length != newACols[0].length) {
-        var msg = "The number of columns in the c field does not equal the ";
+        var msg = "The number of elements in the c field does not equal the ";
         msg += "number of columns in the A field.";
+        alert(msg);
+        shouldDie = true;
+        return [A, b, cj, x, xB, shouldDie];
+    }
+
+    if (newcRows.length != newxRows.length) {
+        var msg = "The number of elements in the c field does not equal the ";
+        msg += "number of elements in the x field.";
         alert(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];

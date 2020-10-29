@@ -47,8 +47,12 @@ function minElIfLt0(b) {
     for (let i = 0; i < b.length; i++) {
         // Ensure that floating point errors do not stuff up determination of
         // feasibility
-        var bCor = math.fraction(b[i]);
-        bCor = bCor.s * bCor.n / bCor.d;
+        if ( ( b[i] == Number.POSITIVE_INFINITY ) || (b[i] == Number.NEGATIVE_INFINITY) || (b[i] == undefined)) {
+            bCor = b[i];
+        } else {
+            var bCor = math.fraction(b[i]);
+            bCor = bCor.s * bCor.n / bCor.d;
+        }
         if (bCor < 0) {
             if (b[i] < min) {
                 minIndex = i;
