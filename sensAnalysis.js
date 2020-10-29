@@ -1,26 +1,117 @@
 /**
- * Change objective function coefficients.
+ * Adding new variable
  * 
  * @params    None.
- * @return    [A, b, cj, x, xB]
+ * @return    [A, b, cj, x, xB, shouldDie]
  */
-function objectiveChange() {
+function addVariable() {
     // Set globals
     var A = finalA;
+    var m = A.length;
+    var mn = A[0].length;
+    var n = mn - m;
     var b = finalb;
     var xB = finalxB;
-    var cj = readc();
+    var cj = finalcj;
     var x = finalx;
+    var newACols = readA();
+    var newcRows = readc();
+    var newxRows = readx();
+    var newAColsCor = matMult(finalV, newACols);
     var shouldDie = false;
 
-    if (cj.length != x.length) {
+    // Test dimensionality of newACols
+    if (newACols.length != m) {
+        var msg = "The newly entered A does not have the same number of ";
+        msg += "rows as the original A";
+        alert(msg);
         shouldDie = true;
-        alert("c and x do not match in length!");
-        return [A, b, cj, x, xB, shouldDie];        
+        return [A, b, cj, x, xB, shouldDie];
     }
 
-    // Mention what's happening in output
-    tempStr += "Objective function coefficient(s) changed. ";
+    if (newcRows != newACols[0].length) {
+        var msg = "The number of columns in the c field does not equal the ";
+        msg += "number of columns in the A field.";
+        alert(msg);
+        shouldDie = true;
+        return [A, b, cj, x, xB, shouldDie];
+    }
+
+    // Adds new columns to A just before the slack variables
+    for (let i = 0; i < A.length; i++) {
+        for (let j = 0; j < newACols[0].length; j++) {
+            A[i].splice(n+j, 0, newAColsCor[i][j]);
+        }
+    }
+
+    // Adds new elements to cj and x
+    for (let j = 0; j < newcRows.length; j++) {
+        cj.splice(n+j, 0, newcRows[j]);
+        x.splice(n+j, 0, newxRows[j]);
+    }
+
+    // Print message letting the user know what is being computed
+    tempStr += "Adding new variable(s). ";
+
+    return [A, b, cj, x, xB, shouldDie];
+}
+
+/**
+ * Change constraint coefficients.
+ * 
+ * @params    None. Gets all its data from globals and the form.
+ * @return    [A, b, cj, x, xB, shouldDie]. shouldDie decides whether simplex 
+ * will exit.
+ */
+function constrCoeffsChange() {
+    // Set globals
+    var A = readA();
+    // Easier to work with transposes, as the first and easiest elements to 
+    // obtain pertain are columns of the original matrix.
+    var AT = transpose(A);
+    var finalAT = transpose(finalA);
+    // Gather dimensionality info
+    var m = A.length;
+    var mn = A[0].length;
+    // Obtain current arrays from the last iteration of simplex
+    var b = finalb;
+    var xB = finalxB;
+    var cj = finalcj;
+    var x = finalx;
+    // Determine the location of basis variables within x
+    var loc = basisIndex(x, xB);
+    var shouldDie = false;
+
+    if ( (A.length != finalA.length) || (A[0].length != finalA[0].length) ) {
+        shouldDie = true;
+        var msg = "The dimensions of the new A do not match the dimensions";
+        msg += " of A in the final tableau.";
+        alert(msg);
+        return [A, b, cj, x, xB, shouldDie];
+    }
+
+    // Multiply non-basis elements of A by V from final simplex iteration
+    for (let j = 0; j < mn; j++) {
+        if (!find(loc, j)) {
+            finalAT[j] = matMult(finalV, AT[j]);
+        } else {
+            for (let i = 0; i < m; i++) {
+                if (AT[j][i] != initialAT[j][i]) {
+                    // Return an error if elements of A corresponding to basis 
+                    // variables have been modified
+                    var msg = "If the coefficients of basic variables change,";
+                    msg += " you must solve the problem from scratch again!";
+                    alert(msg);
+                    shouldDie = true;
+                    return [A, b, cj, x, xB, shouldDie];
+                }
+            }
+        }
+    }
+    var A = transpose(finalAT);
+
+    // Mention what's changed since previous iterations of simplex
+    tempStr += "Constraint coefficient(s) have changed. ";
 
     return [A, b, cj, x, xB, shouldDie];
 }
@@ -113,10 +204,37 @@ function newConstraint() {
 }
 
 /**
+ * Change objective function coefficients.
+ * 
+ * @params    None.
+ * @return    [A, b, cj, x, xB, shouldDie]
+ */
+function objectiveChange() {
+    // Set globals
+    var A = finalA;
+    var b = finalb;
+    var xB = finalxB;
+    var cj = readc();
+    var x = finalx;
+    var shouldDie = false;
+
+    if (cj.length != x.length) {
+        shouldDie = true;
+        alert("c and x do not match in length!");
+        return [A, b, cj, x, xB, shouldDie];        
+    }
+
+    // Mention what's happening in output
+    tempStr += "Objective function coefficient(s) changed. ";
+
+    return [A, b, cj, x, xB, shouldDie];
+}
+
+/**
  * Change RHS of constraints.
  * 
  * @params    None.
- * @return    [A, b, cj, x, xB]
+ * @return    [A, b, cj, x, xB, shouldDie]
  */
 function resourceChange() {
     // Set globals
@@ -138,122 +256,4 @@ function resourceChange() {
     tempStr += "Resource value(s) changed. ";
 
     return [A, b, cj, x, xB, shouldDie];  
-}
-
-/**
- * Change constraint coefficients.
- * 
- * @params    None. Gets all its data from globals and the form.
- * @return    [A, b, cj, x, xB, shouldDie]. shouldDie decides whether simplex 
- * will exit.
- */
-function constrCoeffsChange() {
-    // Set globals
-    var A = readA();
-    // Easier to work with transposes, as the first and easiest elements to 
-    // obtain pertain are columns of the original matrix.
-    var AT = transpose(A);
-    var finalAT = transpose(finalA);
-    // Gather dimensionality info
-    var m = A.length;
-    var mn = A[0].length;
-    // Obtain current arrays from the last iteration of simplex
-    var b = finalb;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
-    // Determine the location of basis variables within x
-    var loc = basisIndex(x, xB);
-    var shouldDie = false;
-
-    if ( (A.length != finalA.length) || (A[0].length != finalA[0].length) ) {
-        shouldDie = true;
-        var msg = "The dimensions of the new A do not match the dimensions";
-        msg += " of A in the final tableau.";
-        alert(msg);
-        return [A, b, cj, x, xB, shouldDie];
-    }
-
-    // Multiply non-basis elements of A by V from final simplex iteration
-    for (let j = 0; j < mn; j++) {
-        if (!find(loc, j)) {
-            finalAT[j] = matMult(finalV, AT[j]);
-        } else {
-            for (let i = 0; i < m; i++) {
-                if (AT[j][i] != initialAT[j][i]) {
-                    // Return an error if elements of A corresponding to basis 
-                    // variables have been modified
-                    var msg = "If the coefficients of basic variables change,";
-                    msg += " you must solve the problem from scratch again!";
-                    alert(msg);
-                    shouldDie = true;
-                    return [A, b, cj, x, xB, shouldDie];
-                }
-            }
-        }
-    }
-    var A = transpose(finalAT);
-
-    // Mention what's changed since previous iterations of simplex
-    tempStr += "Constraint coefficient(s) have changed. ";
-
-    return [A, b, cj, x, xB, shouldDie];
-}
-
-/**
- * Adding new variable
- * 
- * @params    None.
- * @return    [A, b, cj, x, xB]
- */
-function addVariable() {
-    // Set globals
-    var A = finalA;
-    var m = A.length;
-    var mn = A[0].length;
-    var n = mn - m;
-    var b = finalb;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
-    var newACols = readA();
-    var newcRows = readc();
-    var newxRows = readx();
-    var newAColsCor = matMult(finalV, newACols);
-    var shouldDie = false;
-
-    // Test dimensionality of newACols
-    if (newACols.length != m) {
-        var msg = "The newly entered A does not have the same number of ";
-        msg += "rows as the original A";
-        alert(msg);
-        shouldDie = true;
-        return [A, b, cj, x, xB, shouldDie];
-    }
-
-    if (newcRows != newACols[0].length) {
-        var msg = "The number of columns in the c field does not equal the ";
-        msg += "number of columns in the A field.";
-        alert(msg);
-        shouldDie = true;
-        return [A, b, cj, x, xB, shouldDie];
-    }
-
-    // Adds new columns to A just before the slack variables
-    for (let i = 0; i < A.length; i++) {
-        for (let j = 0; j < newACols[0].length; j++) {
-            A[i].splice(n+j, 0, newAColsCor[i][j]);
-        }
-    }
-
-    // Adds new elements to cj and x
-    for (let j = 0; j < newcRows.length; j++) {
-        cj.splice(n+j, 0, newcRows[j]);
-        x.splice(n+j, 0, newxRows[j]);
-    }
-
-    // Print message letting the user know what is being computed
-    tempStr += "Adding new variable(s). ";
-
-    return [A, b, cj, x, xB, shouldDie];
 }
