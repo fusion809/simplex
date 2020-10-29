@@ -24,6 +24,7 @@ function updateGlobals(A, b, xB, x, cj) {
     finalA = A;
     if (l == 0) {
         initialAT = transpose(A);
+        initialA = transpose(initialAT);
     }
     l++;
     finalb = b;

@@ -15,6 +15,7 @@ function addVariable() {
     var cj = finalcj;
     var x = finalx;
     var newACols = readA();
+    var newACols2 = readA();
     var newcRows = readc();
     var newxRows = readx();
     var newAColsCor = matMult(finalV, newACols);
@@ -49,6 +50,7 @@ function addVariable() {
     for (let i = 0; i < A.length; i++) {
         for (let j = 0; j < newACols[0].length; j++) {
             A[i].splice(n+j, 0, newAColsCor[i][j]);
+            initialA[i].splice(n+j, 0, newACols2[i][j]);
         }
     }
 
@@ -89,6 +91,7 @@ function constrCoeffsChange() {
     // Determine the location of basis variables within x
     var loc = basisIndex(x, xB);
     var shouldDie = false;
+    initialAT = transpose(initialA);
 
     if ( (A.length != finalA.length) || (A[0].length != finalA[0].length) ) {
         shouldDie = true;
@@ -157,6 +160,7 @@ function newConstraint() {
     var x = finalx;
     var shouldDie = false;
     var newARows = readA();
+    var newARows2 = readA();
     var newbRows = readb();
 
     // If the number of rows to be added to A and b do not match, return an
@@ -171,14 +175,16 @@ function newConstraint() {
     for (let i = 0; i < A.length; i++) {
         for (let j = 0; j < newbRows.length; j++) {
             A[i].push(0);
+            initialA[i].push(0);
         }
     }
-    
+
     // Correct newARows and newbRows so that they can be added to the final 
     // tableau
     var loc = basisIndex(x, xB);
     for (let i = 0; i < newARows.length; i++) {
         var newARow = newARows[i];
+        initialA.push(newARows2[i]);
         // Loop over loc, looking for a column in newARow that's for a basis 
         // variable and is non-zero. Correct newARow and newbRow accordingly.
         for (let j = 0; j < loc.length; j++) {
