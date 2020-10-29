@@ -224,20 +224,20 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
         // Pivot row operation
         if (pivotRIdx - 1 == i) {
             if (pivotEl == 1) {
-                tempStr += "<div>" + katex.renderToString("R_{" + pivotRIdx +
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + pivotRIdx +
                  "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
             } else if (pivotEl == -1) {
-                tempStr += "<div>" + katex.renderToString("-R_{" + pivotRIdx + 
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("-R_{" + pivotRIdx + 
                 "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
             } else {
                 var fraction = math.fraction(1/pivotEl);
                 if (fraction.d != 1) {
-                    tempStr += "<div>" + katex.renderToString(sign(fraction.s) 
+                    tempStr += "<div style='padding: 7px;'>" + katex.renderToString(sign(fraction.s) 
                     + "\\dfrac{" + fraction.n + "}{" + fraction.d + "}" + 
                     " R_{" + pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + 
                     "}^{'}") + "</div>";
                 } else {
-                    tempStr += "<div>" + katex.renderToString(sign(fraction.s) 
+                    tempStr += "<div style='padding: 7px;'>" + katex.renderToString(sign(fraction.s) 
                     + fraction.n + " R_{" + pivotRIdx + "} \\rightarrow R_{" 
                     + pivotRIdx + "}^{'}") + "</div>";
                 }
@@ -246,26 +246,26 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
         // Row operations for non-pivot rows
         else {
             if (pivotCol[i] == -1) {
-                tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + 
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
                 "} + " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
             } else if ( pivotCol[i] < 0) {
                 var fraction = math.fraction(-pivotCol[i]);
                 if (fraction.d != 1) {
-                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) +
+                    tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) +
                      "} + \\dfrac{" + fraction.n + "}{" + fraction.d + "} R_{" 
                      + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + 
                      "}^{'}") + "</div>";
                 } else {
-                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + 
+                    tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
                     "} + " + fraction.n + "R_{" + pivotRIdx + 
                     "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
                 }
             } else if (pivotCol[i] == 0) {
-                tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + 
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
                 "} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
             } else if (pivotCol[i] == 1) {
-                tempStr += "<div>" + katex.renderToString("R_{" + (i + 1) + 
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
                 "} - " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
             }
@@ -273,12 +273,12 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
             else {
                 var fraction = math.fraction(pivotCol[i]);
                 if (fraction.d != 1) {
-                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1)
+                    tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1)
                      + "} - \\dfrac{" + fraction.n + "}{" + fraction.d + 
                      "}R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + 
                      "}^{'}") + "</div>";
                 } else {
-                    tempStr += "<div>" + katex.renderToString("R_{" + (i + 1)
+                    tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1)
                      + "} - " + fraction.n + "R_{" + pivotRIdx + 
                      "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
                 }
