@@ -62,18 +62,6 @@ function readInputs() {
 }
 
 /**
- * Uncheck specified radio button if it is checked.
- * 
- * @param name     Name of the radio button's HTML element.
- * @return         Nothing.
- */
-function uncheck(name) {
-    if (document.getElementById(name).checked) {
-        document.getElementById(name).checked = false;
-    }
-}
-
-/**
  * Set main variables to final values.
  * 
  * @params    None.
@@ -89,4 +77,16 @@ function setVarsToFinal() {
 
     // Return
     return [A, b, cj, x, xB];
+}
+
+/**
+ * Uncheck specified radio button if it is checked.
+ * 
+ * @param name     Name of the radio button's HTML element.
+ * @return         Nothing.
+ */
+function uncheck(name) {
+    if (document.getElementById(name).checked) {
+        document.getElementById(name).checked = false;
+    }
 }

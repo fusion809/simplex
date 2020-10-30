@@ -1,4 +1,20 @@
 /**
+ * Correct floating point numbers that are really integers/fractions
+ * 
+ * @param number   Number to be corrected.
+ * @return         If the number of infinite or undefined, return that, 
+ * otherwise return (hopefully) more accurate version of the number.
+ */
+function floatCor(number) {
+    if ( ( number == Number.POSITIVE_INFINITY ) || (number == Number.NEGATIVE_INFINITY) || (number == undefined)) {
+        return number;
+    } else {
+        var bCor = math.fraction(number);
+        return bCor.s * bCor.n / bCor.d;
+    }
+}
+
+/**
  * Essentially updates the output of minElIfLt0 to account for solutions that 
  * while feasible are not optimal.
  * 
@@ -59,20 +75,4 @@ function minElIfLt0(b) {
     }
 
     return [minIndex, isFeas, isOptim];
-}
-
-/**
- * Correct floating point numbers that are really integers/fractions
- * 
- * @param number   Number to be corrected.
- * @return         If the number of infinite or undefined, return that, 
- * otherwise return (hopefully) more accurate version of the number.
- */
-function floatCor(number) {
-    if ( ( number == Number.POSITIVE_INFINITY ) || (number == Number.NEGATIVE_INFINITY) || (number == undefined)) {
-        return number;
-    } else {
-        var bCor = math.fraction(number);
-        return bCor.s * bCor.n / bCor.d;
-    }
 }
