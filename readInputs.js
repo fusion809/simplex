@@ -35,11 +35,7 @@ function getParameters() {
     // Extract relevant values from form
     else {
         // Set globals
-        var A = readA();
-        var b = readb();
-        var xB = readxB();
-        var cj = readc();
-        var x = readx();
+        [A, b, cj, x, xB] = readInputs();
     }
 
     // Update globals
@@ -47,6 +43,22 @@ function getParameters() {
 
     // Uncheck buttons
     return [A, b, cj, x, xB, shouldDie];
+}
+
+/**
+ * Read inputs from the form.
+ * 
+ * @params    None.
+ * @return    [A, b, cj, x, xB]
+ */
+function readInputs() {
+    var A = readA();
+    var b = readb();
+    var xB = readxB();
+    var cj = readc();
+    var x = readx();
+
+    return [A, b, cj, x, xB];
 }
 
 /**
@@ -59,4 +71,22 @@ function uncheck(name) {
     if (document.getElementById(name).checked) {
         document.getElementById(name).checked = false;
     }
+}
+
+/**
+ * Set main variables to final values.
+ * 
+ * @params    None.
+ * @return    [A, b, cj, x, xB]
+ */
+function setVarsToFinal() {
+    // Initialize global variables
+    var A = finalA;
+    var b = finalb;
+    var xB = finalxB;
+    var cj = finalcj;
+    var x = finalx;
+
+    // Return
+    return [A, b, cj, x, xB];
 }

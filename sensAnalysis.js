@@ -153,11 +153,7 @@ function correctionOp(newARow, ARow, multiplier) {
  */
 function newConstraint() {
     // Set globals
-    var A = finalA;
-    var b = finalb;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
+    var [A, b, cj, x, xB] = setVarsToFinal();
     var shouldDie = false;
     var newARows = readA();
     var newARows2 = readA();
@@ -201,20 +197,39 @@ function newConstraint() {
     }
 
     // New constraint elements to A, b, xB, x and cj
-    for (let i = 0; i < newARows.length; i++) {
-        var newSlackVar = newSlackVariable(x);
-        A.push(newARows[i]);
-        b.push(newbRows[i]);
-        xB.push(newSlackVar);
-        x.push(newSlackVar);
-        // New cj values for the new slack variables
-        cj.push(0);
-    }
+    [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows);
 
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";
 
     return [A, b, cj, x, xB, shouldDie];
+}
+
+/**
+ * Add new constraint rows to A, b, cj, x and xB
+ * 
+ * @param A        2d array of constraint coefficients.
+ * @param b        1d array of resource values (RHS of constraints).
+ * @param cj       1d array of objective function coefficients.
+ * @param x        1d array of decision variables.
+ * @param xB       1d array of basis variables.
+ * @param newARows 2d array of new rows to be added to A.
+ * @param newbRows 1d array of new rows to be added to b.
+ * @return         [A, b, cj, x, xB]
+ */
+function addConstr(A, b, cj, x, xB, newARows, newbRows) {
+    for (let i = 0; i < newARows.length; i++) {
+        A.push(newARows[i]);
+        b.push(newbRows[i]);
+        // New cj values for the new slack variables
+        cj.push(0);
+        // Update x and xB
+        var newSlackVar = newSlackVariable(x);
+        x.push(newSlackVar);
+        xB.push(newSlackVar);
+    }
+
+    return [A, b, cj, x, xB];
 }
 
 /**

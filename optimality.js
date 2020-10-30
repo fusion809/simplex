@@ -47,12 +47,7 @@ function minElIfLt0(b) {
     for (let i = 0; i < b.length; i++) {
         // Ensure that floating point errors do not stuff up determination of
         // feasibility
-        if ( ( b[i] == Number.POSITIVE_INFINITY ) || (b[i] == Number.NEGATIVE_INFINITY) || (b[i] == undefined)) {
-            bCor = b[i];
-        } else {
-            var bCor = math.fraction(b[i]);
-            bCor = bCor.s * bCor.n / bCor.d;
-        }
+        var bCor = floatCor(b[i]);
         if (bCor < 0) {
             if (b[i] < min) {
                 minIndex = i;
@@ -64,4 +59,20 @@ function minElIfLt0(b) {
     }
 
     return [minIndex, isFeas, isOptim];
+}
+
+/**
+ * Correct floating point numbers that are really integers/fractions
+ * 
+ * @param number   Number to be corrected.
+ * @return         If the number of infinite or undefined, return that, 
+ * otherwise return (hopefully) more accurate version of the number.
+ */
+function floatCor(number) {
+    if ( ( number == Number.POSITIVE_INFINITY ) || (number == Number.NEGATIVE_INFINITY) || (number == undefined)) {
+        return number;
+    } else {
+        var bCor = math.fraction(number);
+        return bCor.s * bCor.n / bCor.d;
+    }
 }
