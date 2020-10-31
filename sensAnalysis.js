@@ -173,24 +173,35 @@ function newConstraint() {
     // Adds new column to existing A matrix
     for (let i = 0; i < A.length; i++) {
         for (let j = 0; j < newbRows.length; j++) {
+            // Add coefficients for new slack variables to existing A and 
+            // initialA rows
             A[i].push(0);
             initialA[i].push(0);
         }
     }
 
-    // Correct newARows and newbRows so that they can be added to the final 
-    // tableau
+    // Determine column indices corresponding to basis variables
     var loc = basisIndex(x, xB);
+
+    // Loop over each new A row
     for (let i = 0; i < newARows.length; i++) {
+        // Define newARow for this iteration, add it uncorrected to initialA
+        // then add corrected versions to A and corrected b values to the b
+        // array
         var newARow = newARows[i];
         initialA.push(newARows2[i]);
-        // Loop over loc, looking for a column in newARow that's for a basis 
-        // variable and is non-zero. Correct newARow and newbRow accordingly.
+
+        // Loop over basis variable columns, looking for a column in newARow 
+        // that's for a basis variable and is non-zero. Correct newARow and 
+        // newbRow accordingly.
         for (let j = 0; j < loc.length; j++) {
             var ARow = A[j];
             var basisCol = loc[j];
+        
             // Entry in the basis column on ith row
             var basisEl = newARow[basisCol];
+
+            // If basisEl is non-zero, make it zero using row operations
             if ( basisEl != 0) {
                 // From newARow subtract ARow[j]*basisEl
                 newARows[i] = correctionOp(newARow, ARow, basisEl);
