@@ -81,8 +81,8 @@ function constrCoeffsChange() {
     var AT = transpose(A);
     var finalAT = transpose(finalA);
     // Gather dimensionality info
-    var m = A.length;
-    var mn = A[0].length;
+    var [m, mn, n] = getDims(A);
+    var [finm, finmn, finn] = getDims(finalA);
     // Obtain current arrays from the last iteration of simplex
     var b = finalb;
     var xB = finalxB;
@@ -94,7 +94,7 @@ function constrCoeffsChange() {
     initialAT = transpose(initialA);
 
     // Dimensions of A in the form and finalA must match
-    if ( (A.length != finalA.length) || (A[0].length != finalA[0].length) ) {
+    if ( (m != finm) || (mn != finmn) ) {
         shouldDie = true;
         var msg = "The dimensions of the new A do not match the dimensions";
         msg += " of A in the final tableau.";

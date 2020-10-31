@@ -40,8 +40,7 @@ function basisIndex(x, xB) {
  * @return       [cB, zj, zj-cj]
  */
 function calcEntries(A, b, cj, x, xB) {
-    var m = A.length;
-    var mn = A[0].length;
+    var [m, mn, n] = getDims(A);
     var loc = basisIndex(x, xB);
     var cB = new Array(m);
     var z = new Array(mn);

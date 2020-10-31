@@ -13,8 +13,7 @@
  */
 function simplex(A, b, cj, x, xB, zc) {
     // Initialize dimensionality variables
-    var m = A.length;
-    var mn = A[0].length;
+    var [m, mn, n] = getDims(A);
 
     // Initialize pivot variables
     var pivotRIdx;
@@ -28,7 +27,7 @@ function simplex(A, b, cj, x, xB, zc) {
     // Initialize minRat for the below loop
     var minRat = Number.POSITIVE_INFINITY;
 
-    // Initialize relevant variables
+    // Initialize relevant arrays
     var pivotCol = new Array(m);
     var ratio = new Array(zc.length);
 

@@ -7,8 +7,7 @@
  */
 function matMult(V, b) {
     // Initialize dimensionality variables
-    var m = b.length;
-    var n = b[0].length;
+    var [m, mn, n] = getDims(A);
 
     // Initialize array that will store the matrix product
     var bUp = new Array(m);
@@ -48,8 +47,7 @@ function matMult(V, b) {
  */
 function transpose(A) {
     // Dimensionality info
-    var m = A.length;
-    var mn = A[0].length;
+    var [m, mn, n] = getDims(A);
 
     // Create transpose matrix
     var AT = new Array(mn);

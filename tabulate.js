@@ -27,9 +27,8 @@ function katexRow(str) {
 function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
     isPermInf) {
     // Initialize dimensionality variables
-    var m = A.length;
-    var mn = A[0].length;
-
+    var [m, mn, n] = getDims(A);
+    
     // Start row
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";

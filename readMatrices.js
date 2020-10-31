@@ -73,6 +73,7 @@ function readA() {
     // Both semicolons and spaces/commas separate elements, array is 2d
     var testFor2D = htmlEl.match(/[0-9][, ]*[0-9]/) && htmlEl.match(/[;]/);
 
+    // Extract data from form
     if (testFor2D) {
         var A = read2dNumArr("A");
     } else {

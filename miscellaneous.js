@@ -42,3 +42,20 @@ function newSlackVariables(x, number) {
     }
     return newxBRows;
 }
+
+/**
+ * Determines the dimensions of the problem being solved.
+ * 
+ * @param A   Constraint coefficient matrix as 2d array.
+ * @return    [m, mn, n] (m = number of constraints, n = number of decision 
+ * variables excluding slack variables, mn = m + n)
+ */
+function getDims(A) {
+    // Determine dimensions
+    var m = A.length;
+    var mn = A[0].length;
+    var n = mn - m;
+
+    // Return them
+    return [m, mn, n];
+}

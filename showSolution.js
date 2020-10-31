@@ -18,15 +18,13 @@ function showSolution(A, b, x, xB, z, zc) {
     }
     
     // Initialize dimensionality variables
-    var m = A.length;
-    var mn = A[0].length;
-    var n = mn - m;
+    var [m, mn, n] = getDims(A);
     
     // Initialize counter for basis variables displayed.
     var k = 0;
 
     // Display values of non-basic variables and z
-    for (let i = 0 ; i < x.length; i++) {
+    for (let i = 0 ; i < mn; i++) {
         if (!find(xB, x[i])) {
             if (k != 0) {
                 tempStr += ", ";
