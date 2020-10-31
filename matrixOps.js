@@ -36,6 +36,8 @@ function matMult(V, b) {
             }
         }
     }
+
+    // Return matrix product
     return bUp;
 }
 
@@ -62,5 +64,6 @@ function transpose(A) {
         }
     }
 
+    // Return transpose
     return AT;
 }

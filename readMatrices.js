@@ -95,6 +95,7 @@ function read2dNumArr(name) {
     var arr = htmlEl.split(/[, ][\s]*/);
     var A = [[]];
     var k = 0;
+    var len;
 
     // Loop over each element and add to A
     for (let i = 0; i < arr.length; i++) {
@@ -111,6 +112,13 @@ function read2dNumArr(name) {
             if (/[0-9/]*/.test(elArr[0])) {
                 A[k].push(fracToDecimal(elArr[0]));
             }
+            
+            // Input validation
+            if ((len != undefined) && (A[k].length != len)) {
+                alert("A row length mismatch! For some reason your A matrix has rows of different lengths!");
+                throw console.error("A's rows must be equal in length!");
+            }
+            len = A[k].length;
             k++;
 
             // Add new blank row
@@ -132,6 +140,12 @@ function read2dNumArr(name) {
             msg += "spaces or semicolons.";
             alert(msg);
         }
+    }
+
+    // Input validation for final row
+    if ((len != undefined) && (A[k].length != len)) {
+        alert("A row length mismatch! For some reason your A matrix has rows of different lengths!");
+        throw console.error("A's rows must be equal in length!");
     }
 
     return A;
