@@ -6,17 +6,21 @@
  * otherwise return (hopefully) more accurate version of the number.
  */
 function floatCor(number) {
+    // If number cannot be converted to a fraction, leave as is
     if ( ( number == Number.POSITIVE_INFINITY ) || (number == Number.NEGATIVE_INFINITY) || (number == undefined)) {
         return number;
-    } else {
+    } 
+    // Otherwise convert to a fraction and then back to a floating point
+    // useful for replacing very small positive or negative numbers to 0
+    else {
         var bCor = math.fraction(number);
         return bCor.s * bCor.n / bCor.d;
     }
 }
 
 /**
- * Essentially updates the output of minElIfLt0 to account for solutions that 
- * while feasible are not optimal.
+ * Corrects output of minElIfLt0 to account for feasible, but non-optimal 
+ * solutions.
  * 
  * @param b      Solution vector as 1d array.
  * @param zc     zj-cj row of tableau as 1d array.
@@ -28,20 +32,30 @@ function isOptAndFeas(b, zc) {
 
     // If zj-cj < 0 for any j and isOptim is set to true, set isOptim to false
     if (isOptim) {
-        for (let j = 0; j < zc.length; j++) {
-            // Ensure that floating point errors do not stuff up determination 
-            // of optimality
-            var zcCor = math.fraction(zc[j]);
-            zcCor = zcCor.s * zcCor.n / zcCor.d;
-            if (zcCor < 0) {
-                isOptim = false;
-                break;
-            }
-        }
+        isOptim = !isZcNeg(zc);
     }
 
     // Return corrected isOptim and the other outputs of minElIfLt0
     return [minIndex, isFeas, isOptim];
+}
+
+/**
+ * Determine whether any value in zc is negative.
+ * 
+ * @param zc  1d array of zj-cj values. 
+ * @return    Boolean reflecting whether any zc entry is negative.
+ */
+function isZcNeg(zc) {
+    for (let i = 0; i < zc.length; i++) {
+        // Ensure that floating point errors do not stuff up determination 
+        // of optimality
+        if (floatCor(zc[i]) < 0) {
+            return true;
+        }
+    }
+
+    // If we get here no negative entries were found
+    return false;
 }
 
 /**
@@ -65,9 +79,9 @@ function minElIfLt0(b) {
         // feasibility
         var bCor = floatCor(b[i]);
         if (bCor < 0) {
-            if (b[i] < min) {
+            if (bCor < min) {
                 minIndex = i;
-                min = b[i];
+                min = bCor;
             }
             isFeas = false;
             isOptim = false;
