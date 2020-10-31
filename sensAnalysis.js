@@ -93,6 +93,7 @@ function constrCoeffsChange() {
     var shouldDie = false;
     initialAT = transpose(initialA);
 
+    // Dimensions of A in the form and finalA must match
     if ( (A.length != finalA.length) || (A[0].length != finalA[0].length) ) {
         shouldDie = true;
         var msg = "The dimensions of the new A do not match the dimensions";
@@ -103,9 +104,11 @@ function constrCoeffsChange() {
 
     // Multiply non-basis elements of A by V from final simplex iteration
     for (let j = 0; j < mn; j++) {
+        // V matrix to update non-basis variable coefficients in A
         if (!find(loc, j)) {
             finalAT[j] = matMult(finalV, AT[j]);
         } else {
+            // Test for whether basis variable coeffs have changed
             for (let i = 0; i < m; i++) {
                 if (AT[j][i] != initialAT[j][i]) {
                     // Return an error if elements of A corresponding to basis 
@@ -213,17 +216,18 @@ function newConstraint() {
  * @param cj       1d array of objective function coefficients.
  * @param x        1d array of decision variables.
  * @param xB       1d array of basis variables.
- * @param newARows 2d array of new rows to be added to A.
- * @param newbRows 1d array of new rows to be added to b.
+ * @param newARows 2d array of new rows to be added to A (corrected).
+ * @param newbRows 1d array of new rows to be added to b (corrected).
  * @return         [A, b, cj, x, xB]
  */
 function addConstr(A, b, cj, x, xB, newARows, newbRows) {
+    // Add new constraints
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
         b.push(newbRows[i]);
-        // New cj values for the new slack variables
+        // Slack variables have zero objective function coefficients
         cj.push(0);
-        // Update x and xB
+        // Add new slack variables
         var newSlackVar = newSlackVariable(x);
         x.push(newSlackVar);
         xB.push(newSlackVar);
@@ -247,6 +251,8 @@ function objectiveChange() {
     var x = finalx;
     var shouldDie = false;
 
+    // The number of objective function coefficients should equal the number 
+    // of decision variables
     if (cj.length != x.length) {
         shouldDie = true;
         alert("c and x do not match in length!");
@@ -275,6 +281,7 @@ function resourceChange() {
     var b = matMult(finalV, b);
     var shouldDie = false;
 
+    // New b array should have the same number of rows as A
     if (b.length != A.length) {
         shouldDie = true;
         alert("A and b do not match in their row length!");
