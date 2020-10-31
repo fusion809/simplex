@@ -58,6 +58,8 @@ function showSolution(A, b, x, xB, z, zc) {
  */
 function checkForAltSol(A, x, xB, zc) {
     var mn = A[0].length;
+    var k = 0;
+    var arrOfEnterVars = [];
 
     // Loop over each element in zc looking for zc = 0 for a non-basis variable
     for (let i = 0; i < mn; i++) {
@@ -71,10 +73,24 @@ function checkForAltSol(A, x, xB, zc) {
             // Display message in HTML to indicate which variable can enter the basis.
             var format = {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: true};
-            tempStr += "Alternate solution(s) exists, as " + subscripts(x[i],
-                 format) + " can enter the basis.";
+            k++;
+            arrOfEnterVars.push(x[i]);
         }
     }
+
+    // If k != 0, alternate solutions must exist.
+    if (k != 0) {
+        tempStr += "Alternate solution(s) exists, as ";
+        for (let i = 0; i < k; i++) {
+            tempStr += subscripts(arrOfEnterVars[i], format);
+            if (i > 0 && i < k - 2) {
+                tempStr += ", ";
+            } else if (i == k - 2) {
+                tempStr += " and ";
+            }
+        }
+        tempStr += " can enter the basis.";
+    } 
 }
 
 /**
