@@ -35,22 +35,64 @@ function showSolution(A, b, x, xB, z, zc) {
                 isDownArrow: false, notRow: true}) + " = " + 0;               
             k++;
             if (k == n) {
-                tempStr += " and " + katex.renderToString("z = ") + " " + decimalToFrac(z[mn]) + ".<br/>";
+                tempStr += " and " + katex.renderToString("z = ") + " ";
+                tempStr += decimalToFrac(z[mn]) + ".<br/>";
             }
         }
     }
 
     // Determine and display whether an alternate solution exists
-    for (let i = 0; i < mn; i++) {
-        // Checks whether for a non-basic variable the zj-cj element = 0, which
-        // suggests alternate solutions exist
-        var zcCor = math.fraction(zc[i]);
-        zcCor = zcCor.s * zcCor.n / zcCor.d;
-        if (!find(xB, x[i]) && zcCor == 0) {
-            tempStr += "Alternate solution(s) exists. "
-        }
-    }
+    checkForAltSol(A, x, xB, zc);
 
     // Write to tableau element
     document.getElementById("tableau").innerHTML = tempStr;
+}
+
+/**
+ * Check for alternate solutions and mention it in tempStr if there is.
+ * 
+ * @param A   2d array of LHS coefficients.
+ * @param x   1d array of decision variables.
+ * @param xB  1d array of basis variables.
+ * @param zc  1d array of zj-cj values.
+ */
+function checkForAltSol(A, x, xB, zc) {
+    var mn = A[0].length;
+
+    // Loop over each element in zc looking for zc = 0 for a non-basis variable
+    for (let i = 0; i < mn; i++) {
+        // A correction to prevent floating-point errors from messing up 
+        // following comparison
+        var zcCor = floatCor(zc[i]);
+
+        // zj-cj must equal zero for non-basis variable column and the column
+        // must have a positive aij value.
+        if (!find(xB, x[i]) && zcCor == 0 && AColNonNeg(A, i)) {
+            // Display message in HTML to indicate which variable can enter the basis.
+            var format = {isBold: false, isLeftArrow: false, 
+                isDownArrow: false, notRow: true};
+            tempStr += "Alternate solution(s) exists, as " + subscripts(x[i],
+                 format) + " can enter the basis.";
+        }
+    }
+}
+
+/**
+ * Check if any element in specified A column is non-negative.
+ * 
+ * @param A        2d LHS constraint array.
+ * @param index    Column index.
+ * @return         Boolean.
+ */
+function AColNonNeg(A, index) {
+    // Search through each row in A in the specified column for a positive
+    // element.
+    for (let i = 0; i < A.length; i++) {
+        if (floatCor(A[i][index]) > 0) {
+            return true;
+        }
+    }
+
+    // If we reach here, no A[i][index] > 0
+    return false;
 }
