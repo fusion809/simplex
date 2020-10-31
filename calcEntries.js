@@ -8,15 +8,24 @@
  * component of xB appears. 
  */
 function basisIndex(x, xB) {
+    // Initialize array that will store the locations
     var loc = new Array(xB.length);
+
+    // Loop over basis variables
     for (let i = 0; i < xB.length; i++) {
+
+        // Loop over decision variables
         for (let j = 0; j < x.length; j++) {
+
+            // Record where in x each entry in xB is found
             if (xB[i] == x[j]) {
                 loc[i] = j;
                 break;
             }
         }
     }
+
+    // Return array of locations
     return loc;
 }
 
@@ -32,25 +41,37 @@ function basisIndex(x, xB) {
  */
 function calcEntries(A, b, cj, x, xB) {
     var m = A.length;
-    if (m != xB.length) {
-        document.write("Length of A does not match the length of xB.");
-        return;
-    }
     var mn = A[0].length;
     var loc = basisIndex(x, xB);
     var cB = new Array(m);
     var z = new Array(mn);
     var zc = new Array(mn);
 
+    // Input validation
+    if (m != xB.length) {
+        alert("Length of A does not match the length of xB in calcEntries.");
+        return;
+    }
+
+    // Loop over columns of the tableau in which z appears
     for (let i = 0; i < mn + 1; i++) {
+        // Initialize z at zero
         z[i] = 0;
+
+        // i = mn is the objective function value
         if (i != mn) {
+            // Loop over rows calculating cB and adding up contributions to z
             for (let j = 0; j < m; j++) {
                 cB[j] = cj[loc[j]];
                 z[i] += cB[j] * A[j][i];
             }
+
+            // Calculate zj-cj row entries
             zc[i] = z[i] - cj[i];
+
         } else {
+
+            // Calculate objective function value
             for (let j = 0; j < m; j++) {
                 z[i] += cB[j] * b[j];
             }
