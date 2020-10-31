@@ -191,7 +191,7 @@ function newConstraint() {
         var newARow = newARows[i];
         initialA.push(newARows2[i]);
 
-        // Loop over basis variable columns, looking for a column in newARow 
+        // Loop over basis variable columns looking for a column in newARow
         // that's for a basis variable and is non-zero. Correct newARow and 
         // newbRow accordingly.
         for (let j = 0; j < loc.length; j++) {
