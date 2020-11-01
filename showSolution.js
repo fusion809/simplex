@@ -39,11 +39,30 @@ function showSolution(A, b, x, xB, z, zc) {
         }
     }
 
+    // Check for permanent degeneracy
+    checkForDegn(b, xB);
+
     // Determine and display whether an alternate solution exists
     checkForAltSol(A, x, xB, zc);
 
     // Write to tableau element
     document.getElementById("tableau").innerHTML = tempStr;
+}
+
+/**
+ * Update tempStr to mention if problem is degenerate.
+ * 
+ * @param b   1d array of solution values for the final solution.
+ * @param xB  1d array of basic variables as strings.
+ * @return    Nothing, just adds to tempStr.
+ */
+function checkForDegn(b, xB) {
+    var format = {isBold: false, isRow: false, isLeftArrow: false, isDownArrow: false};
+    for (let i = 0 ; i < b.length; i++) {
+        if (floatCor(b[i]) == 0) {
+            tempStr += "Solution is permanently degenerate in " + subscripts(xB[i], format) + ". ";
+        }
+    }
 }
 
 /**

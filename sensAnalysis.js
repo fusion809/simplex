@@ -165,8 +165,17 @@ function newConstraint() {
     // If the number of rows to be added to A and b do not match, return an
     // error
     if (newARows.length != newbRows.length) {
-        shouldDie = false;
+        shouldDie = true;
         alert("An equal number of rows must be added to A and b!");
+        return [A, b, cj, x, xB, shouldDie];
+    }
+
+    if (newARows[0].length != A[0].length + newARows.length) {
+        shouldDie = true;
+        var msg = "Remember your new A rows must have a number of columns ";
+        msg += "equal to that of the old A matrix plus the number of new ";
+        msg += "constraints!";
+        alert(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 
