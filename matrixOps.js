@@ -7,7 +7,7 @@
  */
 function matMult(V, b) {
     // Initialize dimensionality variables
-    var [m, mn, n] = getDims(A);
+    var [m, mn, n] = getDims(V);
 
     // Initialize array that will store the matrix product
     var bUp = new Array(m);
