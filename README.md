@@ -1,5 +1,5 @@
-# Simplex method repo
-This repository contains code I have written to solve linear programming problems using the simplex method. 
+# Simplex method
+This repository contains a webpage I have written to solve linear programming problems using the simplex method. 
 
 As of 2 November 2020 this solver supports:
 * Printing messages indicating whether the solution is:

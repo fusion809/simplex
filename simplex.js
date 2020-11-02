@@ -230,6 +230,17 @@ function simplexIterator(A, b, cj, x, xB) {
             document.getElementById("tableau").innerHTML = tempStr;
         } else if (isOptim) {
             [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+
+            // Update finals before showSolution, in case there's alt sols
+            finalA = A;
+            finalb = b;
+            finalcj = cj;
+            finalx = x;
+            finalxB = xB;
+            finalz = z;
+            finalV = extractV(A);
+            
+            // Show solution
             showSolution(A, b, x, xB, z, zc);
         }
     }
@@ -250,12 +261,4 @@ function solveProblem() {
     if (!shouldDie) {
         [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB);
     }
-
-    finalA = A;
-    finalb = b;
-    finalcj = cj;
-    finalx = x;
-    finalxB = xB;
-    finalz = z;
-    finalV = extractV(A);
 }
