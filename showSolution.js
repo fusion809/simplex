@@ -30,7 +30,7 @@ function showSolution(A, b, x, xB, z, zc) {
     document.getElementById("tableau").innerHTML = tempStr;
 }
 
-function printSolution(b, xB, x, zmn, mn, n) {
+function printSolution(b, xB, x, zmn, mn, n, isAlt) {
     var k = 0;
 
     // Values of basis variables
@@ -42,15 +42,23 @@ function printSolution(b, xB, x, zmn, mn, n) {
     // Values of non-basic variables
     for (let i = 0 ; i < mn; i++) {
         if (!find(xB, x[i])) {
-            if (k != 0) {
-                tempStr += ", ";
+            if (k != 0) { 
+                if (!( ( k==n-1) && (isAlt))) {
+                    tempStr += ", ";
+                } else {
+                    tempStr += " and ";
+                }
             }
             tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: true}) + " = " + 0;               
             k++;
             if (k == n) {
-                tempStr += " and " + katex.renderToString("z = ") + " ";
-                tempStr += decimalToFrac(zmn) + ". ";
+                if (!isAlt) {
+                    tempStr += " and " + katex.renderToString("z = ") + " ";
+                    tempStr += decimalToFrac(zmn) + ". ";
+                } else {
+                    tempStr += ". ";
+                }
             }
         }
     }
@@ -109,7 +117,7 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
             if ( i > 0 ) {
                 tempStr += "Another is ";
             }
-            
+
             // Determine pivot indices
             var [pivColIdx, pivRowIdx] = arrOfPivIdxs[i];
 
@@ -125,7 +133,7 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
                 pivotCol, mn, m);
 
             // Print alternate solution
-            printSolution(b, xB, x, zmn, mn, n);
+            printSolution(b, xB, x, zmn, mn, n, true);
         }
     } 
 }
