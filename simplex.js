@@ -141,7 +141,6 @@ function simplex(A, b, cj, x, xB, zc) {
 function rowOps(A, b, x, xB, pivColIdx, pivotRIdx, pivotEl, pivotCol, mn, m) {
     b[pivotRIdx] /= pivotEl;
     xB[pivotRIdx] = x[pivColIdx];
-    console.log(xB[pivotRIdx])
     for (let i = 0; i < mn; i++) {
         A[pivotRIdx][i] /= pivotEl;
 

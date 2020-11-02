@@ -23,17 +23,23 @@ function showSolution(A, b, x, xB, z, zc) {
     // Determine and display whether an alternate solution exists
     checkForAltSol(A, b, x, xB, z[mn], zc);
 
+    // New empty row
+    tempStr += "<br/>";
+
     // Write to tableau element
     document.getElementById("tableau").innerHTML = tempStr;
 }
 
 function printSolution(b, xB, x, zmn, mn, n) {
     var k = 0;
+
+    // Values of basis variables
     for (let i = 0 ; i < xB.length; i++) {
         tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
             isDownArrow: false, notRow: true}) + " = " + decimalToFrac(b[i]) + ", ";
     }
 
+    // Values of non-basic variables
     for (let i = 0 ; i < mn; i++) {
         if (!find(xB, x[i])) {
             if (k != 0) {
@@ -44,7 +50,7 @@ function printSolution(b, xB, x, zmn, mn, n) {
             k++;
             if (k == n) {
                 tempStr += " and " + katex.renderToString("z = ") + " ";
-                tempStr += decimalToFrac(zmn) + ".<br/>";
+                tempStr += decimalToFrac(zmn) + ". ";
             }
         }
     }
@@ -103,11 +109,12 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
             if ( i > 0 ) {
                 tempStr += "Another is ";
             }
+            
             // Determine pivot indices
             var [pivColIdx, pivRowIdx] = arrOfPivIdxs[i];
 
             // Find ratios for b to pivot column
-            var [k, pivotCol, ratio] = findColRat(A, b, pivColIdx, pivotCol, 
+            var [noOfInvRats, pivotCol, ratio] = findColRat(A, b, pivColIdx, pivotCol, 
                 ratio, k);
 
             // Determine the pivot element
@@ -132,7 +139,7 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
  */
 function AColNonNeg(A, b, Idx) {
     var min = Number.POSITIVE_INFINITY;
-    var k = 0;
+    var k = -1;
     // Search through each row in A in the specified column for a positive
     // element.
     for (let i = 0; i < A.length; i++) {
@@ -142,7 +149,7 @@ function AColNonNeg(A, b, Idx) {
         }
     }
 
-    if (k != 0) {
+    if (k != -1) {
         return [k, true];
     }
 

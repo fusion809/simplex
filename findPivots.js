@@ -33,7 +33,7 @@ function findColRat(A, b, pivotCIdx, pivotCol, ratio, k) {
     // Initialize globals
     var pivotCol = new Array(b.length);
     var ratio = new Array(b.length);
-    var k = 0;
+    var noOfInvRats = 0;
 
     for (let i = 0; i < b.length; i++) {
         pivotCol[i] = A[i][pivotCIdx];
@@ -42,13 +42,13 @@ function findColRat(A, b, pivotCIdx, pivotCol, ratio, k) {
         var pivotColCor = floatCor(pivotCol[i]);
         if (pivotColCor <= 0) {
             ratio[i] = Number.POSITIVE_INFINITY;
-            k++;
+            noOfInvRats++;
         } else {
             ratio[i] = b[i] / pivotCol[i];
         }
     }
 
-    return [k, pivotCol, ratio];
+    return [noOfInvRats, pivotCol, ratio];
 }
 
 /**
