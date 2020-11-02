@@ -126,17 +126,19 @@ function simplex(A, b, cj, x, xB, zc) {
 }
 
 /**
+ * Function that performs simplex row operations on A and b.
  * 
- * @param A 
- * @param b 
- * @param x 
- * @param xB 
- * @param pivColIdx 
- * @param pivotRIdx 
- * @param pivotEl 
- * @param pivotCol 
- * @param mn 
- * @param m 
+ * @param A          2d array of LHS constraint coefficients.
+ * @param b          1d array of solution values.
+ * @param x          1d decision variable array.
+ * @param xB         1d basis variable array.
+ * @param pivColIdx  Pivot column index.
+ * @param pivotRIdx  Pivot row index.
+ * @param pivotEl    Pivot element.
+ * @param pivotCol   Pivot column.
+ * @param mn         Number of columns in A.
+ * @param m          Number of rows in A.
+ * @return           Updated A, b, xB.
  */
 function rowOps(A, b, x, xB, pivColIdx, pivotRIdx, pivotEl, pivotCol, mn, m) {
     b[pivotRIdx] /= pivotEl;
@@ -156,6 +158,7 @@ function rowOps(A, b, x, xB, pivColIdx, pivotRIdx, pivotEl, pivotCol, mn, m) {
     }
     return [A, b, xB];
 }
+
 /**
  * Performs all the iterations of simplex required to find the
  * optimum solution.

@@ -30,6 +30,20 @@ function showSolution(A, b, x, xB, z, zc) {
     document.getElementById("tableau").innerHTML = tempStr;
 }
 
+/**
+ * Print solution, including decision variables and if not an alternate 
+ * solution, the objective function value.
+ * 
+ * @param b        1d of the basis variable values.
+ * @param xB       1d array of basis variables.
+ * @param x        1d array of decision variables.
+ * @param zmn      Objective function value.
+ * @param mn       Number of columns in A.
+ * @param n        Number of decision variables not including slack variables.
+ * @param isAlt    A Boolean that indicates whether the solution being 
+ * displayed is an alternate solution.
+ * @return         Nothing, adds to the tempStr.
+ */
 function printSolution(b, xB, x, zmn, mn, n, isAlt) {
     var k = 0;
 
@@ -42,6 +56,7 @@ function printSolution(b, xB, x, zmn, mn, n, isAlt) {
     // Values of non-basic variables
     for (let i = 0 ; i < mn; i++) {
         if (!find(xB, x[i])) {
+            // Punctuation for the list of variables
             if (k != 0) { 
                 if (!( ( k==n-1) && (isAlt))) {
                     tempStr += ", ";
@@ -49,10 +64,18 @@ function printSolution(b, xB, x, zmn, mn, n, isAlt) {
                     tempStr += " and ";
                 }
             }
+
+            // All non-basic variables are equal to 0
             tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: true}) + " = " + 0;               
+            
+            // k is our count of how many non-basic variables we've printed
             k++;
+
+            // Final entry in sentence
             if (k == n) {
+                // If this isn't an alternate solution that's being printed, 
+                // show z value also. Otherwise just print full stop.
                 if (!isAlt) {
                     tempStr += " and " + katex.renderToString("z = ") + " ";
                     tempStr += decimalToFrac(zmn) + ". ";
@@ -87,6 +110,7 @@ function checkForDegn(b, xB) {
  * @param x   1d array of decision variables.
  * @param xB  1d array of basis variables.
  * @param zc  1d array of zj-cj values.
+ * @return    Nothing, writes to tempStr.
  */
 function checkForAltSol(A, b, x, xB, zmn, zc) {
     var [m, mn, n] = getDims(A);
@@ -101,10 +125,10 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
 
         // zj-cj must equal zero for non-basis variable column and the column
         // must have a positive aij value.
-        if (!find(xB, x[i]) && zcCor == 0 && AColNonNeg(A, b, i)[1]) {
+        if (!find(xB, x[i]) && zcCor == 0 && AColPos(A, b, i)[1]) {
             // Display message in HTML to indicate which variable can enter 
             // the basis.
-            var pivRowIdx = AColNonNeg(A, b, i)[0];
+            var pivRowIdx = AColPos(A, b, i)[0];
             k++;
             arrOfPivIdxs.push([i, pivRowIdx]);
         }
@@ -139,13 +163,14 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
 }
 
 /**
- * Check if any element in specified A column is non-negative.
+ * Check if any element in specified A column is positve.
  * 
- * @param A        2d LHS constraint array.
- * @param Idx    Column Idx.
+ * @param A        2d LHS constraint array (after simplex has been applied).
+ * @param b        1d array of solution values.
+ * @param Idx      Column Idx.
  * @return         Boolean.
  */
-function AColNonNeg(A, b, Idx) {
+function AColPos(A, b, Idx) {
     var min = Number.POSITIVE_INFINITY;
     var k = -1;
     // Search through each row in A in the specified column for a positive
@@ -157,6 +182,7 @@ function AColNonNeg(A, b, Idx) {
         }
     }
 
+    // If k is not still -1, a positive entry in the Idx column of A
     if (k != -1) {
         return [k, true];
     }
