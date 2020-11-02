@@ -16,7 +16,7 @@
  * @return              Nothing, writes data to tempStr.
  */
 function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
-    isPermInf, isUnbound) {
+    isPermInf, isUnbound, isAltSol, befAltSol) {
     // Initialize dimensionality variables
     var [m, mn, n] = getDims(A);
     
@@ -24,7 +24,8 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
-        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf || isUnbound ) {
+        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf || isUnbound 
+        || isAltSol) {
             tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: false});
         } else {
@@ -35,7 +36,7 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
             tempStr += "<td>" + decimalToFrac(A[i][j]) + "</td>";
         }
         tempStr += "<td>" + decimalToFrac(b[i]) + "</td>";
-        if (isFeas && !isOptim) {
+        if (isFeas && !isOptim || befAltSol) {
             if (ratio[i] != Number.POSITIVE_INFINITY && ratio[i] >= 0) {
                 tempStr += "<td>" + decimalToFrac(ratio[i]) + "</td>";
             } else {
@@ -65,7 +66,7 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
  * @return            Nothing, simply writes the tableaux to HTML.
  */
 function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf, 
-    pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
+    isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
 
     // The following is to prevent departing/entering variable
@@ -83,11 +84,11 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
     objectiveRow(cj);
 
     // Header row
-    headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf);
+    headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf, isAltSol, befAltSol);
 
     // A & b rows
     AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
-        isPermInf, isUnbound);
+        isPermInf, isUnbound, isAltSol, befAltSol);
 
     // zj row
     zRow(pivotEl, isFeas, ratio, z);
@@ -104,7 +105,6 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
     // Show row operations
     if (!isOptim && !isUnbound && !isNaN(pivotRIdx) && !isNaN(pivotEl) && 
     !isPermInf) {
-        pivotRIdx++;
         rowOperations(pivotRIdx, pivotCol, pivotEl);
     }
     writeTempStr();
@@ -121,12 +121,12 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
  * infeasible.
  * @return              Nothing, changes are written to the tempStr global.
  */
-function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
+function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf, isAltSol, befAltSol) {
     tempStr += "<tr>";
     tempStr += katexRow("c_{\\mathbf{B}}");
     tempStr += katexRow("x_{\\mathbf{B}}");
     for (let i = 0; i < x.length; i++) {
-        if (i != pivotCIdx || isPermInf) {
+        if (i != pivotCIdx || isPermInf || isAltSol) {
             tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false});
         } else {
@@ -135,7 +135,7 @@ function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
         }
     }
     tempStr += katexRow("\\mathbf{b}");
-    if (isFeas && !isOptim) {
+    if (isFeas && !isOptim || befAltSol) {
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
     }
     tempStr += "</tr>";
@@ -215,6 +215,9 @@ function removeTableaux() {
  * @return          Nothing, adds the row operations to tempStr.
  */
 function rowOperations(pivotRIdx, pivotCol, pivotEl) {
+    // Row numbers start at 1 not 0
+    pivotRIdx++;
+
     // Initialize dimensionality variable
     var m = pivotCol.length;
 

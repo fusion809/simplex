@@ -8,7 +8,7 @@
  * @param zc  zj-cj value array.
  * @return    Nothing, just writes the solution to tempStr global.
  */
-function showSolution(A, b, x, xB, z, zc) {
+function showSolution(A, b, cj, x, xB, z, zc) {
     tempStr += "Optimal solution is ";
 
     // Initialize dimensionality variables
@@ -21,7 +21,7 @@ function showSolution(A, b, x, xB, z, zc) {
     checkForDegn(b, xB);
 
     // Determine and display whether an alternate solution exists
-    checkForAltSol(A, b, x, xB, z[mn], zc);
+    checkForAltSol(A, b, cj, x, xB, z[mn], zc);
 
     // New empty row
     tempStr += "<br/>";
@@ -112,7 +112,7 @@ function checkForDegn(b, xB) {
  * @param zc  1d array of zj-cj values.
  * @return    Nothing, writes to tempStr.
  */
-function checkForAltSol(A, b, x, xB, zmn, zc) {
+function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
     var [m, mn, n] = getDims(A);
     var k = 0;
     var arrOfPivIdxs = [];
@@ -136,12 +136,8 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
 
     // If k != 0, alternate solutions must exist.
     if (k != 0) {
-        tempStr += "Alternate solution(s) exists. One is ";
+        tempStr += "Alternate solution(s) exists. ";
         for (let i = 0; i < k; i++) {
-            if ( i > 0 ) {
-                tempStr += "Another is ";
-            }
-
             // Determine pivot indices
             var [pivColIdx, pivRowIdx] = arrOfPivIdxs[i];
 
@@ -152,10 +148,35 @@ function checkForAltSol(A, b, x, xB, zmn, zc) {
             // Determine the pivot element
             var pivotEl = A[pivRowIdx][pivColIdx];
 
+            // Define vars for genTableau
+            var isFeas = true;
+            var isOptim = true;
+            var isUnbounded = false;
+            var isPermInf = false;
+            var befAltSol = true;
+            var format = {isBold: false, isLeftArrow: false, isDownArrow: false, notRow: true};
+
+            tempStr += "<br/>";    
+            tempStr += "Let " + subscripts(xB[pivRowIdx], format) + " exit the basis and ";
+            tempStr += subscripts(x[pivColIdx], format) + " enter it. ";  
+
+            genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, 
+                isPermInf, isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+
+            rowOperations(pivRowIdx, pivotCol, pivotEl);
+                
             // Perform row operations
             [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
                 pivotCol, mn, m);
 
+            // Generate tableau of alternate solution
+            var isAltSol = true;
+            var befAltSol = false;
+            genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, 
+                isPermInf, isAltSol, befAltSol, pivotCol, ratio, pivotEl, 
+                pivRowIdx, pivColIdx); 
+            tempStr += "Which gives the solution: ";
+            
             // Print alternate solution
             printSolution(b, xB, x, zmn, mn, n, true);
         }

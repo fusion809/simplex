@@ -16,12 +16,14 @@ function simplex(A, b, cj, x, xB, zc) {
     var [m, mn, n] = getDims(A);
 
     // Initialize pivot variables
-    var pivotRIdx;
+    var pivRowIdx;
     var pivColIdx;
     var pivotEl;
     
     // Initialize Booleans
     var isPermInf = false;
+    var isAltSol = false;
+    var befAltSol = false;
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
 
     // Initialize minRat for the below loop
@@ -33,7 +35,7 @@ function simplex(A, b, cj, x, xB, zc) {
 
     if (!isFeas) {
         // The method for working with infeasible solutions
-        pivotRIdx = minIndex;
+        pivRowIdx = minIndex;
         var k = 0;
         // Find minimum ratio, pivot element, pivot column index
         for (let j = 0; j < mn; j++) {
@@ -68,8 +70,8 @@ function simplex(A, b, cj, x, xB, zc) {
         var isUnbounded = false;
 
         // Generate the tableau before we apply simplex
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf, 
-            pivotCol, ratio, pivotEl, pivotRIdx, pivColIdx);
+        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf,
+            isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
 
         // Time to exit function if permanently infeasible, as there's no way
         // to solve the problem
@@ -81,21 +83,21 @@ function simplex(A, b, cj, x, xB, zc) {
         // genTableau will give an error as the way we check whether entering
         // and departing variables should be indicated is to see whether the
         // following as an equality holds.
-        xB[pivotRIdx] = x[pivColIdx];
+        xB[pivRowIdx] = x[pivColIdx];
 
         // Scale pivot row
         for (let i = 0; i < mn; i++) {
-            A[pivotRIdx][i] /= pivotEl;
+            A[pivRowIdx][i] /= pivotEl;
         }
-        b[pivotRIdx] /= pivotEl;
+        b[pivRowIdx] /= pivotEl;
 
         // Update other rows
         for (let i = 0; i < m; i++) {
-            if (i != pivotRIdx) {
+            if (i != pivRowIdx) {
                 for (let j = 0; j < mn; j++) {
-                    A[i][j] -= pivotCol[i] * A[pivotRIdx][j];
+                    A[i][j] -= pivotCol[i] * A[pivRowIdx][j];
                 }
-                b[i] -= pivotCol[i] * b[pivotRIdx];
+                b[i] -= pivotCol[i] * b[pivRowIdx];
             }
         }
     } else if (!isOptim) {
@@ -104,13 +106,13 @@ function simplex(A, b, cj, x, xB, zc) {
         isPermInf = false;
         // Obtain pivot information
         var arr = findPivots(A, b, zc);
-        [pivotEl, pivotCol, pivColIdx, pivotRIdx, ratio, isUnbounded] = arr;
+        [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
         // Tabulate previous iteration
         genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf,
-            pivotCol, ratio, pivotEl, pivotRIdx, pivColIdx);
+            isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
         
         // Apply feasible problem simplex algorithm
-        [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivotRIdx, pivotEl, pivotCol, mn, m);
+        [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m);
     }
 
     // If the solution is now optimal, tabulate it, otherwise proceed to next
@@ -118,7 +120,7 @@ function simplex(A, b, cj, x, xB, zc) {
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
     if (isOptim) {
         genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf, 
-            pivotCol, ratio, pivotEl, pivotRIdx, pivColIdx);
+            isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
     }
 
     // Return data needed by simplexIterator
@@ -133,26 +135,26 @@ function simplex(A, b, cj, x, xB, zc) {
  * @param x          1d decision variable array.
  * @param xB         1d basis variable array.
  * @param pivColIdx  Pivot column index.
- * @param pivotRIdx  Pivot row index.
+ * @param pivRowIdx  Pivot row index.
  * @param pivotEl    Pivot element.
  * @param pivotCol   Pivot column.
  * @param mn         Number of columns in A.
  * @param m          Number of rows in A.
  * @return           Updated A, b, xB.
  */
-function rowOps(A, b, x, xB, pivColIdx, pivotRIdx, pivotEl, pivotCol, mn, m) {
-    b[pivotRIdx] /= pivotEl;
-    xB[pivotRIdx] = x[pivColIdx];
+function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
+    b[pivRowIdx] /= pivotEl;
+    xB[pivRowIdx] = x[pivColIdx];
     for (let i = 0; i < mn; i++) {
-        A[pivotRIdx][i] /= pivotEl;
+        A[pivRowIdx][i] /= pivotEl;
 
         for (let j = 0; j < m; j++) {
             // b subtraction should only be done once per row
-            if (j != pivotRIdx) {
+            if (j != pivRowIdx) {
                 if (i == 0) {
-                    b[j] -= pivotCol[j] * b[pivotRIdx];
+                    b[j] -= pivotCol[j] * b[pivRowIdx];
                 }
-                A[j][i] -= pivotCol[j] * A[pivotRIdx][i];
+                A[j][i] -= pivotCol[j] * A[pivRowIdx][i];
             }
         }
     }
@@ -208,7 +210,7 @@ function simplexIterator(A, b, cj, x, xB) {
     if (isOptim) {
         tempStr += "Solution is already optimal.";
         genTableau(A, b, cj, x, xB, isFeas, isOptim);
-        showSolution(A, b, x, xB, z, zc);
+        showSolution(A, b, cj, x, xB, z, zc);
     }
 
     // Use simplex to solve the problem
@@ -241,7 +243,7 @@ function simplexIterator(A, b, cj, x, xB) {
             finalV = extractV(A);
 
             // Show solution
-            showSolution(A, b, x, xB, z, zc);
+            showSolution(A, b, cj, x, xB, z, zc);
         }
     }
 
