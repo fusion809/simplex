@@ -11,19 +11,29 @@
 function showSolution(A, b, x, xB, z, zc) {
     tempStr += "Optimal solution is ";
 
-    // List basic variable values
+    // Initialize dimensionality variables
+    var [m, mn, n] = getDims(A);
+    
+    // Display values of non-basic variables and z
+    printSolution(b, xB, x, z[mn], mn, n);
+
+    // Check for permanent degeneracy
+    checkForDegn(b, xB);
+
+    // Determine and display whether an alternate solution exists
+    checkForAltSol(A, b, x, xB, z[mn], zc);
+
+    // Write to tableau element
+    document.getElementById("tableau").innerHTML = tempStr;
+}
+
+function printSolution(b, xB, x, zmn, mn, n) {
+    var k = 0;
     for (let i = 0 ; i < xB.length; i++) {
         tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
             isDownArrow: false, notRow: true}) + " = " + decimalToFrac(b[i]) + ", ";
     }
-    
-    // Initialize dimensionality variables
-    var [m, mn, n] = getDims(A);
-    
-    // Initialize counter for basis variables displayed.
-    var k = 0;
 
-    // Display values of non-basic variables and z
     for (let i = 0 ; i < mn; i++) {
         if (!find(xB, x[i])) {
             if (k != 0) {
@@ -34,19 +44,10 @@ function showSolution(A, b, x, xB, z, zc) {
             k++;
             if (k == n) {
                 tempStr += " and " + katex.renderToString("z = ") + " ";
-                tempStr += decimalToFrac(z[mn]) + ".<br/>";
+                tempStr += decimalToFrac(zmn) + ".<br/>";
             }
         }
     }
-
-    // Check for permanent degeneracy
-    checkForDegn(b, xB);
-
-    // Determine and display whether an alternate solution exists
-    checkForAltSol(A, x, xB, zc);
-
-    // Write to tableau element
-    document.getElementById("tableau").innerHTML = tempStr;
 }
 
 /**
@@ -73,10 +74,10 @@ function checkForDegn(b, xB) {
  * @param xB  1d array of basis variables.
  * @param zc  1d array of zj-cj values.
  */
-function checkForAltSol(A, x, xB, zc) {
-    var mn = A[0].length;
+function checkForAltSol(A, b, x, xB, zmn, zc) {
+    var [m, mn, n] = getDims(A);
     var k = 0;
-    var arrOfEnterVars = [];
+    var arrOfPivIdxs = [];
 
     // Loop over each element in zc looking for zc = 0 for a non-basis variable
     for (let i = 0; i < mn; i++) {
@@ -86,27 +87,39 @@ function checkForAltSol(A, x, xB, zc) {
 
         // zj-cj must equal zero for non-basis variable column and the column
         // must have a positive aij value.
-        if (!find(xB, x[i]) && zcCor == 0 && AColNonNeg(A, i)) {
-            // Display message in HTML to indicate which variable can enter the basis.
-            var format = {isBold: false, isLeftArrow: false, 
-                isDownArrow: false, notRow: true};
+        if (!find(xB, x[i]) && zcCor == 0 && AColNonNeg(A, b, i)[1]) {
+            // Display message in HTML to indicate which variable can enter 
+            // the basis.
+            var pivRowIdx = AColNonNeg(A, b, i)[0];
             k++;
-            arrOfEnterVars.push(x[i]);
+            arrOfPivIdxs.push([i, pivRowIdx]);
         }
     }
 
     // If k != 0, alternate solutions must exist.
     if (k != 0) {
-        tempStr += "Alternate solution(s) exists, as ";
+        tempStr += "Alternate solution(s) exists. One is ";
         for (let i = 0; i < k; i++) {
-            tempStr += subscripts(arrOfEnterVars[i], format);
-            if (i > 0 && i < k - 2) {
-                tempStr += ", ";
-            } else if (i == k - 2) {
-                tempStr += " and ";
+            if ( i > 0 ) {
+                tempStr += "Another is ";
             }
+            // Determine pivot indices
+            var [pivColIdx, pivRowIdx] = arrOfPivIdxs[i];
+
+            // Find ratios for b to pivot column
+            var [k, pivotCol, ratio] = findColRat(A, b, pivColIdx, pivotCol, 
+                ratio, k);
+
+            // Determine the pivot element
+            var pivotEl = A[pivRowIdx][pivColIdx];
+
+            // Perform row operations
+            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
+                pivotCol, mn, m);
+
+            // Print alternate solution
+            printSolution(b, xB, x, zmn, mn, n);
         }
-        tempStr += " can enter the basis.";
     } 
 }
 
@@ -114,18 +127,25 @@ function checkForAltSol(A, x, xB, zc) {
  * Check if any element in specified A column is non-negative.
  * 
  * @param A        2d LHS constraint array.
- * @param index    Column index.
+ * @param Idx    Column Idx.
  * @return         Boolean.
  */
-function AColNonNeg(A, index) {
+function AColNonNeg(A, b, Idx) {
+    var min = Number.POSITIVE_INFINITY;
+    var k = 0;
     // Search through each row in A in the specified column for a positive
     // element.
     for (let i = 0; i < A.length; i++) {
-        if (floatCor(A[i][index]) > 0) {
-            return true;
+        if (floatCor(A[i][Idx]) > 0 && b[i]/A[i][Idx] < min) {
+            min = b[i]/A[i][Idx];
+            k = i;
         }
     }
 
-    // If we reach here, no A[i][index] > 0
-    return false;
+    if (k != 0) {
+        return [k, true];
+    }
+
+    // If we reach here, no A[i][Idx] > 0
+    return [k, false];
 }

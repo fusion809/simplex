@@ -10,27 +10,12 @@
  */
 function findPivots(A, b, zc) {
     // Initialize relevant arrays
-    var pivotCol = new Array(b.length);
-    var ratio = new Array(b.length);
     // Determine column index by finding index of minimum
     // zj-cj entry.
     var pivotCIdx = minEl(zc, false);
-    var k = 0;
 
     // Find pivot
-    for (let i = 0; i < b.length; i++) {
-        pivotCol[i] = A[i][pivotCIdx];
-        // Following is to prevent floating point arithmetic errors from 
-        // causing problems
-        var pivotColCor = math.fraction(pivotCol[i]);
-        pivotColCor = pivotColCor.s * pivotColCor.n / pivotColCor.d;
-        if (pivotColCor <= 0) {
-            ratio[i] = Number.POSITIVE_INFINITY;
-            k++;
-        } else {
-            ratio[i] = b[i] / pivotCol[i];
-        }
-    }
+    var [k, pivotCol, ratio] = findColRat(A, b, pivotCIdx);
 
     if (k == b.length) {
         var isUnbounded = true;
@@ -42,6 +27,28 @@ function findPivots(A, b, zc) {
     var pivotEl = pivotCol[pivotRIdx];
 
     return [pivotEl, pivotCol, pivotCIdx, pivotRIdx, ratio, isUnbounded];
+}
+
+function findColRat(A, b, pivotCIdx, pivotCol, ratio, k) {
+    // Initialize globals
+    var pivotCol = new Array(b.length);
+    var ratio = new Array(b.length);
+    var k = 0;
+
+    for (let i = 0; i < b.length; i++) {
+        pivotCol[i] = A[i][pivotCIdx];
+        // Following is to prevent floating point arithmetic errors from 
+        // causing problems
+        var pivotColCor = floatCor(pivotCol[i]);
+        if (pivotColCor <= 0) {
+            ratio[i] = Number.POSITIVE_INFINITY;
+            k++;
+        } else {
+            ratio[i] = b[i] / pivotCol[i];
+        }
+    }
+
+    return [k, pivotCol, ratio];
 }
 
 /**
