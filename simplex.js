@@ -1,4 +1,38 @@
 /**
+ * Function that performs simplex row operations on A and b.
+ * 
+ * @param A          2d array of LHS constraint coefficients.
+ * @param b          1d array of solution values.
+ * @param x          1d decision variable array.
+ * @param xB         1d basis variable array.
+ * @param pivColIdx  Pivot column index.
+ * @param pivRowIdx  Pivot row index.
+ * @param pivotEl    Pivot element.
+ * @param pivotCol   Pivot column.
+ * @param mn         Number of columns in A.
+ * @param m          Number of rows in A.
+ * @return           Updated A, b, xB.
+ */
+function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
+    b[pivRowIdx] /= pivotEl;
+    xB[pivRowIdx] = x[pivColIdx];
+    for (let i = 0; i < mn; i++) {
+        A[pivRowIdx][i] /= pivotEl;
+
+        for (let j = 0; j < m; j++) {
+            // b subtraction should only be done once per row
+            if (j != pivRowIdx) {
+                if (i == 0) {
+                    b[j] -= pivotCol[j] * b[pivRowIdx];
+                }
+                A[j][i] -= pivotCol[j] * A[pivRowIdx][i];
+            }
+        }
+    }
+    return [A, b, xB];
+}
+
+/**
  * Performs a singe iteration of simplex and calls genTableau on the previous
  * iteration. All inputs pertain to the values from the previous iteration of
  * simplex.
@@ -125,40 +159,6 @@ function simplex(A, b, cj, x, xB, zc) {
 
     // Return data needed by simplexIterator
     return [A, b, xB, isUnbounded, isPermInf];
-}
-
-/**
- * Function that performs simplex row operations on A and b.
- * 
- * @param A          2d array of LHS constraint coefficients.
- * @param b          1d array of solution values.
- * @param x          1d decision variable array.
- * @param xB         1d basis variable array.
- * @param pivColIdx  Pivot column index.
- * @param pivRowIdx  Pivot row index.
- * @param pivotEl    Pivot element.
- * @param pivotCol   Pivot column.
- * @param mn         Number of columns in A.
- * @param m          Number of rows in A.
- * @return           Updated A, b, xB.
- */
-function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
-    b[pivRowIdx] /= pivotEl;
-    xB[pivRowIdx] = x[pivColIdx];
-    for (let i = 0; i < mn; i++) {
-        A[pivRowIdx][i] /= pivotEl;
-
-        for (let j = 0; j < m; j++) {
-            // b subtraction should only be done once per row
-            if (j != pivRowIdx) {
-                if (i == 0) {
-                    b[j] -= pivotCol[j] * b[pivRowIdx];
-                }
-                A[j][i] -= pivotCol[j] * A[pivRowIdx][i];
-            }
-        }
-    }
-    return [A, b, xB];
 }
 
 /**

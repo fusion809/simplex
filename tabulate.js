@@ -13,6 +13,11 @@
  * @param isPermInf     Boolean indicating whether the problem is permanently 
  * infeasible.
  * @param isUnbound     Boolean indicating whether the problem is unbounded.
+ * @param isAltSol      Boolean indicating whether an alternate solution is to
+ * displayed.
+ * @param befAltSol     Boolean indicating whether the tableau to be shown is
+ * the one before the tableau with the alternate solution. This tableau shows
+ * ratios and pivot indicators.
  * @return              Nothing, writes data to tempStr.
  */
 function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
@@ -58,6 +63,13 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
  * @param isFeas      Boolean indicating whether problem is feasible.
  * @param isOptim     Boolean indicating whether problem is optimized.
  * @param isUnbound   Boolean indicating whether the problem is unbounded.
+ * @param isPermInf   Boolean indicating whether the problem is permanently 
+ * infeasible.
+ * @param isAltSol    Boolean indicating whether the tableau shows an alternate
+ * solution.
+ * @param befAltSol   Boolean indicating whether the tableau is the one to be
+ * displayed immediately before the alternate solution tableau. This tableau 
+ * shows ratios and pivot indicators.
  * @param pivotCol    Pivot column.
  * @param ratio       Ratio array used to decide entering/departing variables.
  * @param pivotEl     Pivot element.
@@ -119,6 +131,11 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
  * @param isOptim       Boolean indicating whether problem is optimal.
  * @param isPermInf     Boolean indicating whether problem is permanently 
  * infeasible.
+ * @param isAltSol      Boolean indicating whether the tableau shows an 
+ * alternate solution.
+ * @param befAltSol     Boolean indicating whether the tableau is the one to 
+ * be displayed immediately before the alternate solution tableau. This 
+ * tableau shows ratios and pivot indicators.
  * @return              Nothing, changes are written to the tempStr global.
  */
 function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf, isAltSol, befAltSol) {
