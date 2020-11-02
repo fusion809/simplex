@@ -105,7 +105,6 @@ function simplex(A, b, cj, x, xB, zc) {
         // Obtain pivot information
         var arr = findPivots(A, b, zc);
         [pivotEl, pivotCol, pivColIdx, pivotRIdx, ratio, isUnbounded] = arr;
-        console.log("isUnbounded is " + isUnbounded);
         // Tabulate previous iteration
         genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf,
             pivotCol, ratio, pivotEl, pivotRIdx, pivColIdx);
