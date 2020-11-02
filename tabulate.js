@@ -1,14 +1,4 @@
 /**
- * Generate a row with the input string rendered with KaTeX.
- * 
- * @param str      String to render.
- * @return         Row HTML with KaTeX-rendered string.
- */
-function katexRow(str) {
-    return "<td>" + katex.renderToString(str) + "</td>";
-}
-
-/**
  * Write A and b rows to tempStr.
  * 
  * @param A             Array of constraint coefficients.
@@ -22,10 +12,11 @@ function katexRow(str) {
  * @param isOptim       Boolean indicating the optimality of the solution.
  * @param isPermInf     Boolean indicating whether the problem is permanently 
  * infeasible.
+ * @param isUnbound     Boolean indicating whether the problem is unbounded.
  * @return              Nothing, writes data to tempStr.
  */
 function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
-    isPermInf) {
+    isPermInf, isUnbound) {
     // Initialize dimensionality variables
     var [m, mn, n] = getDims(A);
     
@@ -33,7 +24,7 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
-        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf ) {
+        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf || isUnbound ) {
             tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: false});
         } else {
@@ -96,7 +87,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
 
     // A & b rows
     AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
-        isPermInf);
+        isPermInf, isUnbound);
 
     // zj row
     zRow(pivotEl, isFeas, ratio, z);
@@ -148,6 +139,16 @@ function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf) {
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
     }
     tempStr += "</tr>";
+}
+
+/**
+ * Generate a row with the input string rendered with KaTeX.
+ * 
+ * @param str      String to render.
+ * @return         Row HTML with KaTeX-rendered string.
+ */
+function katexRow(str) {
+    return "<td>" + katex.renderToString(str) + "</td>";
 }
 
 /**
