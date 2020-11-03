@@ -104,8 +104,9 @@ function simplex(A, b, cj, x, xB, zc) {
         var isUnbounded = false;
 
         // Generate the tableau before we apply simplex
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf,
-            isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+        var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
+            isAltSol, befAltSol);
+        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
 
         // Time to exit function if permanently infeasible, as there's no way
         // to solve the problem
@@ -142,8 +143,9 @@ function simplex(A, b, cj, x, xB, zc) {
         var arr = findPivots(A, b, zc);
         [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
         // Tabulate previous iteration
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf,
-            isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+        var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
+            isAltSol, befAltSol);
+        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
         
         // Apply feasible problem simplex algorithm
         [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m);
@@ -153,8 +155,10 @@ function simplex(A, b, cj, x, xB, zc) {
     // iteration
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
     if (isOptim) {
-        genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, isPermInf, 
-            isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+        var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
+            isAltSol, befAltSol);
+        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+            pivRowIdx, pivColIdx);
     }
 
     // Return data needed by simplexIterator
@@ -209,7 +213,7 @@ function simplexIterator(A, b, cj, x, xB) {
     // If problem is already optimal, just tabulate the solution
     if (isOptim) {
         tempStr += "Solution is already optimal.";
-        genTableau(A, b, cj, x, xB, isFeas, isOptim);
+        genTableau(A, b, cj, x, xB, {isFeas: isFeas, isOptim: isOptim});
         showSolution(A, b, cj, x, xB, z, zc);
     }
 
@@ -234,12 +238,15 @@ function simplexIterator(A, b, cj, x, xB) {
             [cB, z, zc] = calcEntries(A, b, cj, x, xB);
 
             // Update finals before showSolution, in case there's alt sols
-            finalA = A;
-            finalb = b;
-            finalcj = cj;
-            finalx = x;
-            finalxB = xB;
-            finalz = z;
+            var finalObj = {A: A, b: b, cj: cj, x: x, xB: xB, z: z};
+            var finalJSON = JSON.stringify(finalObj);
+            var parsedFinal = JSON.parse(finalJSON);
+            finalA = parsedFinal.A;
+            finalb = parsedFinal.b;
+            finalcj = parsedFinal.cj;
+            finalx = parsedFinal.x;
+            finalxB = parsedFinal.xB;
+            finalz = parsedFinal.z;
             finalV = extractV(A);
 
             // Show solution
@@ -249,6 +256,27 @@ function simplexIterator(A, b, cj, x, xB) {
 
     // Update final values
     return [A, b, cj, x, xB, z];
+}
+
+function val(A) {
+    var [m, mn, n] = getDims(A);
+
+    var arr = new Array(m);
+
+    if (mn > 1) {
+        for (let i = 0; i < m; i++) {
+            arr[i] = new Array(mn);
+            for (let j = 0 ; j < mn; j++) {
+                arr[i][j] = A[i][j];
+            }
+        }
+    } else {
+        for (let i = 0 ; i < m; i++) {
+            arr[i] = A[i];
+        }
+    }
+
+    return arr;
 }
 
 /**

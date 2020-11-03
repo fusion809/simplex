@@ -12,19 +12,19 @@ function AColPos(A, b, Idx) {
     // Search through each row in A in the specified column for a positive
     // element.
     for (let i = 0; i < A.length; i++) {
-        if (floatCor(A[i][Idx]) > 0 && b[i]/A[i][Idx] < min) {
+        if ((floatCor(A[i][Idx]) > 0) && (b[i]/A[i][Idx] < min)) {
             min = b[i]/A[i][Idx];
             k = i;
         }
     }
 
-    // If k is not still -1, a positive entry in the Idx column of A
+    // If k is not still -1, a positive entry in the Idx column of A must have
+    // been found
     if (k != -1) {
         return [k, true];
+    } else {
+        return [k, false];
     }
-
-    // If we reach here, no A[i][Idx] > 0
-    return [k, false];
 }
 
 /**
@@ -40,9 +40,12 @@ function AColPos(A, b, Idx) {
  * @return    Nothing, writes to tempStr.
  */
 function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
+    // Dimensions of the problem
     var [m, mn, n] = getDims(A);
-    var k = 0;
+    // Initialize array of pivot indices
     var arrOfPivIdxs = [];
+    // Counter of how many variables able to depart are found
+    var k = 0;
 
     // Loop over each element in zc looking for zc = 0 for a non-basis variable
     for (let i = 0; i < mn; i++) {
@@ -52,7 +55,7 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
 
         // zj-cj must equal zero for non-basis variable column and the column
         // must have a positive aij value.
-        if (!find(xB, x[i]) && zcCor == 0 && AColPos(A, b, i)[1]) {
+        if (!find(xB, x[i]) && (zcCor == 0) && AColPos(A, b, i)[1]) {
             // Display message in HTML to indicate which variable can enter 
             // the basis.
             var pivRowIdx = AColPos(A, b, i)[0];
@@ -69,19 +72,16 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
             var [pivColIdx, pivRowIdx] = arrOfPivIdxs[i];
 
             // Find ratios for b to pivot column
-            var [noOfInvRats, pivotCol, ratio] = findColRat(A, b, pivColIdx, pivotCol, 
-                ratio, k);
+            var {pivotCol, ratio} = findColRat(A, b, pivColIdx);
 
             // Determine the pivot element
             var pivotEl = A[pivRowIdx][pivColIdx];
 
             // Define vars for genTableau
-            var isFeas = true;
-            var isOptim = true;
-            var isUnbounded = false;
-            var isPermInf = false;
-            var befAltSol = true;
-            var format = {isBold: false, isLeftArrow: false, isDownArrow: false, notRow: true};
+            var format = {isBold: false, isLeftArrow: false, 
+                isDownArrow: false, notRow: true};
+            var bools = {isFeas: true, isOptim: true, isUnbounded: true, 
+                isPermInf: false, isAltSol: false, befAltSol: true};
 
             // Say let this var exit and the other var enter on a new line
             tempStr += "<br/>";    
@@ -89,8 +89,7 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
             tempStr += subscripts(x[pivColIdx], format) + " enter it. ";  
 
             // Generate tableau showing the entering/leaving vars
-            genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, 
-                isPermInf, isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+            genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
 
             // Show row operations
             rowOperations(pivRowIdx, pivotCol, pivotEl);
@@ -100,10 +99,9 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
                 pivotCol, mn, m);
 
             // Generate tableau of alternate solution
-            var isAltSol = true;
-            var befAltSol = false;
-            genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbounded, 
-                isPermInf, isAltSol, befAltSol, pivotCol, ratio, pivotEl, 
+            bools.isAltSol = true;
+            bools.befAltSol = false;
+            genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
                 pivRowIdx, pivColIdx); 
             tempStr += "Which gives the solution: ";
             

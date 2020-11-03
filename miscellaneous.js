@@ -1,4 +1,43 @@
 /**
+ * Creates an object containing the specified Booleans.
+ * 
+ * @param isFeas       Boolean containing whether the problem is feasible.
+ * @param isOptim      Boolean containing whether the problem is optimal.
+ * @param isUnbounded  Boolean containing whether the problem is unbounded.
+ * @param isPermInf    Boolean containing whether the problem is permanently 
+ * infeasible.
+ * @param isAltSol     Boolean containing whether an alternate solution is 
+ * being displayed.
+ * @param befAltSol    Boolean containing whether this function is being called
+ * before an alternate solution is displayed.
+ */
+function Bools(isFeas, isOptim, isUnbounded, isPermInf, isAltSol, befAltSol) {
+    this.isFeas = isFeas;
+    this.isOptim = isOptim;
+    this.isUnbounded = isUnbounded;
+    this.isPermInf = isPermInf;
+    this.isAltSol = isAltSol;
+    this.befAltSol = befAltSol;
+}
+
+/**
+ * Determines the dimensions of the problem being solved.
+ * 
+ * @param A   Constraint coefficient matrix as 2d array.
+ * @return    [m, mn, n] (m = number of constraints, n = number of decision 
+ * variables excluding slack variables, mn = m + n)
+ */
+function getDims(A) {
+    // Determine dimensions
+    var m = A.length;
+    var mn = A[0].length;
+    var n = mn - m;
+
+    // Return them
+    return [m, mn, n];
+}
+
+/**
  * Determine whether specified number is an integer.
  * 
  * @param number   Number we're checking for whether it's an integer.
@@ -41,21 +80,4 @@ function newSlackVariables(x, number) {
         newxBRows.push(newSlackVariable(newxBRows));
     }
     return newxBRows;
-}
-
-/**
- * Determines the dimensions of the problem being solved.
- * 
- * @param A   Constraint coefficient matrix as 2d array.
- * @return    [m, mn, n] (m = number of constraints, n = number of decision 
- * variables excluding slack variables, mn = m + n)
- */
-function getDims(A) {
-    // Determine dimensions
-    var m = A.length;
-    var mn = A[0].length;
-    var n = mn - m;
-
-    // Return them
-    return [m, mn, n];
 }

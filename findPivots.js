@@ -12,12 +12,12 @@ function findPivots(A, b, zc) {
     // Initialize relevant arrays
     // Determine column index by finding index of minimum
     // zj-cj entry.
-    var pivotCIdx = minEl(zc, false);
+    var pivColIdx = minEl(zc, false);
 
     // Find pivot
-    var [k, pivotCol, ratio] = findColRat(A, b, pivotCIdx);
+    var {noOfInvRats, pivotCol, ratio} = findColRat(A, b, pivColIdx);
 
-    if (k == b.length) {
+    if (noOfInvRats == b.length) {
         var isUnbounded = true;
     } else {
         var isUnbounded = false;
@@ -26,17 +26,27 @@ function findPivots(A, b, zc) {
     var pivotRIdx = minEl(ratio, true);
     var pivotEl = pivotCol[pivotRIdx];
 
-    return [pivotEl, pivotCol, pivotCIdx, pivotRIdx, ratio, isUnbounded];
+    return [pivotEl, pivotCol, pivColIdx, pivotRIdx, ratio, isUnbounded];
 }
 
-function findColRat(A, b, pivotCIdx, pivotCol, ratio, k) {
+/**
+ * Calculate column of ratios between b and the pivot column entries.
+ * 
+ * @param A             2d LHS constraint coefficients array.
+ * @param b             1d solution array (b column of the tableau).
+ * @param pivColIdx     Pivot column index.
+ * @return              number of invalid ratios, pivot column and ratios in
+ * an object.
+ */
+function findColRat(A, b, pivColIdx) {
     // Initialize globals
     var pivotCol = new Array(b.length);
     var ratio = new Array(b.length);
-    var noOfInvRats = 0;
+    var noOfInvRats = 0; // Number of invalid ratios
 
+    // Loop over every element of b
     for (let i = 0; i < b.length; i++) {
-        pivotCol[i] = A[i][pivotCIdx];
+        pivotCol[i] = A[i][pivColIdx];
         // Following is to prevent floating point arithmetic errors from 
         // causing problems
         var pivotColCor = floatCor(pivotCol[i]);
@@ -48,7 +58,12 @@ function findColRat(A, b, pivotCIdx, pivotCol, ratio, k) {
         }
     }
 
-    return [noOfInvRats, pivotCol, ratio];
+    var objOfReturns = {
+        noOfInvRats: noOfInvRats,
+        pivotCol: pivotCol,
+        ratio: ratio
+    };
+    return objOfReturns;
 }
 
 /**

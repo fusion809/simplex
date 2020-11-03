@@ -8,20 +8,12 @@
  * @param ratio         Ratio of b to pivot column elements.
  * @param pivotRIdx     Pivot row index.
  * @param pivotCIdx     Pivot column index.
- * @param isFeas        Boolean indicating the feasibility of the solution.
- * @param isOptim       Boolean indicating the optimality of the solution.
- * @param isPermInf     Boolean indicating whether the problem is permanently 
- * infeasible.
- * @param isUnbound     Boolean indicating whether the problem is unbounded.
- * @param isAltSol      Boolean indicating whether an alternate solution is to
- * displayed.
- * @param befAltSol     Boolean indicating whether the tableau to be shown is
- * the one before the tableau with the alternate solution. This tableau shows
- * ratios and pivot indicators.
+ * @param bools         Object containing relevant Booleans.
  * @return              Nothing, writes data to tempStr.
  */
-function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
-    isPermInf, isUnbound, isAltSol, befAltSol) {
+function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, bools) {
+    // Get required Booleans
+    var {isFeas, isOptim, isPermInf, isUnbound, isAltSol, befAltSol} = bools;
     // Initialize dimensionality variables
     var [m, mn, n] = getDims(A);
     
@@ -60,16 +52,8 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
  * @param cj          1d array of objective function coefficients.
  * @param x           1d array of decision variable names.
  * @param xB          1d array of basis variable names.
- * @param isFeas      Boolean indicating whether problem is feasible.
- * @param isOptim     Boolean indicating whether problem is optimized.
- * @param isUnbound   Boolean indicating whether the problem is unbounded.
- * @param isPermInf   Boolean indicating whether the problem is permanently 
- * infeasible.
- * @param isAltSol    Boolean indicating whether the tableau shows an alternate
- * solution.
- * @param befAltSol   Boolean indicating whether the tableau is the one to be
- * displayed immediately before the alternate solution tableau. This tableau 
- * shows ratios and pivot indicators.
+ * @param bools       Relevant Booleans that determine some of the 
+ * characteristics of the tableau.
  * @param pivotCol    Pivot column.
  * @param ratio       Ratio array used to decide entering/departing variables.
  * @param pivotEl     Pivot element.
@@ -77,9 +61,9 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim,
  * @param pivotCIdx   Pivot column index.
  * @return            Nothing, simply writes the tableaux to HTML.
  */
-function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf, 
-    isAltSol, befAltSol, pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
+function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+    var {isFeas, isOptim, isUnbound, isPermInf, isAltSol, befAltSol} = bools;
 
     // The following is to prevent departing/entering variable
     // indications from appearing in a final tableau
@@ -96,11 +80,10 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
     objectiveRow(cj);
 
     // Header row
-    headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf, isAltSol, befAltSol);
+    headerRow(x, pivotCIdx, bools);
 
     // A & b rows
-    AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, isFeas, isOptim, 
-        isPermInf, isUnbound, isAltSol, befAltSol);
+    AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, bools);
 
     // zj row
     zRow(pivotEl, isFeas, ratio, z);
@@ -109,7 +92,7 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
     zcRow(zc);
 
     // Ratio row
-    ratRow(pivotEl, ratio, isFeas, isPermInf)
+    ratRow(pivotEl, ratio, bools)
 
     // End tableau
     tempStr += "</table>";
@@ -127,28 +110,21 @@ function genTableau(A, b, cj, x, xB, isFeas, isOptim, isUnbound, isPermInf,
  * 
  * @param x             x array containing decision variable names.
  * @param pivotCIdx     Pivot column index.
- * @param isFeas        Boolean indicating whether problem is feasible.
- * @param isOptim       Boolean indicating whether problem is optimal.
- * @param isPermInf     Boolean indicating whether problem is permanently 
- * infeasible.
- * @param isAltSol      Boolean indicating whether the tableau shows an 
- * alternate solution.
- * @param befAltSol     Boolean indicating whether the tableau is the one to 
- * be displayed immediately before the alternate solution tableau. This 
- * tableau shows ratios and pivot indicators.
+ * @param bools         Relevant Boolean values.
  * @return              Nothing, changes are written to the tempStr global.
  */
-function headerRow(x, pivotCIdx, isFeas, isOptim, isPermInf, isAltSol, befAltSol) {
+function headerRow(x, pivotCIdx, bools) {
+    var {isFeas, isOptim, isPermInf, isAltSol, befAltSol} = bools;
     tempStr += "<tr>";
     tempStr += katexRow("c_{\\mathbf{B}}");
     tempStr += katexRow("x_{\\mathbf{B}}");
     for (let i = 0; i < x.length; i++) {
         if (i != pivotCIdx || isPermInf || isAltSol) {
             tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
-                isDownArrow: false});
+                isDownArrow: false, notRow: false});
         } else {
             tempStr += subscripts(x[i], {isBold: true, isLeftArrow: false, 
-                isDownArrow: true});
+                isDownArrow: true, notRow: false});
         }
     }
     tempStr += katexRow("\\mathbf{b}");
@@ -189,12 +165,11 @@ function objectiveRow(cj) {
  * 
  * @param pivotEl       Pivot element.
  * @param ratio         Ratio of zj-cj to the elements of the pivot row.
- * @param isFeas        Boolean indicating the feasibility of the solution.
- * @param isPermInf     Boolean indicating whether the solution is permanently
- * infeasible.
+ * @param bools         Object containing relevant Booleans.
  * @return              Nothing, the row is just written to tempStr.
  */
-function ratRow(pivotEl, ratio, isFeas, isPermInf) {
+function ratRow(pivotEl, ratio, bools) {
+    var {isFeas, isPermInf} = bools;
     if (ratio != undefined && !isNaN(pivotEl) && !isFeas && !isPermInf) {
         // Gathering dimensionality data
         var mn = ratio.length;
