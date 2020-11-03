@@ -258,27 +258,6 @@ function simplexIterator(A, b, cj, x, xB) {
     return [A, b, cj, x, xB, z];
 }
 
-function val(A) {
-    var [m, mn, n] = getDims(A);
-
-    var arr = new Array(m);
-
-    if (mn > 1) {
-        for (let i = 0; i < m; i++) {
-            arr[i] = new Array(mn);
-            for (let j = 0 ; j < mn; j++) {
-                arr[i][j] = A[i][j];
-            }
-        }
-    } else {
-        for (let i = 0 ; i < m; i++) {
-            arr[i] = A[i];
-        }
-    }
-
-    return arr;
-}
-
 /**
  * Apply simplexIterator() to arguments obtained from getParameters()
  * 

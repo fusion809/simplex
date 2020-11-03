@@ -21,6 +21,22 @@ function Bools(isFeas, isOptim, isUnbounded, isPermInf, isAltSol, befAltSol) {
 }
 
 /**
+ * A function used to copy arrays/objects on assignment. 
+ * If finalA = copyOnAss(A), then if A is updated finalA won't be.
+ * 
+ * @param locA     Array/object.
+ * @return         Same array/object except copied on assignment.
+ */
+function copyOnAss(locA) {
+    // Using JSON funcs to copy without reference
+    var finalObj = {locA: locA};
+    var finalJSON = JSON.stringify(finalObj);
+    var parsedFinal = JSON.parse(finalJSON);
+
+    return parsedFinal.locA;
+}
+
+/**
  * Determines the dimensions of the problem being solved.
  * 
  * @param A   Constraint coefficient matrix as 2d array.

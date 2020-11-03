@@ -1,4 +1,32 @@
 /**
+ * Add new constraint rows to A, b, cj, x and xB
+ * 
+ * @param A        2d array of constraint coefficients.
+ * @param b        1d array of resource values (RHS of constraints).
+ * @param cj       1d array of objective function coefficients.
+ * @param x        1d array of decision variables.
+ * @param xB       1d array of basis variables.
+ * @param newARows 2d array of new rows to be added to A (corrected).
+ * @param newbRows 1d array of new rows to be added to b (corrected).
+ * @return         [A, b, cj, x, xB]
+ */
+function addConstr(A, b, cj, x, xB, newARows, newbRows) {
+    // Add new constraints
+    for (let i = 0; i < newARows.length; i++) {
+        A.push(newARows[i]);
+        b.push(newbRows[i]);
+        // Slack variables have zero objective function coefficients
+        cj.push(0);
+        // Add new slack variables
+        var newSlackVar = newSlackVariable(x);
+        x.push(newSlackVar);
+        xB.push(newSlackVar);
+    }
+
+    return [A, b, cj, x, xB];
+}
+
+/**
  * Adding new variable
  * 
  * @params    None.
@@ -226,34 +254,6 @@ function newConstraint() {
     tempStr += "Adding new constraint(s). ";
 
     return [A, b, cj, x, xB, shouldDie];
-}
-
-/**
- * Add new constraint rows to A, b, cj, x and xB
- * 
- * @param A        2d array of constraint coefficients.
- * @param b        1d array of resource values (RHS of constraints).
- * @param cj       1d array of objective function coefficients.
- * @param x        1d array of decision variables.
- * @param xB       1d array of basis variables.
- * @param newARows 2d array of new rows to be added to A (corrected).
- * @param newbRows 1d array of new rows to be added to b (corrected).
- * @return         [A, b, cj, x, xB]
- */
-function addConstr(A, b, cj, x, xB, newARows, newbRows) {
-    // Add new constraints
-    for (let i = 0; i < newARows.length; i++) {
-        A.push(newARows[i]);
-        b.push(newbRows[i]);
-        // Slack variables have zero objective function coefficients
-        cj.push(0);
-        // Add new slack variables
-        var newSlackVar = newSlackVariable(x);
-        x.push(newSlackVar);
-        xB.push(newSlackVar);
-    }
-
-    return [A, b, cj, x, xB];
 }
 
 /**
