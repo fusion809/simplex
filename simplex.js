@@ -106,7 +106,8 @@ function simplex(A, b, cj, x, xB, zc) {
         // Generate the tableau before we apply simplex
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx,
+            pivColIdx);
 
         // Time to exit function if permanently infeasible, as there's no way
         // to solve the problem
@@ -145,10 +146,12 @@ function simplex(A, b, cj, x, xB, zc) {
         // Tabulate previous iteration
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+            pivRowIdx, pivColIdx);
         
         // Apply feasible problem simplex algorithm
-        [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m);
+        [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
+            pivotCol, mn, m);
     }
 
     // If the solution is now optimal, tabulate it, otherwise proceed to next

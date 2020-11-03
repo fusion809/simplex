@@ -18,8 +18,7 @@ function AColPos(A, b, Idx) {
         }
     }
 
-    // If k is not still -1, a positive entry in the Idx column of A must have
-    // been found
+    // k != -1 tests whether a positive ratio was found
     if (k != -1) {
         return [k, true];
     } else {
@@ -89,7 +88,8 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
             tempStr += subscripts(x[pivColIdx], format) + " enter it. ";  
 
             // Generate tableau showing the entering/leaving vars
-            genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx);
+            genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+                pivRowIdx, pivColIdx);
 
             // Show row operations
             rowOperations(pivRowIdx, pivotCol, pivotEl);
