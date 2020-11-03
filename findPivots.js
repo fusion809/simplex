@@ -23,10 +23,10 @@ function findPivots(A, b, zc) {
         var isUnbounded = false;
     }
 
-    var pivotRIdx = minEl(ratio, true);
-    var pivotEl = pivotCol[pivotRIdx];
+    var pivRowIdx = minEl(ratio, true);
+    var pivotEl = pivotCol[pivRowIdx];
 
-    return [pivotEl, pivotCol, pivColIdx, pivotRIdx, ratio, isUnbounded];
+    return [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded];
 }
 
 /**

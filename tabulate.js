@@ -6,12 +6,12 @@
  * @param xB            Basis variable array.
  * @param cB            Array of cB column elements.
  * @param ratio         Ratio of b to pivot column elements.
- * @param pivotRIdx     Pivot row index.
- * @param pivotCIdx     Pivot column index.
+ * @param pivRowIdx     Pivot row index.
+ * @param pivColIdx     Pivot column index.
  * @param bools         Object containing relevant Booleans.
  * @return              Nothing, writes data to tempStr.
  */
-function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, bools) {
+function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
     // Get required Booleans
     var {isFeas, isOptim, isPermInf, isUnbound, isAltSol, befAltSol} = bools;
     // Initialize dimensionality variables
@@ -21,7 +21,7 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, bools) {
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
-        if (( pivotRIdx != i) || (isNaN(pivotCIdx)) || isPermInf || isUnbound 
+        if (( pivRowIdx != i) || (isNaN(pivColIdx)) || isPermInf || isUnbound 
         || isAltSol) {
             tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: false});
@@ -57,19 +57,19 @@ function AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, bools) {
  * @param pivotCol    Pivot column.
  * @param ratio       Ratio array used to decide entering/departing variables.
  * @param pivotEl     Pivot element.
- * @param pivotRIdx   Pivot row index.
- * @param pivotCIdx   Pivot column index.
+ * @param pivRowIdx   Pivot row index.
+ * @param pivColIdx   Pivot column index.
  * @return            Nothing, simply writes the tableaux to HTML.
  */
-function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivotRIdx, pivotCIdx) {
+function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx, pivColIdx) {
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
     var {isFeas, isOptim, isUnbound, isPermInf, isAltSol, befAltSol} = bools;
 
     // The following is to prevent departing/entering variable
     // indications from appearing in a final tableau
-    if (xB[pivotRIdx] == x[pivotCIdx]) {
-        pivotRIdx = NaN;
-        pivotCIdx = NaN;
+    if (xB[pivRowIdx] == x[pivColIdx]) {
+        pivRowIdx = NaN;
+        pivColIdx = NaN;
     }
 
     // Start tableau
@@ -80,10 +80,10 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivotRIdx,
     objectiveRow(cj);
 
     // Header row
-    headerRow(x, pivotCIdx, bools);
+    headerRow(x, pivColIdx, bools);
 
     // A & b rows
-    AbRows(A, b, xB, cB, ratio, pivotRIdx, pivotCIdx, bools);
+    AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools);
 
     // zj row
     zRow(pivotEl, isFeas, ratio, z);
@@ -98,9 +98,9 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivotRIdx,
     tempStr += "</table>";
 
     // Show row operations
-    if (!isOptim && !isUnbound && !isNaN(pivotRIdx) && !isNaN(pivotEl) && 
+    if (!isOptim && !isUnbound && !isNaN(pivRowIdx) && !isNaN(pivotEl) && 
     !isPermInf) {
-        rowOperations(pivotRIdx, pivotCol, pivotEl);
+        rowOperations(pivRowIdx, pivotCol, pivotEl);
     }
     writeTempStr();
 }
@@ -109,17 +109,17 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivotRIdx,
  * Write header row to tempStr.
  * 
  * @param x             x array containing decision variable names.
- * @param pivotCIdx     Pivot column index.
+ * @param pivColIdx     Pivot column index.
  * @param bools         Relevant Boolean values.
  * @return              Nothing, changes are written to the tempStr global.
  */
-function headerRow(x, pivotCIdx, bools) {
+function headerRow(x, pivColIdx, bools) {
     var {isFeas, isOptim, isPermInf, isAltSol, befAltSol} = bools;
     tempStr += "<tr>";
     tempStr += katexRow("c_{\\mathbf{B}}");
     tempStr += katexRow("x_{\\mathbf{B}}");
     for (let i = 0; i < x.length; i++) {
-        if (i != pivotCIdx || isPermInf || isAltSol) {
+        if (i != pivColIdx || isPermInf || isAltSol) {
             tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: false});
         } else {
@@ -201,14 +201,14 @@ function removeTableaux() {
 /**
  * Show row operations.
  * 
- * @param pivotRIdx Pivot row index.
+ * @param pivRowIdx Pivot row index.
  * @param pivotCol  Pivot column.
  * @param pivotEl   Pivot element.
  * @return          Nothing, adds the row operations to tempStr.
  */
-function rowOperations(pivotRIdx, pivotCol, pivotEl) {
+function rowOperations(pivRowIdx, pivotCol, pivotEl) {
     // Row numbers start at 1 not 0
-    pivotRIdx++;
+    pivRowIdx++;
 
     // Initialize dimensionality variable
     var m = pivotCol.length;
@@ -217,24 +217,24 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
     // tempStr
     for (let i = 0; i < m; i++) {
         // Pivot row operation
-        if (pivotRIdx - 1 == i) {
+        if (pivRowIdx - 1 == i) {
             if (pivotEl == 1) {
-                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + pivotRIdx +
-                 "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + pivRowIdx +
+                 "} \\rightarrow R_{" + pivRowIdx + "}^{'}") + "</div>";
             } else if (pivotEl == -1) {
-                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("-R_{" + pivotRIdx + 
-                "} \\rightarrow R_{" + pivotRIdx + "}^{'}") + "</div>";
+                tempStr += "<div style='padding: 7px;'>" + katex.renderToString("-R_{" + pivRowIdx + 
+                "} \\rightarrow R_{" + pivRowIdx + "}^{'}") + "</div>";
             } else {
                 var fraction = math.fraction(1/pivotEl);
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + katex.renderToString(sign(fraction.s) 
                     + "\\dfrac{" + fraction.n + "}{" + fraction.d + "}" + 
-                    " R_{" + pivotRIdx + "} \\rightarrow R_{" + pivotRIdx + 
+                    " R_{" + pivRowIdx + "} \\rightarrow R_{" + pivRowIdx + 
                     "}^{'}") + "</div>";
                 } else {
                     tempStr += "<div style='padding: 7px;'>" + katex.renderToString(sign(fraction.s) 
-                    + fraction.n + " R_{" + pivotRIdx + "} \\rightarrow R_{" 
-                    + pivotRIdx + "}^{'}") + "</div>";
+                    + fraction.n + " R_{" + pivRowIdx + "} \\rightarrow R_{" 
+                    + pivRowIdx + "}^{'}") + "</div>";
                 }
             }
         } 
@@ -242,18 +242,18 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
         else {
             if (pivotCol[i] == -1) {
                 tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
-                "} + " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + 
+                "} + " + "R_{" + pivRowIdx + "}^{'} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
             } else if ( pivotCol[i] < 0) {
                 var fraction = math.fraction(-pivotCol[i]);
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) +
                      "} + \\dfrac{" + fraction.n + "}{" + fraction.d + "} R_{" 
-                     + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + 
+                     + pivRowIdx + "}^{'} \\rightarrow R_{" + (i + 1) + 
                      "}^{'}") + "</div>";
                 } else {
                     tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
-                    "} + " + fraction.n + "R_{" + pivotRIdx + 
+                    "} + " + fraction.n + "R_{" + pivRowIdx + 
                     "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
                 }
             } else if (pivotCol[i] == 0) {
@@ -261,7 +261,7 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
                 "} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
             } else if (pivotCol[i] == 1) {
                 tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1) + 
-                "} - " + "R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + 
+                "} - " + "R_{" + pivRowIdx + "}^{'} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
             }
             // pivotCol[i] > 0 and not equal to 1
@@ -270,11 +270,11 @@ function rowOperations(pivotRIdx, pivotCol, pivotEl) {
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1)
                      + "} - \\dfrac{" + fraction.n + "}{" + fraction.d + 
-                     "}R_{" + pivotRIdx + "}^{'} \\rightarrow R_{" + (i + 1) + 
+                     "}R_{" + pivRowIdx + "}^{'} \\rightarrow R_{" + (i + 1) + 
                      "}^{'}") + "</div>";
                 } else {
                     tempStr += "<div style='padding: 7px;'>" + katex.renderToString("R_{" + (i + 1)
-                     + "} - " + fraction.n + "R_{" + pivotRIdx + 
+                     + "} - " + fraction.n + "R_{" + pivRowIdx + 
                      "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + "</div>";
                 }
             }
