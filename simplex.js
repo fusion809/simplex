@@ -240,16 +240,13 @@ function simplexIterator(A, b, cj, x, xB) {
         } else if (isOptim) {
             [cB, z, zc] = calcEntries(A, b, cj, x, xB);
 
-            // Update finals before showSolution, in case there's alt sols
-            var finalObj = {A: A, b: b, cj: cj, x: x, xB: xB, z: z};
-            var finalJSON = JSON.stringify(finalObj);
-            var parsedFinal = JSON.parse(finalJSON);
-            finalA = parsedFinal.A;
-            finalb = parsedFinal.b;
-            finalcj = parsedFinal.cj;
-            finalx = parsedFinal.x;
-            finalxB = parsedFinal.xB;
-            finalz = parsedFinal.z;
+            // Update finals before showSolution, in case there's alt sol
+            finalA = copyOnAss(A);
+            finalb = copyOnAss(b);
+            finalcj = copyOnAss(cj);
+            finalx = copyOnAss(x);
+            finalxB = copyOnAss(xB);
+            finalz = copyOnAss(z);
             finalV = extractV(A);
 
             // Show solution
