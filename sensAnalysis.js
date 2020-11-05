@@ -8,16 +8,17 @@
  * @param xB       1d array of basis variables.
  * @param newARows 2d array of new rows to be added to A (corrected).
  * @param newbRows 1d array of new rows to be added to b (corrected).
+ * @param newcRows 1d array of new elements to be added to c.
  * @return         [A, b, cj, x, xB]
  */
-function addConstr(A, b, cj, x, xB, newARows, newbRows, newcEntries) {
+function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows) {
     // Add new constraints
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
         b.push(newbRows[i]);
         // Slack variables have zero objective function coefficients
-        if (document.getElementById("newcEntries").checked) {
-            cj.push(newcEntries[i]);
+        if (document.getElementById("newcRows").checked) {
+            cj.push(newcRows[i]);
         } else {
             cj.push(0);
         }
@@ -193,7 +194,7 @@ function newConstraint() {
     var newARows = readA();
     var newARows2 = readA();
     var newbRows = readb();
-    var newcEntries = readc();
+    var newcRows = readc();
 
     // If the number of rows to be added to A and b do not match, return an
     // error
@@ -203,9 +204,9 @@ function newConstraint() {
         return [A, b, cj, x, xB, shouldDie];
     }
 
-    // Return an error if the number of elements in newcEntries does not match
-    // the number of elements in newbRows and the newcEntries box is ticked
-    if ( (newcEntries.length != newbRows.length ) && document.getElementById("newcEntries").checked) {
+    // Return an error if the number of elements in newcRows does not match
+    // the number of elements in newbRows and the newcRows box is ticked
+    if ( (newcRows.length != newbRows.length ) && document.getElementById("newcRows").checked) {
         shouldDie = true;
         alert("The number of new b rows and new entries in c must match!");
         return [A, b, cj, x, xB, shouldDie];
@@ -263,7 +264,7 @@ function newConstraint() {
     }
 
     // New constraint elements to A, b, xB, x and cj
-    [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, newcEntries);
+    [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows);
 
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";
