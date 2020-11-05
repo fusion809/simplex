@@ -10,13 +10,17 @@
  * @param newbRows 1d array of new rows to be added to b (corrected).
  * @return         [A, b, cj, x, xB]
  */
-function addConstr(A, b, cj, x, xB, newARows, newbRows) {
+function addConstr(A, b, cj, x, xB, newARows, newbRows, newcEntries) {
     // Add new constraints
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
         b.push(newbRows[i]);
         // Slack variables have zero objective function coefficients
-        cj.push(0);
+        if (document.getElementById("newcEntries").checked) {
+            cj.push(newcEntries[i]);
+        } else {
+            cj.push(0);
+        }
         // Add new slack variables
         var newSlackVar = newSlackVariable(x);
         x.push(newSlackVar);
@@ -189,6 +193,7 @@ function newConstraint() {
     var newARows = readA();
     var newARows2 = readA();
     var newbRows = readb();
+    var newcEntries = readc();
 
     // If the number of rows to be added to A and b do not match, return an
     // error
@@ -198,6 +203,16 @@ function newConstraint() {
         return [A, b, cj, x, xB, shouldDie];
     }
 
+    // Return an error if the number of elements in newcEntries does not match
+    // the number of elements in newbRows and the newcEntries box is ticked
+    if ( (newcEntries.length != newbRows.length ) && document.getElementById("newcEntries").checked) {
+        shouldDie = true;
+        alert("The number of new b rows and new entries in c must match!");
+        return [A, b, cj, x, xB, shouldDie];
+    }
+
+    // Return an error if the columns in newARows does not match the number of
+    // columns in A plus the number of rows in newARows
     if (newARows[0].length != A[0].length + newARows.length) {
         shouldDie = true;
         var msg = "Remember your new A rows must have a number of columns ";
@@ -248,7 +263,7 @@ function newConstraint() {
     }
 
     // New constraint elements to A, b, xB, x and cj
-    [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows);
+    [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, newcEntries);
 
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";
