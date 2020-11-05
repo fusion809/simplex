@@ -13,7 +13,7 @@
  */
 function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
     // Get required Booleans
-    var {isFeas, isOptim, isPermInf, isUnbound, isAltSol, befAltSol} = bools;
+    var {isFeas, isOptim, isPermInf, isUnbounded, isAltSol, befAltSol} = bools;
     // Initialize dimensionality variables
     var [m, mn, n] = getDims(A);
     
@@ -21,7 +21,7 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
     for (let i = 0; i < m; i++) {
         tempStr += "<tr>";
         tempStr += "<td>" + decimalToFrac(cB[i]) + "</td>";
-        if (( pivRowIdx != i) || (isNaN(pivColIdx)) || isPermInf || isUnbound 
+        if (( pivRowIdx != i) || (isNaN(pivColIdx)) || isPermInf || isUnbounded 
         || isAltSol) {
             tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: false});
@@ -66,7 +66,7 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
 function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
     pivRowIdx, pivColIdx) {
     var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
-    var {isFeas, isOptim, isUnbound, isPermInf} = bools;
+    var {isFeas, isOptim, isUnbounded, isPermInf} = bools;
 
     // The following is to prevent departing/entering variable
     // indications from appearing in a final tableau
@@ -101,7 +101,7 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl,
     tempStr += "</table>";
 
     // Show row operations
-    if (!isOptim && !isUnbound && !isNaN(pivRowIdx) && !isNaN(pivotEl) && 
+    if (!isOptim && !isUnbounded && !isNaN(pivRowIdx) && !isNaN(pivotEl) && 
     !isPermInf) {
         rowOperations(pivRowIdx, pivotCol, pivotEl);
     }

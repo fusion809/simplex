@@ -146,9 +146,9 @@ function simplex(A, b, cj, x, xB, zc) {
         // Tabulate previous iteration
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
+        console.log(bools.isUnbounded);
         genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
             pivRowIdx, pivColIdx);
-        
         // Apply feasible problem simplex algorithm
         [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
             pivotCol, mn, m);
