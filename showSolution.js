@@ -79,7 +79,7 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
             // Define vars for genTableau
             var format = {isBold: false, isLeftArrow: false, 
                 isDownArrow: false, notRow: true};
-            var bools = {isFeas: true, isOptim: true, isUnbounded: true, 
+            var bools = {isFeas: true, isOptim: true, isUnbounded: false, 
                 isPermInf: false, isAltSol: false, befAltSol: true};
 
             // Say let this var exit and the other var enter on a new line
