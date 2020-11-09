@@ -214,7 +214,4 @@ function showSolution(A, b, cj, x, xB, z, zc) {
 
     // New empty row
     tempStr += "<br/>";
-
-    // Write to tableau element
-    document.getElementById("tableau").innerHTML = tempStr;
 }

@@ -105,7 +105,6 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl,
     !isPermInf) {
         rowOperations(pivRowIdx, pivotCol, pivotEl);
     }
-    writeTempStr();
 }
 
 /**
@@ -325,16 +324,6 @@ function subscripts(decVar, format) {
     } else {
         return katexRow(corrected);
     }
-}
-
-/**
- * Write tempStr to tableau HTML element.
- * 
- * @params    None.
- * @return    Nothing.
- */
-function writeTempStr() {
-    document.getElementById("tableau").innerHTML = tempStr;
 }
 
 /**

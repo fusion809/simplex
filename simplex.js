@@ -232,10 +232,8 @@ function simplexIterator(A, b, cj, x, xB) {
         // unbounded
         if (isUnbounded) {
             tempStr += "Problem is unbounded! ";
-            document.getElementById("tableau").innerHTML = tempStr;
         } else if (isPermInf) {
             tempStr += "Problem is infeasible! ";
-            document.getElementById("tableau").innerHTML = tempStr;
         } else if (isOptim) {
             [cB, z, zc] = calcEntries(A, b, cj, x, xB);
 
@@ -269,4 +267,6 @@ function solveProblem() {
     if (!shouldDie) {
         [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB);
     }
+
+    document.getElementById("tableau").innerHTML = tempStr;
 }
