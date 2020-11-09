@@ -18,5 +18,5 @@ As of 3 November 2020 this solver:
 
 Shortcomings include:
 * Poor performance. For really big problems this solver is *very slow* (taking several seconds). Any optimizations will be welcome.
-* Does not support entering the problem in a format other than matrix format.
+* Does not support entering the problem in a format other than matrix format. I am reluctant to remove the ability to enter the problem in matrix form, as this can be helpful (e.g. in cases where one wishes the solver to perform all remaining iterations of simplex after one has already performed a few iterations of simplex manually)
 * Does not solve integer programming problems (branchAndBound.js is an attempt at this, but it was abandoned due to the complexity of the recursion required).
