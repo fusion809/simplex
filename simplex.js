@@ -262,11 +262,14 @@ function simplexIterator(A, b, cj, x, xB) {
  * @return    Nothing.
  */
 function solveProblem() {
+    // Obtain required problem parameters
     var [A, b, cj, x, xB, shouldDie] = getParameters();
 
+    // Solve problem using simplex iterator
     if (!shouldDie) {
         [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB);
     }
 
+    // Write tempStr to tableau element
     document.getElementById("tableau").innerHTML = tempStr;
 }
