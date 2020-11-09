@@ -244,7 +244,8 @@ function rowOperations(pivRowIdx, pivotCol, pivotEl) {
                 }
             }
         } 
-        // Row operations for non-pivot rows
+        // Row operations for non-pivot rows, adjusted according to the value
+        // of the pivot column element for the row
         else {
             if (pivotCol[i] == -1) {
                 tempStr += "<div style='padding: 7px;'>" + 

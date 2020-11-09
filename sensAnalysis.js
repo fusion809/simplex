@@ -38,7 +38,7 @@ function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows) {
  * @return    [A, b, cj, x, xB, shouldDie]
  */
 function addVariable() {
-    // Set globals
+    // Read variables from globals
     var A = finalA;
     var m = A.length;
     var mn = A[0].length;
@@ -47,31 +47,34 @@ function addVariable() {
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
+
+    // Collect new variables from the form
     var newACols = readA();
     var newACols2 = readA();
     var newcRows = readc();
     var newxRows = readx();
+
+    // Correct new A columns using the final V matrix, so that they can be
+    // added to the new tableau
     var newAColsCor = matMult(finalV, newACols);
+
+    // Initialize the shouldDie Boolean
     var shouldDie = false;
 
-    // Test dimensionality of newACols
+    // Dimensionality tests
     if (newACols.length != m) {
         var msg = "The newly entered A does not have the same number of ";
         msg += "rows as the original A";
         alert(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
-    }
-
-    if (newcRows.length != newACols[0].length) {
+    } else if (newcRows.length != newACols[0].length) {
         var msg = "The number of elements in the c field does not equal the ";
         msg += "number of columns in the A field.";
         alert(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
-    }
-
-    if (newcRows.length != newxRows.length) {
+    } else if (newcRows.length != newxRows.length) {
         var msg = "The number of elements in the c field does not equal the ";
         msg += "number of elements in the x field.";
         alert(msg);
@@ -109,22 +112,28 @@ function addVariable() {
 function constrCoeffsChange() {
     // Set globals
     var A = readA();
+
     // Easier to work with transposes, as the first and easiest elements to 
-    // obtain pertain are columns of the original matrix.
+    // obtain pertain to columns of the original matrix.
     var AT = transpose(A);
     var finalAT = transpose(finalA);
+    initialAT = transpose(initialA);
+    
     // Gather dimensionality info
     var [m, mn, n] = getDims(A);
     var [finm, finmn, finn] = getDims(finalA);
+    
     // Obtain current arrays from the last iteration of simplex
     var b = finalb;
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
+    
     // Determine the location of basis variables within x
     var loc = basisIndex(x, xB);
+
+    // Initialize shouldDie Boolean
     var shouldDie = false;
-    initialAT = transpose(initialA);
 
     // Dimensions of A in the form and finalA must match
     if ( (m != finm) || (mn != finmn) ) {
@@ -190,11 +199,15 @@ function correctionOp(newARow, ARow, multiplier) {
 function newConstraint() {
     // Set globals
     var [A, b, cj, x, xB] = setVarsToFinal();
-    var shouldDie = false;
+    
+    // Read new entries from form
     var newARows = readA();
     var newARows2 = readA();
     var newbRows = readb();
     var newcRows = readc();
+
+    // Initialize shouldDie Boolean
+    var shouldDie = false;
 
     // If the number of rows to be added to A and b do not match, return an
     // error
@@ -279,12 +292,16 @@ function newConstraint() {
  * @return    [A, b, cj, x, xB, shouldDie]
  */
 function objectiveChange() {
-    // Set globals
+    // Set globals to values from final iteration of simplex
     var A = finalA;
     var b = finalb;
     var xB = finalxB;
-    var cj = readc();
     var x = finalx;
+
+    // Obtain new cj from form
+    var cj = readc();
+
+    // Initialize shouldDie Boolean
     var shouldDie = false;
 
     // The number of objective function coefficients should equal the number 
@@ -308,13 +325,20 @@ function objectiveChange() {
  * @return    [A, b, cj, x, xB, shouldDie]
  */
 function resourceChange() {
-    // Set globals
+    // Set globals to values obtained from final iteration of simplex
     var A = finalA;
-    var b = readb();
     var xB = finalxB;
     var cj = finalcj;
     var x = finalx;
+
+    // Read new b from form
+    var b = readb();
+
+    // Find how b should be added to final tableau using the relationship:
+    // b_{New}^{final} = V^{final} b_{New}^{(0)}
     var b = matMult(finalV, b);
+
+    // Initialize shouldDie Boolean
     var shouldDie = false;
 
     // New b array should have the same number of rows as A

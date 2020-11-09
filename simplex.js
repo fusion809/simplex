@@ -14,9 +14,14 @@
  * @return           Updated A, b, xB.
  */
 function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
+    // Divide pivot row by pivot element
     b[pivRowIdx] /= pivotEl;
+
+    // Replace pivot row basis variable with pivot column variable
     xB[pivRowIdx] = x[pivColIdx];
+
     for (let i = 0; i < mn; i++) {
+        // Divide pivot row by pivot element
         A[pivRowIdx][i] /= pivotEl;
 
         for (let j = 0; j < m; j++) {
@@ -25,6 +30,9 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
                 if (i == 0) {
                     b[j] -= pivotCol[j] * b[pivRowIdx];
                 }
+                // Subtract what multiple of the corrected pivot row is 
+                // required to get zeros in all columns corresponding to
+                // basis variables
                 A[j][i] -= pivotCol[j] * A[pivRowIdx][i];
             }
         }
@@ -140,14 +148,17 @@ function simplex(A, b, cj, x, xB, zc) {
         // Method for working with non-optimal, but feasible solutions
         // If the problem is feasible, it's not permanently infeasible
         isPermInf = false;
+
         // Obtain pivot information
         var arr = findPivots(A, b, zc);
         [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
+
         // Tabulate previous iteration
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
         genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
             pivRowIdx, pivColIdx);
+
         // Apply feasible problem simplex algorithm
         [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
             pivotCol, mn, m);
@@ -225,6 +236,7 @@ function simplexIterator(A, b, cj, x, xB) {
         [cB, z, zc] = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
         [A, b, xB, isUnbounded, isPermInf] = arr;
+        
         // Determine whether problem is now optimal and feasible
         [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
 
