@@ -1,5 +1,122 @@
 /**
- * Multiply square matrix by column vector
+ * Convert array into matrix object.
+ * 
+ * @param arr      Array.
+ * @return         Matrix object with attributes matrix, height and width.
+ */
+function Matrix(arr) {
+    this.matrix = arr;
+    this.height = arr.length;
+    if (arr[0].length == undefined) {
+        this.width = 1;
+    } else {
+        this.width = arr[0].length;
+    }
+    // Difference between width and height of matrix, equal to the number of 
+    // decision variables
+    this.dimDiff = this.width - this.height;
+
+    this.transpose = function() {
+        var trans = new Array(this.width);
+        for (let i = 0; i < this.width; i++) {
+            trans[i] = new Array(this.height);
+            for (let j = 0; j < this.height; j++) {
+                trans[i][j] = arr[j][i];
+            }
+        }
+        return new Matrix(trans);
+    }
+
+    this.mult = function(arr2) {
+        var result = new Array(this.height);
+
+        for (let i = 0; i < this.height; i++) {
+
+            if (arr2.width > 1) {
+                result[i] = new Array(arr2.width);
+                for (let j = 0 ; j < arr2.width; j++) {
+                    result[i][j] = 0;
+                    for (let k = 0; k < this.width; k++) {
+                        result[i][j] += this.matrix[i][k] * arr2.matrix[k][j];
+                    }
+                }
+            } else {
+                result[i] = 0;
+                for (let k = 0; k < this.width; k++) {
+                    result[i] += this.matrix[i][k] * arr2.matrix[k];
+                }
+            }
+        }
+        return new Matrix(result);
+    }
+
+    this.find = function(target) {
+        for (let i = 0; i < this.height; i++) {
+            if (this.matrix[i] == target) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.minEl = function(isPosReq) {
+        var index = 0;
+        var min = Number.POSITIVE_INFINITY;
+        for (let i = 0; i < this.height; i++) {
+            if (isPosReq) {
+                if ((this.matrix[i] < min) && (this.matrix[i] >= 0)) {
+                    min = this.matrix[i];
+                    index = i;
+                }
+            } else {
+                if (this.matrix[i] < min) {
+                    min = this.matrix[i];
+                    index = i;
+                }
+            }
+        }
+        return index;
+    }
+
+    this.location = function(arr2) {
+        var loc = new Array(arr2.height);
+
+        // Loop over basis variables
+        for (let i = 0; i < this.height; i++) {
+            // Loop over decision variables
+            for (let j = 0; j < arr2.height; j++) {    
+                // Record where in x each entry in xB is found
+                if (this.matrix[i] == arr2.matrix[j]) {
+                    loc[j] = i;
+                    break;
+                }
+            }
+        }
+
+        // Return array of locations
+        return new Matrix(loc);
+    }
+}
+
+/**
+ * Determines the dimensions of the problem being solved.
+ * 
+ * @param A   Constraint coefficient matrix as 2d array.
+ * @return    [m, mn, n] (m = number of constraints, n = number of decision 
+ * variables excluding slack variables, mn = m + n)
+ */
+function getDims(A) {
+    // Determine dimensions
+    var m = A.length;
+    var mn = A[0].length;
+    var n = mn - m;
+
+    // Return them
+    return [m, mn, n];
+}
+
+/**
+ * Multiply square matrix by column this.matrixtor
  * 
  * @param V        2d array representing a matrix.
  * @param b        1d/2d array.

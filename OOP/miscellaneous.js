@@ -29,11 +29,11 @@ function Bools(isFeas, isOptim, isUnbounded, isPermInf, isAltSol, befAltSol) {
  */
 function copyOnAss(locA) {
     // Using JSON funcs to copy without reference
-    var finalObj = {locA: locA};
+    var finalObj = {locA: locA.matrix};
     var finalJSON = JSON.stringify(finalObj);
     var parsedFinal = JSON.parse(finalJSON);
 
-    return parsedFinal.locA;
+    return new Matrix(parsedFinal.locA);
 }
 
 /**
@@ -59,8 +59,7 @@ function isInt(number) {
  * @return    New slack variable name.
  */
 function newSlackVariable(x) {
-    var mn = x.length;
-    var finalSlack = x[mn-1];
+    var finalSlack = x.matrix[x.height-1];
     var finalSlackLet = finalSlack.replace(/\d+/, '');
     var finalSlackNo = parseInt(finalSlack.replace(finalSlackLet, ''));
     return finalSlackLet + (finalSlackNo + 1);
