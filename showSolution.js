@@ -204,7 +204,7 @@ function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
     var [m, mn, n] = getDims(A);
     
     // Display values of non-basic variables and z
-    printSolution(b, xB, x, z[mn], mn, n, sign, objVarName);
+    printSolution(b, xB, x, z[mn], mn, n, sign, objVarName, false);
 
     // Check for permanent degeneracy
     checkForDegn(b, xB);

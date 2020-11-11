@@ -167,18 +167,24 @@ function readNonMatForm() {
     var b = new Array(noOfConstr);
     var j = 0;
     var countOfEq = 0;
+    var noOfEmptyRows = 0;
+    for (let i = 0 ; i < elNLArr.length; i++) {
+        if (elNLArr[i].match(/^\s*$/)) {
+            noOfEmptyRows++;
+        }
+    }
 
     while (j < noOfConstr) {
-        if (elNLArr[j+2-countOfEq].match(/ =/)) {
+        if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
             A[j+1] = new Array(mn-1);
         }
         A[j] = new Array(mn-1);
         // Add slack entries
         cj.push(0);
 
-        var constr = elNLArr[j+2-countOfEq].replace(/[<>]*=.*/, '').replace(/ /g, "");
-        var resc = parseFloat(elNLArr[j+2-countOfEq].replace(/.*[<>]*=/, '').replace(/ /g, ""));
-        if (elNLArr[j+2 - countOfEq].match(/ =/)) {
+        var constr = elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/[<>]*=.*/, '').replace(/ /g, "");
+        var resc = parseFloat(elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/.*[<>]*=/, '').replace(/ /g, ""));
+        if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
             tempStr += "Splitting constraint ";
             tempStr += (j+1 - countOfEq);
             tempStr += " into <= and >= constraints.";
@@ -186,7 +192,7 @@ function readNonMatForm() {
             tempStr += " canonical form.<br/>"
             b[j] = -resc;
             b[j+1] = resc;
-        } else if (elNLArr[j+2 - countOfEq].match(/<=/)) {
+        } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/)) {
             b[j] = resc;
         } else {
             tempStr += "Multiplying constraint ";
@@ -205,11 +211,11 @@ function readNonMatForm() {
             } else {
                 var coeff = 0;
             }
-            if (elNLArr[j+2-countOfEq].match(/<=/)) {
+            if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/<=/)) {
                 A[j][i] = coeff;
-            } else if (elNLArr[j+2-countOfEq].match(/>=/)) {
+            } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/>=/)) {
                 A[j][i] = -coeff;
-            } else if (elNLArr[j+2-countOfEq].match(/ =/)) {
+            } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
                 A[j][i] = -coeff;
                 A[j+1][i] = coeff;
             }
@@ -222,7 +228,7 @@ function readNonMatForm() {
             } else {
                 A[j][k] = 0;
             }
-            if (elNLArr[j+2-countOfEq].match(/ =/)) {
+            if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
                 if (j+1 == k - varNo) {
                     A[j+1][k] = 1;
                 } else {
@@ -232,9 +238,9 @@ function readNonMatForm() {
         }
         xB.push("s" + (j+1));
         x.push("s" + (j+1));
-        if (elNLArr[j+2-countOfEq].match(/ =/)) {
-            xB.push("s" + (j+2));
-            x.push("s" + (j+2));
+        if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
+            xB.push("s" + (j + 2));
+            x.push("s" + (j + 2));
             cj.push(0);
             j += 2;
             countOfEq++;

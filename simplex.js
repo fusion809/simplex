@@ -227,7 +227,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     if (isOptim) {
         tempStr += "Solution is already optimal.";
         genTableau(A, b, cj, x, xB, {isFeas: isFeas, isOptim: isOptim});
-        showSolution(A, b, cj, x, xB, z, zc, objVarName);
+        showSolution(A, b, cj, x, xB, z, zc, sign, objVarName);
     }
 
     // Use simplex to solve the problem
