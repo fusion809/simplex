@@ -38,7 +38,7 @@ function AColPos(A, b, Idx) {
  * @param zc  1d array of zj-cj values.
  * @return    Nothing, writes to tempStr.
  */
-function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
+function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
     // Dimensions of the problem
     var [m, mn, n] = getDims(A);
     // Initialize array of pivot indices
@@ -106,7 +106,7 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc) {
             tempStr += "Which gives the solution: ";
             
             // Print alternate solution
-            printSolution(b, xB, x, zmn, mn, n, true);
+            printSolution(b, xB, x, zmn, mn, n, sign, objVarName, true);
         }
     } 
 }
@@ -141,7 +141,7 @@ function checkForDegn(b, xB) {
  * displayed is an alternate solution.
  * @return         Nothing, adds to the tempStr.
  */
-function printSolution(b, xB, x, zmn, mn, n, isAlt) {
+function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
     // Non-basic variable counter
     var k = 0;
 
@@ -175,8 +175,8 @@ function printSolution(b, xB, x, zmn, mn, n, isAlt) {
                 // If this isn't an alternate solution that's being printed, 
                 // show z value also. Otherwise just print full stop.
                 if (!isAlt) {
-                    tempStr += " and " + katex.renderToString("z = ") + " ";
-                    tempStr += decimalToFrac(zmn) + ". ";
+                    tempStr += " and " + katex.renderToString(objVarName + " = ") + " ";
+                    tempStr += decimalToFrac(sign*zmn) + ". ";
                 } else {
                     tempStr += ". ";
                 }
@@ -197,20 +197,20 @@ function printSolution(b, xB, x, zmn, mn, n, isAlt) {
  * @param zc  zj-cj value array.
  * @return    Nothing, just writes the solution to tempStr global.
  */
-function showSolution(A, b, cj, x, xB, z, zc) {
+function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
     tempStr += "Optimal solution is ";
 
     // Initialize dimensionality variables
     var [m, mn, n] = getDims(A);
     
     // Display values of non-basic variables and z
-    printSolution(b, xB, x, z[mn], mn, n);
+    printSolution(b, xB, x, z[mn], mn, n, sign, objVarName);
 
     // Check for permanent degeneracy
     checkForDegn(b, xB);
 
     // Determine and display whether an alternate solution exists
-    checkForAltSol(A, b, cj, x, xB, z[mn], zc);
+    checkForAltSol(A, b, cj, x, xB, z[mn], zc, sign, objVarName);
 
     // New empty row
     tempStr += "<br/>";

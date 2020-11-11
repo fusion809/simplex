@@ -189,7 +189,7 @@ function simplex(A, b, cj, x, xB, zc) {
  * @param xB            1d array of basis variable names.
  * @return              [A, b, cj, x, xB, z]
  */
-function simplexIterator(A, b, cj, x, xB) {
+function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // Error messages
     if (b.length != xB.length ) {
         alert("The lengths of b and xB do not match!");
@@ -227,7 +227,7 @@ function simplexIterator(A, b, cj, x, xB) {
     if (isOptim) {
         tempStr += "Solution is already optimal.";
         genTableau(A, b, cj, x, xB, {isFeas: isFeas, isOptim: isOptim});
-        showSolution(A, b, cj, x, xB, z, zc);
+        showSolution(A, b, cj, x, xB, z, zc, objVarName);
     }
 
     // Use simplex to solve the problem
@@ -259,7 +259,7 @@ function simplexIterator(A, b, cj, x, xB) {
             finalV = extractV(A);
 
             // Show solution
-            showSolution(A, b, cj, x, xB, z, zc);
+            showSolution(A, b, cj, x, xB, z, zc, sign, objVarName);
         }
     }
 
@@ -275,11 +275,12 @@ function simplexIterator(A, b, cj, x, xB) {
  */
 function solveProblem() {
     // Obtain required problem parameters
-    var [A, b, cj, x, xB, shouldDie] = getParameters();
+    var [A, b, cj, x, xB, shouldDie, sign, objVarName] = getParameters();
 
     // Solve problem using simplex iterator
     if (!shouldDie) {
-        [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB);
+        [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB, sign, 
+            objVarName);
     }
 
     // Write tempStr to tableau element
