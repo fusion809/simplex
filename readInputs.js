@@ -169,7 +169,7 @@ function readNonMatForm() {
     var countOfEq = 0;
     var noOfEmptyRows = 0;
     for (let i = 0 ; i < elNLArr.length; i++) {
-        if (elNLArr[i].match(/^\s*$/)) {
+        if (elNLArr[i].match(/^\s*$/) || elNLArr[i].match(/[Ss]ubject to/)) {
             noOfEmptyRows++;
         }
     }

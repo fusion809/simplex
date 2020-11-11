@@ -150,7 +150,7 @@ function checkForDegn(b, xB) {
 function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
     // Non-basic variable counter
     var k = 0;
-
+    
     // Values of basis variables
     for (let i = 0 ; i < xB.length; i++) {
         tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
