@@ -38,8 +38,9 @@ function getParameters() {
     else {
         // Set globals
         if (document.getElementById("useNonMat").checked) {
-            var [A, b, cj, x, xB, shouldDie, sign, objVarName] = readNonMatForm();
-            document.getElementById("useNonMat").checked = false;
+            var [A, b, cj, x, xB, shouldDie, sign, objVarName] = 
+            readNonMatForm();
+            uncheck("useNonMat");
         } else {
             var [A, b, cj, x, xB] = readInputs();
         }
