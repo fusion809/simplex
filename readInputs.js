@@ -39,6 +39,7 @@ function getParameters() {
         // Set globals
         if (document.getElementById("useNonMat").checked) {
             var [A, b, cj, x, xB, shouldDie, sign, objVarName] = readNonMatForm();
+            document.getElementById("useNonMat").checked = false;
         } else {
             var [A, b, cj, x, xB] = readInputs();
         }
@@ -187,9 +188,9 @@ function readNonMatForm() {
         if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
             tempStr += "Splitting constraint ";
             tempStr += (j+1 - countOfEq);
-            tempStr += " into <= and >= constraints.";
-            tempStr += " >= constraints must be multiplied by -1 to get into";
-            tempStr += " canonical form.<br/>"
+            tempStr += " into <= and >= constraints. The second of these ";
+            tempStr += "constraints must be multiplied by -1 so it can be ";
+            tempStr += "added to the initial tableau.<br/><br/> ";
             b[j] = -resc;
             b[j+1] = resc;
         } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/)) {
@@ -198,7 +199,7 @@ function readNonMatForm() {
             tempStr += "Multiplying constraint ";
             tempStr += (j+1-countOfEq);
             tempStr += " by minus one to replace >= with <=, which can then";
-            tempStr += " be converted into canonical form.<br/>";
+            tempStr += " be converted into canonical form.<br/><br/>";
             b[j] = -resc;
         }
 
