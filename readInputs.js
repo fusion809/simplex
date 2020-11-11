@@ -101,7 +101,7 @@ function uncheck(name) {
  * Read problem in non-matrix form.
  * 
  * @params    None, reads inputs from "nonMatForm" textarea.
- * @return    [A, b, cj, x, xB, shouldDie, varName]
+ * @return    [A, b, cj, x, xB, shouldDie, sign, varName]
  */
 function readNonMatForm() {
     // Element of the text area

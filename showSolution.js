@@ -29,14 +29,17 @@ function AColPos(A, b, Idx) {
 /**
  * Check for alternate solutions and mention it in tempStr if there is.
  * 
- * @param A   2d array of LHS coefficients.
- * @param b   1d array of solution values.
- * @param cj  1d array of objective function coefficients.
- * @param x   1d array of decision variables.
- * @param xB  1d array of basis variables.
- * @param zmn Objective function value.
- * @param zc  1d array of zj-cj values.
- * @return    Nothing, writes to tempStr.
+ * @param A          2d array of LHS coefficients.
+ * @param b          1d array of solution values.
+ * @param cj         1d array of objective function coefficients.
+ * @param x          1d array of decision variables.
+ * @param xB         1d array of basis variables.
+ * @param zmn        Objective function value.
+ * @param zc         1d array of zj-cj values.
+ * @param sign       What the objective function has been multiplied by to make
+ * it a maximization problem.
+ * @param objVarName Objective function name (e.g. z).
+ * @return           Nothing, writes to tempStr.
  */
 function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
     // Dimensions of the problem
@@ -131,15 +134,18 @@ function checkForDegn(b, xB) {
  * Print solution, including decision variables and if not an alternate 
  * solution, the objective function value.
  * 
- * @param b        1d of the basis variable values.
- * @param xB       1d array of basis variables.
- * @param x        1d array of decision variables.
- * @param zmn      Objective function value.
- * @param mn       Number of columns in A.
- * @param n        Number of decision variables not including slack variables.
- * @param isAlt    A Boolean that indicates whether the solution being 
+ * @param b          1d of the basis variable values.
+ * @param xB         1d array of basis variables.
+ * @param x          1d array of decision variables.
+ * @param zmn        Objective function value.
+ * @param mn         Number of columns in A.
+ * @param n          Number of decision variables not including slack variables.
+ * @param sign       What the objective function has been multiplied by to make
+ * it a maximization problem.
+ * @param objVarName Objective function name (e.g. z).
+ * @param isAlt      A Boolean that indicates whether the solution being 
  * displayed is an alternate solution.
- * @return         Nothing, adds to the tempStr.
+ * @return           Nothing, adds to the tempStr.
  */
 function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
     // Non-basic variable counter
@@ -188,14 +194,17 @@ function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
 /**
  * Show the optimal solution for the problem.
  * 
- * @param A   Final A array.
- * @param b   Final b array.
- * @param cj  Array of objective function coefficients.
- * @param x   Decision variable array.
- * @param xB  Final xB array.
- * @param z   zj value array.
- * @param zc  zj-cj value array.
- * @return    Nothing, just writes the solution to tempStr global.
+ * @param A          Final A array.
+ * @param b          Final b array.
+ * @param cj         Array of objective function coefficients.
+ * @param x          Decision variable array.
+ * @param xB         Final xB array.
+ * @param z          zj value array.
+ * @param zc         zj-cj value array.
+ * @param sign       What the objective function has been multiplied by to make
+ * it a maximization problem.
+ * @param objVarName Objective function name (e.g. z).
+ * @return           Nothing, just writes the solution to tempStr global.
  */
 function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
     tempStr += "Optimal solution is ";
