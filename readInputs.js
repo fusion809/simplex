@@ -118,7 +118,8 @@ function readNonMatForm() {
         type = 1;
     } else if (type.match(/[mM]in[imize]*[imise]*/)) {
         type = -1;
-        tempStr += "Multiplying objective function by -1 to get a max problem.<br/>";
+        tempStr += "Multiplying objective function by -1 to get a ";
+        tempStr += "maximization problem.<br/>";
     }
 
     // Name of the objective function (e.g. z)
@@ -239,18 +240,21 @@ function readNonMatForm() {
         if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
             tempStr += "Splitting constraint ";
             tempStr += (j+1 - countOfEq);
-            tempStr += " into &leq; and &geq; constraints. The second of ";
-            tempStr += "these constraints must be multiplied by -1 so it can ";
-            tempStr += "be added to the initial tableau.<br/><br/> ";
-            b[j] = -resc;
-            b[j+1] = resc;
+            tempStr += " into &leq; and &geq; constraints. &geq; constraint ";
+            tempStr += "must be multiplied by -1 to turn it into a &leq; ";
+            tempStr += "constraint so it can then be converted to canonical ";
+            tempStr += "form and added to the initial tableau."
+            tempStr += "<br/><br/> ";
+            b[j] = resc;
+            b[j+1] = -resc;
         } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/)) {
             b[j] = resc;
         } else {
             tempStr += "Multiplying constraint ";
             tempStr += (j+1-countOfEq);
             tempStr += " by minus one to replace &geq; with &leq;, which can ";
-            tempStr += "then be converted into canonical form.<br/><br/>";
+            tempStr += "then be converted to canonical form and added to the ";
+            tempStr += "tableau.<br/><br/>";
             b[j] = -resc;
         }
 
@@ -272,8 +276,8 @@ function readNonMatForm() {
             } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/>=/)) {
                 A[j][i] = -coeff;
             } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
-                A[j][i] = -coeff;
-                A[j+1][i] = coeff;
+                A[j][i] = coeff;
+                A[j+1][i] = -coeff;
             }
         }
 
