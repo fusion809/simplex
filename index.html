@@ -55,11 +55,13 @@
         <div>
             Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem".<br/><br/>
             
-            In the textbox, >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to.<br/><br/>
+            In the textbox, >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to. <b>Do not use &geq; and &leq; characters within your constraints.</b><br/><br/>
             
-            Your problem can be either a maximization or minimization problem. "Maximize", "Maximise" or "Max" (case-insensitive) is used to indicate a maximization problem, whilst "Minimize", "Minimise" or "Min" (case-insensitive) is used to indicate a minimization problem. Non-negativity constraints are assumed (should <b>not</b> be specified).<br/><br/>
+            "Maximize", "Maximise" or "Max" (case-insensitive) can be used to indicate the problem is a maximization problem, whilst "Minimize", "Minimise" or "Min" (case-insensitive) can be used to indicate it is a minimization problem.<br/><br/> 
+            
+            Non-negativity constraints are assumed (and should <b>not</b> be specified).<br/><br/>
 
-            You can include the phrase "Subject to" (with or without a colon) before specifying your structural constraints, but you do not need to.<br/><br/>
+            You can include the phrase "Subject to" (with or without a colon) before specifying your structural constraints, but you do not need to. <b>Do not write "st." before you list structural constraints.</b><br/><br/>
 
             Commas and dots cannot be used to as thousands delimiters. A dot is used to indicate the decimal place.<br/><br/>
             
@@ -108,12 +110,12 @@
 
             \[
             \begin{aligned}
-            &\mathrm{Maximize\hspace{0.1cm}z} &&= 350m + 500a + 650d\\
+            &\mathrm{Minimize\hspace{0.1cm}z} &&= 200m + 350a + 430d\\
             &\mathrm{Subject\hspace{0.1cm}to:}\\
-            &3m + 5a + 7d &&\leq 7500 \\
-            &5m + 4a + 6d &&\leq 9800 \\
-            &2m + 1a + 2d &&\leq 3500 \\
-            &1m + 1a + 1d &&\leq 2000 \\
+            &3m + 5a + 4d &&\geq 2500 \\
+            &5m + 4a + 3d &&\geq 4800 \\
+            &2m + 1a + 2d &&\geq 3500 \\
+            &1m + 1a + 1d &&\geq 2000 \\
             &m, a, d &&\geq 0
             \end{aligned}
             \]
@@ -132,21 +134,21 @@
             </tr> 
             <tr width="100%">
                 <td>\(A\)</td>
-                <td width="100%"><textarea id="A" name="A" style="width: 100%; height: 120px;">[3 5 7 1 0 0 0;
-5 4 6 0 1 0 0;
-2 1 2 0 0 1 0;
-1 1 1 0 0 0 1]</textarea></td>
+                <td width="100%"><textarea id="A" name="A" style="width: 100%; height: 120px;">[-3 -5 -4 1 0 0 0;
+-5 -4 -3 0 1 0 0;
+-2 -1 -2 0 0 1 0;
+-1 -1 -1 0 0 0 1]</textarea></td>
             </tr>
             <tr>
                 <td>\(\mathbf{b}\)</td>
-                <td width="100%"><textarea id="b" name="b" style="width: 100%; height: 120px;">[7500;
-9800;
-3500;
-2000]</textarea></td>
+                <td width="100%"><textarea id="b" name="b" style="width: 100%; height: 120px;">[-2500;
+-4800;
+-3500;
+-2000]</textarea></td>
             </tr>
             <tr>
                 <td>\(\mathbf{c}\)</td>
-                <td><textarea id="c" name="c" style="width: 100%">[350 500 650 0 0 0 0]</textarea></td>
+                <td><textarea id="c" name="c" style="width: 100%">[-200 -350 -430 0 0 0 0]</textarea></td>
             </tr>
             <tr>
                 <td>\(\mathbf{x}\)</td>
@@ -177,12 +179,12 @@ s4]</textarea>
                 <tr>
                     <td colspan="2">
                         <textarea id="nonMatForm" style="width: 100%; height: 400px;">
-Maximize Z = 350m + 500a + 650d
+Minimize Z = 200m + 350a + 430d
     
-3m + 5a + 7d <= 7500
-5m + 4a + 6d <= 9800
-2m + a + 2d <= 3500
-m + a + d <= 2000</textarea>
+3m + 5a + 4d >= 2500
+5m + 4a + 3d >= 4800
+2m + a + 2d >= 3500
+m + a + d >= 2000</textarea>
                     </td>
                 </tr>
                 <tr>
