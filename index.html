@@ -65,6 +65,7 @@
             
             Fraction coefficients must appear <b>before</b> the variable that they pertain to. For example:
 
+            All decision variables <i>must</i> appear in the objective function.
             <pre>
                 5/6x1
             </pre>
@@ -110,7 +111,7 @@
             &\mathrm{Subject\hspace{0.1cm}to:}\\
             &3m + 5a + 7d &&\leq 7500 \\
             &5m + 4a + 6d &&\leq 9800 \\
-            &2m + 1a + 2d &&\geq 3500 \\
+            &2m + 1a + 2d &&\leq 3500 \\
             &1m + 1a + 1d &&\leq 2000 \\
             &m, a, d &&\geq 0
             \end{aligned}
@@ -179,7 +180,7 @@ Maximize Z = 350m + 500a + 650d
     
 3m + 5a + 7d <= 7500
 5m + 4a + 6d <= 9800
-2m + a + 2d >= 3500
+2m + a + 2d <= 3500
 m + a + d <= 2000</textarea>
                     </td>
                 </tr>

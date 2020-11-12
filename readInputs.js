@@ -123,12 +123,20 @@ function readNonMatForm() {
 
     // Name of the objective function (e.g. z)
     var objVarName = elSpArr[1].replace(/=/, '');
+
+    // Right-hand side of objective function
     var objRHS = elNLArr[0].replace(/.*=/, '').replace(/ /g, "");
+    
+    // Array of signs for objective function coefficients
     var signRHSArr = objRHS.match(/[+-]/g).join("");
+
+    // Extract all decision variables from objective function
     var x = objRHS.match(/[a-zA-Z][a-zA-Z]*[0-9]*/g).join(" ").split(" ");
     var varNo = x.length;
+
+    // Array of coefficients (without sign) with variables they correspond to
     var coeffsArr = objRHS.split(/[+-]/);
-    // Remove any empty elements
+    // Remove any empty elements from array
     var coeffsArr = coeffsArr.filter(function(el) {
         return el != "";
     });
