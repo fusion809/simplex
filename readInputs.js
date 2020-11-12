@@ -128,19 +128,26 @@ function readNonMatForm() {
     var x = objRHS.match(/[a-zA-Z][a-zA-Z]*[0-9]*/g).join(" ").split(" ");
     var varNo = x.length;
     var coeffsArr = objRHS.split(/[+-]/);
+    // Remove any empty elements
+    var coeffsArr = coeffsArr.filter(function(el) {
+        return el != "";
+    });
 
+    // Count up number of less than or equal to inequalities
     if (element.match(/<=/g)) {
         var noOfLeq = element.match(/<=/g).join("").replace(/</g, "").length;
     } else {
         var noOfLeq = 0;
     }
 
+    // Count up number of greater than or equal to inequalities
     if (element.match(/>=/g)) {
         var noOfGeq = element.match(/>=/g).join("").replace(/>/g, "").length;
     } else {
         var noOfGeq = 0;
     }
 
+    // Count up equalities
     if (element.match(/ =/g)) {
         var noOfEq = 2*(element.match(/ =/g).join("").replace(/ /g, "").length-1);
     } else {
@@ -150,29 +157,52 @@ function readNonMatForm() {
     // For some reason the following calculation causes us to access a 
     // non-existent element of elNLArr below
     var noOfConstr = noOfLeq + noOfGeq + noOfEq;
-    for (let i = 0; i < coeffsArr.length; i++) {
+
+    // Loop over objective function coefficients array
+    for (let i = 0; i < varNo; i++) {
         if (coeffsArr[i] != "") {
             var coeffWOSign = coeffsArr[i].replace(/[a-zA-Z][a-zA-Z]*[0-9]*/, '');
-            // If coeff is omitted as it equals 1
+
+            // If number is omitted, the coeff = 1
             if (!coeffWOSign.match(/[0-9]/)) {
                 coeffWOSign += "1";
             }
-            if ( (coeffsArr.length == signRHSArr.length +1) && (i == 0)) {
-                var coeff = parseFloat(coeffWOSign);
-            } else if (coeffsArr.length == signRHSArr.length +1) {
-                var coeff = parseInt(signRHSArr[i-1] + "1")*parseFloat(coeffWOSign);
-            } else {
-                var coeff = parseInt(signRHSArr[i] + "1")*parseFloat(coeffWOSign);
+
+            // First element, if there's no sign is given
+            if ( (varNo == signRHSArr.length + 1) && (i == 0)) {
+                var coeff = fracToDecimal(coeffWOSign);
+            } 
+            // Other elements, if no sign is given for first element
+            else if (varNo == signRHSArr.length + 1) {
+                // This first line sets the sign of the coefficient
+                var coeff = parseInt(signRHSArr[i-1] + "1");
+                coeff *= fracToDecimal(coeffWOSign);
+            } 
+            // Elements for rows where every sign is explicity specified
+            else {
+                // This first line sets the sign of the coefficient
+                var coeff = parseInt(signRHSArr[i] + "1");
+                coeff *= fracToDecimal(coeffWOSign);
             }
+            
+            // Add to cj
             cj.push(type*coeff);
         }
     }
+
+    // Initialize arrays
     var A = new Array(noOfConstr);
     var xB = [];
-    var mn = coeffsArr.length + noOfConstr;
     var b = new Array(noOfConstr);
+
+    // Number of columns in A
+    var mn = varNo + noOfConstr;
+
+    // Counter variables
     var j = 0;
     var countOfEq = 0;
+
+    // Determine number of empty rows
     var noOfEmptyRows = 0;
     for (let i = 0 ; i < elNLArr.length; i++) {
         if (elNLArr[i].match(/^\s*$/) || elNLArr[i].match(/[Ss]ubject to/)) {
@@ -180,16 +210,24 @@ function readNonMatForm() {
         }
     }
 
+    // Loop over constraints
     while (j < noOfConstr) {
+        // Initialize relevant rows
         if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
-            A[j+1] = new Array(mn-1);
+            A[j+1] = new Array(mn);
         }
-        A[j] = new Array(mn-1);
+        A[j] = new Array(mn);
+
         // Add slack entries
         cj.push(0);
 
+        // LHS of constraint
         var constr = elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/[<>]*=.*/, '').replace(/ /g, "");
-        var resc = parseFloat(elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/.*[<>]*=/, '').replace(/ /g, ""));
+
+        // RHS of constraint
+        var resc = fracToDecimal(elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/.*[<>]*=/, '').replace(/ /g, ""));
+
+        // Detail what is being done before initial tableau is drawn
         if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
             tempStr += "Splitting constraint ";
             tempStr += (j+1 - countOfEq);
@@ -208,6 +246,7 @@ function readNonMatForm() {
             b[j] = -resc;
         }
 
+        // Loop over every variable, determine coefficient and add to A
         for (let i = 0; i < varNo; i++) {
             var varName = x[i];
             var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
@@ -245,8 +284,14 @@ function readNonMatForm() {
                 }
             }
         }
+
+        // Add slacks to x and xB
         xB.push("s" + (j+1));
         x.push("s" + (j+1));
+
+        // If constraint is an equality, add additional entries to cj, x and
+        // xB, increment j by 2 and countOfEq by 1. Otherwise just increment j
+        // by 2.
         if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
             xB.push("s" + (j + 2));
             x.push("s" + (j + 2));
@@ -257,5 +302,7 @@ function readNonMatForm() {
             j++;
         }
     }
+
+    // Return all data needed by getParameters()
     return [A, b, cj, x, xB, false, type, objVarName];
 }

@@ -31,11 +31,11 @@
         <h1>Simplex method solver <a href="https://github.com/fusion809/simplex" link="_blank"><img src="https://github.githubassets.com/favicons/favicon.svg"/></a></h1>
         
         <div>
-            This webpage essentially just solves a specified linear programming problem using the simplex method and shows full working. The problem can either be provided in canonical matrix form (with slack variables), or can be entered into the form at the end of the webpage in non-matrix form.
-            
+            This webpage essentially just solves a specified linear programming problem using the simplex method and shows full working. The problem can either be provided in canonical matrix form (with slack variables), or non-matrix form.
+
         </div>
 
-        <h2>Matrix form</h2>
+        <h2 id="mat">Matrix form</h2>
         <div>
             Canonical matrix form is:
 
@@ -51,9 +51,31 @@
             The various matrices can be entered in using MATLAB notation. In the case of \(A\), semicolons are used to separate rows and commas or spaces to separate individual row elements. \(\mathbf{b}\), \(\mathbf{c}\), \(\mathbf{x}\) and \(x_{\mathbf{B}}\) can have individual elements separated by commas, semicolons or spaces.
         </div>
 
-        <h2>Non-matrix form</h2>
+        <h2 id = "nonMat">Non-matrix form</h2>
         <div>
-            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Solve the problem". >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to. Your problem can be max or min. The non-negativity constraints should not be given, as they are just assumed.
+            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem". 
+            
+            In the textbox, >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to.
+            
+            Your problem can be either a maximization or minimization problem. "Maximize", "Maximise" or "Max" (case-insensitive) is used to indicate a maximization problem, whilst "Minimize", "Minimise" or "Min" (case-insensitive) is used to indicate a minimization problem. Non-negativity constraints are assumed (should <b>not</b> be specified).
+
+            You can include the phrase "Subject to" (with or without a colon) before specifying your structural constraints, but you do not need to.
+
+            Commas and dots cannot be used to as thousands delimiters. A dot is used to indicate the decimal place.  
+            
+            Fraction coefficients must appear <b>before</b> the variable that they pertain to. For example:
+
+            <pre>
+                5/6x1
+            </pre>
+
+            is OK as is <code>5/6 x1</code>, but:
+
+            <pre>
+                5x1/6
+            </pre>
+
+            will not be read correctly. 
         </div>
 
         <h2>Sensitivity analysis</h2>
@@ -77,8 +99,31 @@
         <div>
             To change resource value(s) (\(\mathbf{b}\) values) after the solver has solved the original problem, merely change the relevant entries in \(\mathbf{b}\), click the circle next to "<b>Resource change?</b>" and click the "Click to solve problem" button.
         </div>
+
+        <h2>Default example</h2>
+        <div>
+            This webpage uses the following default example:
+
+            \[
+            \begin{aligned}
+            &\mathrm{Maximize\hspace{0.1cm}z} &&= 350m + 500a + 650d\\
+            &\mathrm{Subject\hspace{0.1cm}to:}\\
+            &3m + 5a + 7d &&\leq 7500 \\
+            &5m + 4a + 6d &&\leq 9800 \\
+            &2m + 1a + 2d &&\geq 3500 \\
+            &1m + 1a + 1d &&\leq 2000 \\
+            &m, a, d &&\geq 0
+            \end{aligned}
+            \]
+            
+            to illustrate how problems should be entered into both forms. 
+        </div>
+
         <form>
             <table width="100%">
+            <tr>
+                <th colspan=2>Canonical matrix form</th>
+            </tr>
             <tr>
                 <th>Input</th>
                 <th width="100%">Contents</th>
@@ -124,27 +169,23 @@ s4]</textarea>
                     <input type="radio" id="newVar">New variable(s)?</input>
                 </td>
                 </tr>
-            </table>
-        </form>
-
-        Below one can enter the problem in a more intuitive syntax. You cannot perform sensitivity analysis through the form below, but you can enter a problem in below and then perform sensitivity analysis using the above form.<br/><br/>
-
-        Less than or equal to signs below should be replaced with <= whilst >= should be used to denote greater than or equal to signs.
-        <form>
-            <table width="100%">
-                <tr width="100%">
-                    <td width="100%">
-                        <input type="radio" id="useNonMat">Use non-matrix format?</input>
+                <tr>
+                    <th colspan="2">Non-matrix form</th>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <textarea id="nonMatForm" style="width: 100%; height: 400px;">
+Maximize Z = 350m + 500a + 650d
+    
+3m + 5a + 7d <= 7500
+5m + 4a + 6d <= 9800
+2m + a + 2d >= 3500
+m + a + d <= 2000</textarea>
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        <textarea id="nonMatForm" style="width: 100%; height: 400px;">
-Maximize z = 3x1 + 2x2 + 3x3
-    
-1x1 + 3x2 + 4x3 >= 5
-3x1 + 4x2 - 2x3 <= 4
-2x1 + 5x2 - 3x3 = 4</textarea>
+                    <td width="100%" colspan="2">
+                        <input type="radio" id="useNonMat">Use non-matrix format?</input>
                     </td>
                 </tr>
             </table>
