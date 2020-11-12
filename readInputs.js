@@ -153,6 +153,10 @@ function readNonMatForm() {
     for (let i = 0; i < coeffsArr.length; i++) {
         if (coeffsArr[i] != "") {
             var coeffWOSign = coeffsArr[i].replace(/[a-zA-Z][a-zA-Z]*[0-9]*/, '');
+            // If coeff is omitted as it equals 1 or -1
+            if (!coeffWOSign.match(/[0-9]/)) {
+                coeffWOSign += "1";
+            }
             if ( (coeffsArr.length == signRHSArr.length +1) && (i == 0)) {
                 var coeff = parseFloat(coeffWOSign);
             } else if (coeffsArr.length == signRHSArr.length +1) {
@@ -209,6 +213,10 @@ function readNonMatForm() {
             var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
             if (constr.match(regex)) {
                 var coeff = constr.match(regex).join("").replace(varName, "");
+                // If coeff is omitted as it equals 1 or -1
+                if (!coeff.match(/[0-9]/)) {
+                    coeff += "1";
+                }
                 coeff = fracToDecimal(coeff);
             } else {
                 var coeff = 0;

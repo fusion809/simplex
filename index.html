@@ -31,7 +31,13 @@
         <h1>Simplex method solver <a href="https://github.com/fusion809/simplex" link="_blank"><img src="https://github.githubassets.com/favicons/favicon.svg"/></a></h1>
         
         <div>
-            This webpage essentially just solves a specified linear programming problem using the simplex method and shows full working. The problem can either be in canonical matrix form (slack variables included), that is:
+            This webpage essentially just solves a specified linear programming problem using the simplex method and shows full working. The problem can either be provided in canonical matrix form (with slack variables), or can be entered into the form at the end of the webpage in non-matrix form.
+            
+        </div>
+
+        <h2>Matrix form</h2>
+        <div>
+            Canonical matrix form is:
 
             \[
             \begin{aligned}
@@ -42,9 +48,12 @@
             \end{aligned}
             \]
 
-            or non-matrix form (see the form near the end of the page).
-
             The various matrices can be entered in using MATLAB notation. In the case of \(A\), semicolons are used to separate rows and commas or spaces to separate individual row elements. \(\mathbf{b}\), \(\mathbf{c}\), \(\mathbf{x}\) and \(x_{\mathbf{B}}\) can have individual elements separated by commas, semicolons or spaces.
+        </div>
+
+        <h2>Non-matrix form</h2>
+        <div>
+            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Solve the problem". >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to. Your problem can be max or min. The non-negativity constraints should not be given, as they are just assumed.
         </div>
 
         <h2>Sensitivity analysis</h2>
@@ -134,8 +143,8 @@ s4]</textarea>
 Maximize z = 3x1 + 2x2 + 3x3
     
 1x1 + 3x2 + 4x3 >= 5
-3x1 + 4x2 + 2x3 <= 4
-2x1 + 5x2 + 3x3 = 4</textarea>
+3x1 + 4x2 - 2x3 <= 4
+2x1 + 5x2 - 3x3 = 4</textarea>
                     </td>
                 </tr>
             </table>

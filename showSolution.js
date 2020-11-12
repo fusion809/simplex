@@ -150,7 +150,7 @@ function checkForDegn(b, xB) {
 function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
     // Non-basic variable counter
     var k = 0;
-    
+
     // Values of basis variables
     for (let i = 0 ; i < xB.length; i++) {
         tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
@@ -181,7 +181,11 @@ function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
                 // If this isn't an alternate solution that's being printed, 
                 // show z value also. Otherwise just print full stop.
                 if (!isAlt) {
-                    tempStr += " and " + katex.renderToString(objVarName + " = ") + " ";
+                    tempStr += " and ";
+                    tempStr += subscripts(objVarName, 
+                        {isBold: false, isLeftArrow: false, 
+                            isDownArrow: false, notRow: true});
+                    tempStr += katex.renderToString(" = ") + " ";
                     tempStr += decimalToFrac(sign*zmn) + ". ";
                 } else {
                     tempStr += ". ";
