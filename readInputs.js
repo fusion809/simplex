@@ -153,7 +153,7 @@ function readNonMatForm() {
     for (let i = 0; i < coeffsArr.length; i++) {
         if (coeffsArr[i] != "") {
             var coeffWOSign = coeffsArr[i].replace(/[a-zA-Z][a-zA-Z]*[0-9]*/, '');
-            // If coeff is omitted as it equals 1 or -1
+            // If coeff is omitted as it equals 1
             if (!coeffWOSign.match(/[0-9]/)) {
                 coeffWOSign += "1";
             }
@@ -193,9 +193,9 @@ function readNonMatForm() {
         if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
             tempStr += "Splitting constraint ";
             tempStr += (j+1 - countOfEq);
-            tempStr += " into <= and >= constraints. The second of these ";
-            tempStr += "constraints must be multiplied by -1 so it can be ";
-            tempStr += "added to the initial tableau.<br/><br/> ";
+            tempStr += " into &leq; and &geq; constraints. The second of ";
+            tempStr += "these constraints must be multiplied by -1 so it can ";
+            tempStr += "be added to the initial tableau.<br/><br/> ";
             b[j] = -resc;
             b[j+1] = resc;
         } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/)) {
@@ -203,8 +203,8 @@ function readNonMatForm() {
         } else {
             tempStr += "Multiplying constraint ";
             tempStr += (j+1-countOfEq);
-            tempStr += " by minus one to replace >= with <=, which can then";
-            tempStr += " be converted into canonical form.<br/><br/>";
+            tempStr += " by minus one to replace &geq; with &leq;, which can ";
+            tempStr += "then be converted into canonical form.<br/><br/>";
             b[j] = -resc;
         }
 
@@ -213,7 +213,6 @@ function readNonMatForm() {
             var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
             if (constr.match(regex)) {
                 var coeff = constr.match(regex).join("").replace(varName, "");
-                // If coeff is omitted as it equals 1 or -1
                 if (!coeff.match(/[0-9]/)) {
                     coeff += "1";
                 }

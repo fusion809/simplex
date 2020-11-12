@@ -185,6 +185,7 @@ function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
                     tempStr += subscripts(objVarName, 
                         {isBold: false, isLeftArrow: false, 
                             isDownArrow: false, notRow: true});
+                    tempStr += " ";
                     tempStr += katex.renderToString(" = ") + " ";
                     tempStr += decimalToFrac(sign*zmn) + ". ";
                 } else {

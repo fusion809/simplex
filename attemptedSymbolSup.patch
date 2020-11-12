@@ -1,0 +1,76 @@
+diff --git a/readInputs.js b/readInputs.js
+index 4fb6542..2edf853 100644
+--- a/readInputs.js
++++ b/readInputs.js
+@@ -129,14 +129,19 @@ function readNonMatForm() {
+     var varNo = x.length;
+     var coeffsArr = objRHS.split(/[+-]/);
+ 
++    console.log(element.match(/&leq;/g))
+     if (element.match(/<=/g)) {
+         var noOfLeq = element.match(/<=/g).join("").replace(/</g, "").length;
++    } else if (element.match(/≤/g)) {
++        var noOfLeq = element.match(/≤/g).join("").length;
+     } else {
+         var noOfLeq = 0;
+     }
+ 
+     if (element.match(/>=/g)) {
+         var noOfGeq = element.match(/>=/g).join("").replace(/>/g, "").length;
++    } else if (element.match(/≥/g)) {
++        var noOfGeq = element.match(/≥/g).join("").length;
+     } else {
+         var noOfGeq = 0;
+     }
+@@ -188,22 +193,23 @@ function readNonMatForm() {
+         // Add slack entries
+         cj.push(0);
+ 
+-        var constr = elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/[<>]*=.*/, '').replace(/ /g, "");
+-        var resc = parseFloat(elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/.*[<>]*=/, '').replace(/ /g, ""));
++        var constr = elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/[<>]*=.*/, '').replace(/≥.*/, '').replace(/≤.*/, '').replace(/ /g, "");
++        var resc = parseFloat(elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/.*[<>]*=/, '').replace(/.*≤/, '').replace(/.*≥/, '').replace(/ /g, ""));
+         if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
+             tempStr += "Splitting constraint ";
+             tempStr += (j+1 - countOfEq);
+-            tempStr += " into <= and >= constraints. The second of these ";
+-            tempStr += "constraints must be multiplied by -1 so it can be ";
+-            tempStr += "added to the initial tableau.<br/><br/> ";
++            tempStr += " into &leq; and &geq; constraints. The second of ";
++            tempStr += "these constraints must be multiplied by -1 so it can ";
++            tempStr += "be added to the initial tableau.<br/><br/> ";
+             b[j] = -resc;
+             b[j+1] = resc;
+-        } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/)) {
++        } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/) ||
++        elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/≤/)) {
+             b[j] = resc;
+         } else {
+             tempStr += "Multiplying constraint ";
+             tempStr += (j+1-countOfEq);
+-            tempStr += " by minus one to replace >= with <=, which can then";
++            tempStr += " by minus one to replace &geq; with &leq;, which can then";
+             tempStr += " be converted into canonical form.<br/><br/>";
+             b[j] = -resc;
+         }
+@@ -221,11 +227,17 @@ function readNonMatForm() {
+             } else {
+                 var coeff = 0;
+             }
+-            if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/<=/)) {
++
++            var isLeq = elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/<=/) ||
++            elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/≤/);
++            var isGeq = elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/>=/) ||
++            elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/≥/);
++            var isEq = elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/);
++            if (isLeq) {
+                 A[j][i] = coeff;
+-            } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/>=/)) {
++            } else if (isGeq) {
+                 A[j][i] = -coeff;
+-            } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
++            } else if (isEq) {
+                 A[j][i] = -coeff;
+                 A[j+1][i] = coeff;
+             }
