@@ -53,19 +53,18 @@
 
         <h2 id = "nonMat">Non-matrix form</h2>
         <div>
-            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem". 
+            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem".<br/><br/>
             
-            In the textbox, >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to.
+            In the textbox, >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to.<br/><br/>
             
-            Your problem can be either a maximization or minimization problem. "Maximize", "Maximise" or "Max" (case-insensitive) is used to indicate a maximization problem, whilst "Minimize", "Minimise" or "Min" (case-insensitive) is used to indicate a minimization problem. Non-negativity constraints are assumed (should <b>not</b> be specified).
+            Your problem can be either a maximization or minimization problem. "Maximize", "Maximise" or "Max" (case-insensitive) is used to indicate a maximization problem, whilst "Minimize", "Minimise" or "Min" (case-insensitive) is used to indicate a minimization problem. Non-negativity constraints are assumed (should <b>not</b> be specified).<br/><br/>
 
-            You can include the phrase "Subject to" (with or without a colon) before specifying your structural constraints, but you do not need to.
+            You can include the phrase "Subject to" (with or without a colon) before specifying your structural constraints, but you do not need to.<br/><br/>
 
-            Commas and dots cannot be used to as thousands delimiters. A dot is used to indicate the decimal place.  
+            Commas and dots cannot be used to as thousands delimiters. A dot is used to indicate the decimal place.<br/><br/>
             
             Fraction coefficients must appear <b>before</b> the variable that they pertain to. For example:
 
-            All decision variables <i>must</i> appear in the objective function.
             <pre>
                 5/6x1
             </pre>
@@ -76,7 +75,9 @@
                 5x1/6
             </pre>
 
-            will not be read correctly. 
+            will not be read correctly.<br/><br/>
+
+            All decision variables <b>must</b> appear in the objective function, even if they are just multiplied by 0. In constraints, not all decision variables need to appear.
         </div>
 
         <h2>Sensitivity analysis</h2>
