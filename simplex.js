@@ -160,8 +160,10 @@ function simplex(A, b, cj, x, xB, zc) {
             pivRowIdx, pivColIdx);
 
         // Apply feasible problem simplex algorithm
-        [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
-            pivotCol, mn, m);
+        if (pivRowIdx != -1) {
+            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
+               pivotCol, mn, m);
+        }
     }
 
     // If the solution is now optimal, tabulate it, otherwise proceed to next

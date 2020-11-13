@@ -15,6 +15,7 @@ function findPivots(A, b, zc) {
     // Find pivot
     var {noOfInvRats, pivotCol, ratio} = findColRat(A, b, pivColIdx);
 
+    // If all ratios for pivot column are invalid, problem is unbounded
     if (noOfInvRats == b.length) {
         var isUnbounded = true;
     } else {
