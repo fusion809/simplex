@@ -58,13 +58,8 @@ function findColRat(A, b, pivColIdx) {
         }
     }
 
-    // Store values in object
-    var objOfReturns = {
-        noOfInvRats: noOfInvRats,
-        pivotCol: pivotCol,
-        ratio: ratio
-    };
-    return objOfReturns;
+    // Return object of values
+    return {noOfInvRats: noOfInvRats, pivotCol: pivotCol, ratio: ratio};
 }
 
 /**

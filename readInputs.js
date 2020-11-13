@@ -70,24 +70,6 @@ function readInputs() {
 }
 
 /**
- * Set main variables to final values.
- * 
- * @params    None.
- * @return    [A, b, cj, x, xB]
- */
-function setVarsToFinal() {
-    // Initialize global variables
-    var A = finalA;
-    var b = finalb;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
-
-    // Return
-    return [A, b, cj, x, xB];
-}
-
-/**
  * Uncheck specified radio button if it is checked.
  * 
  * @param name     Name of the radio button's HTML element.
