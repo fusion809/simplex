@@ -62,22 +62,15 @@ function Matrix(arr) {
         return false;
     }
 
-    // Index of minimum element in array; isPosReq specifies if element must be
+    // Index of minimum element in array; isNonNeg specifies if element must be
     // positive
-    this.minEl = function(isPosReq) {
+    this.minEl = function(isNonNeg) {
         var index = 0;
         var min = Number.POSITIVE_INFINITY;
         for (let i = 0; i < this.height; i++) {
-            if (isPosReq) {
-                if ((this.matrix[i] < min) && (this.matrix[i] >= 0)) {
-                    min = this.matrix[i];
-                    index = i;
-                }
-            } else {
-                if (this.matrix[i] < min) {
-                    min = this.matrix[i];
-                    index = i;
-                }
+            if ((this.matrix[i] < min) && (!isNonNeg || this.matrix[i] >= 0)) {
+                min = this.matrix[i];
+                index = i;
             }
         }
         return index;

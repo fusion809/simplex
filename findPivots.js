@@ -9,10 +9,8 @@
  * and 1d ratio array.
  */
 function findPivots(A, b, zc) {
-    // Initialize relevant arrays
-    // Determine column index by finding index of minimum
-    // zj-cj entry.
-    var pivColIdx = minEl(zc, false);
+    // Pivot column is the one with the most negative entry of zj-cj
+    var pivColIdx = minEl(zc, true, false);
 
     // Find pivot
     var {noOfInvRats, pivotCol, ratio} = findColRat(A, b, pivColIdx);
@@ -23,7 +21,8 @@ function findPivots(A, b, zc) {
         var isUnbounded = false;
     }
 
-    var pivRowIdx = minEl(ratio, true);
+    // Pivot row has the lowest non-negative ratio
+    var pivRowIdx = minEl(ratio, false, true);
     var pivotEl = pivotCol[pivRowIdx];
 
     return [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded];
@@ -58,6 +57,7 @@ function findColRat(A, b, pivColIdx) {
         }
     }
 
+    // Store values in object
     var objOfReturns = {
         noOfInvRats: noOfInvRats,
         pivotCol: pivotCol,
@@ -67,29 +67,32 @@ function findColRat(A, b, pivColIdx) {
 }
 
 /**
- * Find the index of the smallest element or smallest positive element in a 1d 
+ * Find the index of the smallest element or smallest nonNegitive element in a 1d 
  * array.
  * 
- * @param vec       1d array to find the smallest element/positive element in.
- * @param isPosReq  A Boolean that decides whether the element must be 
- * positive.
- * @return          Index of the element with the smallest value/positive 
+ * @param vec       1d array to find the smallest element/nonNegitive element in.
+ * @param isNeg     A Boolean that indicates whether the element must be 
+ * negative.
+ * @param isNonNeg  A Boolean that decides whether the element must be 
+ * non-negative.
+ * @return          Index of the element with the smallest value/non-negative 
  * value.
  */
-function minEl(vec, isPosReq) {
+function minEl(vec, isNeg, isNonNeg) {
     var min = Number.POSITIVE_INFINITY;
-    var index = 0;
+    var index = -1;
+
+    // Loop over elements of vec
     for (let i = 0; i < vec.length; i++) {
-        if (isPosReq) {
-            if ((vec[i] < min) && (vec[i] >= 0)) {
-                min = vec[i];
-                index = i;
-            }
-        } else {
-            if (vec[i] < min) {
-                min = vec[i];
-                index = i;
-            }
+        // Conditions for following test
+        var nonNegReq = (!isNonNeg || vec[i] >= 0);
+        var negReq = (!isNeg || vec[i] < 0);
+        var isLt = (vec[i] < min);
+
+        // Test whether min and index should be set for this element of vec
+        if (isLt && nonNegReq && negReq) {
+            min = vec[i];
+            index = i;
         }
     }
 
