@@ -4,11 +4,14 @@
  * @param A        2d LHS constraint array (after simplex has been applied).
  * @param b        1d array of solution values.
  * @param Idx      Column Idx.
- * @return         Boolean.
+ * @return         Row in A[][Idx] with lowest positive b/col ratio, Boolean 
+ * indicating whether there's a positive, finite ratio.
  */
 function AColPos(A, b, Idx) {
+    // Initialize relevant variables
     var min = Number.POSITIVE_INFINITY;
     var k = -1;
+
     // Search through each row in A in the specified column for a positive
     // element.
     for (let i = 0; i < A.length; i++) {
@@ -122,10 +125,14 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
  * @return    Nothing, just adds to tempStr.
  */
 function checkForDegn(b, xB) {
+    // Formatting details for subscripts of degenerate basis variable.
     var format = {isBold: false, isRow: false, isLeftArrow: false, isDownArrow: false};
+
+    // Loop through b, look for zero entry and print degeneracy message
     for (let i = 0 ; i < b.length; i++) {
         if (floatCor(b[i]) == 0) {
-            tempStr += "Solution is permanently degenerate in " + subscripts(xB[i], format) + ". ";
+            tempStr += "Solution is permanently degenerate in ";
+            tempStr += subscripts(xB[i], format) + ". ";
         }
     }
 }
@@ -215,7 +222,7 @@ function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
     tempStr += "Optimal solution is ";
 
     // Initialize dimensionality variables
-    var {m, mn, n} = getDims(A);
+    var {mn, n} = getDims(A);
     
     // Display values of non-basic variables and z
     printSolution(b, xB, x, z[mn], mn, n, sign, objVarName, false);

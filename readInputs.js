@@ -305,10 +305,15 @@ function readNonMatForm() {
         // xB, increment j by 2 and countOfEq by 1. Otherwise just increment j
         // by 2.
         if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
+            // Second split constraint slack variable
             xB.push("s" + (j + 2));
             x.push("s" + (j + 2));
             cj.push(0);
+
+            // Incrementing by 2 constraint counter
             j += 2;
+
+            // Increment equality constraint count
             countOfEq++;
         } else {
             j++;

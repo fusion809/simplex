@@ -16,6 +16,7 @@ function Matrix(arr) {
     // decision variables
     this.dimDiff = this.width - this.height;
 
+    // Transpose matrix
     this.transpose = function() {
         var trans = new Array(this.width);
         for (let i = 0; i < this.width; i++) {
@@ -27,6 +28,7 @@ function Matrix(arr) {
         return new Matrix(trans);
     }
 
+    // Multiply matrix with arr2
     this.mult = function(arr2) {
         var result = new Array(this.height);
 
@@ -50,6 +52,7 @@ function Matrix(arr) {
         return new Matrix(result);
     }
 
+    // Find where target is found within matrix
     this.find = function(target) {
         for (let i = 0; i < this.height; i++) {
             if (this.matrix[i] == target) {
@@ -59,6 +62,8 @@ function Matrix(arr) {
         return false;
     }
 
+    // Index of minimum element in array; isPosReq specifies if element must be
+    // positive
     this.minEl = function(isPosReq) {
         var index = 0;
         var min = Number.POSITIVE_INFINITY;
@@ -78,6 +83,7 @@ function Matrix(arr) {
         return index;
     }
 
+    // Location of where arr2 elements are found in current matrix object
     this.location = function(arr2) {
         var loc = new Array(arr2.height);
 
@@ -172,11 +178,12 @@ function transpose(A) {
     // Create transpose matrix
     var AT = new Array(mn);
 
+    // Loop over columns in A
     for (let j = 0; j < mn; j++) {
         // Make it 2d
         AT[j] = new Array(m);
 
-        // Populate AT with data
+        // Loop over rows in A, make them columns in AT
         for (let i = 0; i < m; i++) {
             AT[j][i] = A[i][j];
         }
