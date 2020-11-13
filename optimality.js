@@ -69,23 +69,10 @@ function minElIfLt0(b) {
     // Initialize variables
     var isFeas = true;
     var isOptim = true;
-    var min = Number.POSITIVE_INFINITY;
-    var minIndex;
-
-    // Find minimum element if one such element is less than 0 and set isFeas
-    // and isOptim to false if such an element is found.
-    for (let i = 0; i < b.length; i++) {
-        // Ensure that floating point errors do not stuff up determination of
-        // feasibility
-        var bCor = floatCor(b[i]);
-        if (bCor < 0) {
-            if (bCor < min) {
-                minIndex = i;
-                min = bCor;
-            }
-            isFeas = false;
-            isOptim = false;
-        }
+    var minIndex = minEl(b, true, false);
+    if (minIndex != -1) {
+        isFeas = false;
+        isOptim = false;
     }
 
     return [minIndex, isFeas, isOptim];
