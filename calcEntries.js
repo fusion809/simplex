@@ -40,7 +40,7 @@ function basisIndex(x, xB) {
  * @return       [cB, zj, zj-cj]
  */
 function calcEntries(A, b, cj, x, xB) {
-    var [m, mn, n] = getDims(A);
+    var {m, mn} = getDims(A);
     var loc = basisIndex(x, xB);
     var cB = new Array(m);
     var z = new Array(mn);
@@ -48,7 +48,7 @@ function calcEntries(A, b, cj, x, xB) {
 
     // Input validation
     if (m != xB.length) {
-        alert("Length of A does not match the length of xB in calcEntries.");
+        console.error("Length of A does not match the length of xB in calcEntries.");
         return;
     }
 
@@ -77,5 +77,5 @@ function calcEntries(A, b, cj, x, xB) {
         }
     }
 
-    return [cB, z, zc];
+    return {cB: cB, z: z, zc: zc};
 }

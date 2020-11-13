@@ -43,7 +43,7 @@ function AColPos(A, b, Idx) {
  */
 function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
     // Dimensions of the problem
-    var [m, mn, n] = getDims(A);
+    var {m, mn, n} = getDims(A);
     // Initialize array of pivot indices
     var arrOfPivIdxs = [];
     // Counter of how many variables able to depart are found
@@ -215,7 +215,7 @@ function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
     tempStr += "Optimal solution is ";
 
     // Initialize dimensionality variables
-    var [m, mn, n] = getDims(A);
+    var {m, mn, n} = getDims(A);
     
     // Display values of non-basic variables and z
     printSolution(b, xB, x, z[mn], mn, n, sign, objVarName, false);

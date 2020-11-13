@@ -39,14 +39,8 @@ function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows) {
  */
 function addVariable() {
     // Read variables from globals
-    var A = finalA;
-    var m = A.length;
-    var mn = A[0].length;
-    var n = mn - m;
-    var b = finalb;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
+    var {A, b, cj, x, xB} = setToFinals();
+    var {m, n} = getDims(A);
 
     // Collect new variables from the form
     var newACols = readA();
@@ -65,19 +59,19 @@ function addVariable() {
     if (newACols.length != m) {
         var msg = "The newly entered A does not have the same number of ";
         msg += "rows as the original A";
-        alert(msg);
+        console.error(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
     } else if (newcRows.length != newACols[0].length) {
         var msg = "The number of elements in the c field does not equal the ";
         msg += "number of columns in the A field.";
-        alert(msg);
+        console.error(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
     } else if (newcRows.length != newxRows.length) {
         var msg = "The number of elements in the c field does not equal the ";
         msg += "number of elements in the x field.";
-        alert(msg);
+        console.error(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
     }
@@ -120,14 +114,14 @@ function constrCoeffsChange() {
     initialAT = transpose(initialA);
     
     // Gather dimensionality info
-    var [m, mn, n] = getDims(A);
-    var [finm, finmn, finn] = getDims(finalA);
+    var {m, mn} = getDims(A);
+    var finm = getDims(finalA).m;
+    var finmn = getDims(finalA).mn;
     
     // Obtain current arrays from the last iteration of simplex
-    var b = finalb;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
+    var {b, cj, x, xB} = setToFinals();
+    console.log(b);
+    console.log(xB);
     
     // Determine the location of basis variables within x
     var loc = basisIndex(x, xB);
@@ -140,7 +134,7 @@ function constrCoeffsChange() {
         shouldDie = true;
         var msg = "The dimensions of the new A do not match the dimensions";
         msg += " of A in the final tableau.";
-        alert(msg);
+        console.error(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -157,7 +151,7 @@ function constrCoeffsChange() {
                     // variables have been modified
                     var msg = "If the coefficients of basic variables change,";
                     msg += " you must solve the problem from scratch again!";
-                    alert(msg);
+                    console.error(msg);
                     shouldDie = true;
                     return [A, b, cj, x, xB, shouldDie];
                 }
@@ -198,7 +192,7 @@ function correctionOp(newARow, ARow, multiplier) {
  */
 function newConstraint() {
     // Set globals
-    var [A, b, cj, x, xB] = setVarsToFinal();
+    var {A, b, cj, x, xB} = setToFinals();
     
     // Read new entries from form
     var newARows = readA();
@@ -213,7 +207,7 @@ function newConstraint() {
     // error
     if (newARows.length != newbRows.length) {
         shouldDie = true;
-        alert("An equal number of rows must be added to A and b!");
+        console.error("An equal number of rows must be added to A and b!");
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -221,7 +215,8 @@ function newConstraint() {
     // the number of elements in newbRows and the newcRows box is ticked
     if ( (newcRows.length != newbRows.length ) && document.getElementById("newcRows").checked) {
         shouldDie = true;
-        alert("The number of new b rows and new entries in c must match!");
+        var msg = "The number of new b rows and new entries in c must match!";
+        console.error(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -232,7 +227,7 @@ function newConstraint() {
         var msg = "Remember your new A rows must have a number of columns ";
         msg += "equal to that of the old A matrix plus the number of new ";
         msg += "constraints!";
-        alert(msg);
+        console.error(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -293,10 +288,7 @@ function newConstraint() {
  */
 function objectiveChange() {
     // Set globals to values from final iteration of simplex
-    var A = finalA;
-    var b = finalb;
-    var xB = finalxB;
-    var x = finalx;
+    var {A, b, x, xB} = setToFinals();
 
     // Obtain new cj from form
     var cj = readc();
@@ -308,7 +300,7 @@ function objectiveChange() {
     // of decision variables
     if (cj.length != x.length) {
         shouldDie = true;
-        alert("c and x do not match in length!");
+        console.error("c and x do not match in length!");
         return [A, b, cj, x, xB, shouldDie];        
     }
 
@@ -326,17 +318,10 @@ function objectiveChange() {
  */
 function resourceChange() {
     // Set globals to values obtained from final iteration of simplex
-    var A = finalA;
-    var xB = finalxB;
-    var cj = finalcj;
-    var x = finalx;
+    var {A, cj, x, xB} = setToFinals();
 
     // Read new b from form
-    var b = readb();
-
-    // Find how b should be added to final tableau using the relationship:
-    // b_{New}^{final} = V^{final} b_{New}^{(0)}
-    var b = matMult(finalV, b);
+    var b = bUpdate(readb());
 
     // Initialize shouldDie Boolean
     var shouldDie = false;
@@ -344,7 +329,7 @@ function resourceChange() {
     // New b array should have the same number of rows as A
     if (b.length != A.length) {
         shouldDie = true;
-        alert("A and b do not match in their row length!");
+        console.error("A and b do not match in their row length!");
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -352,4 +337,23 @@ function resourceChange() {
     tempStr += "Resource value(s) changed. ";
 
     return [A, b, cj, x, xB, shouldDie];  
+}
+
+function bUpdate(b) {
+    // Find how b should be added to final tableau using the relationship:
+    // b_{New}^{final} = V^{final} b_{New}^{(0)}
+    return matMult(finalV, b); 
+}
+
+function setToFinals() {
+    // Initialize parameter object
+    var paramObj = {
+        A: finalA,
+        b: finalb,
+        cj: finalcj,
+        x: finalx,
+        xB: finalxB,
+    }
+
+    return paramObj;
 }

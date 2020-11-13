@@ -55,7 +55,7 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
  */
 function simplex(A, b, cj, x, xB, zc) {
     // Initialize dimensionality variables
-    var [m, mn, n] = getDims(A);
+    var {m, mn} = getDims(A);
 
     // Initialize pivot variables
     var pivRowIdx;
@@ -192,32 +192,32 @@ function simplex(A, b, cj, x, xB, zc) {
 function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // Error messages
     if (b.length != xB.length ) {
-        alert("The lengths of b and xB do not match!");
+        console.error("The lengths of b and xB do not match!");
         return;
     } else if (A.length != b.length) {
         var msg = "The number of rows in A does not match the number of rows";
         msg += "in b!";
-        alert(msg);
+        console.error(msg);
         return;
     } else if (A[0].length != x.length) {
         var msg = "A has a number of columns that exceeds the number of";
         msg += " elements in x!";
-        alert(msg);
+        console.error(msg);
         return;
     } else if (A.length != xB.length) {
         var msg = "xB has a number of elements that exceeds the number of";
         msg += " elements in A!";
-        alert(msg);
+        console.error(msg);
         return;
     } else if (cj.length != A[0].length) {
         var msg = "A has a number of columns that exceeds the number of ";
         msg += "elements in c."
-        alert(msg);
+        console.error(msg);
         return; 
     }
 
     // Initialize global variables
-    var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+    var {z, zc} = calcEntries(A, b, cj, x, xB);
     var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
     var isUnbounded = false;
     var isPermInf = false;
@@ -233,7 +233,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // Use simplex to solve the problem
     while ((!isOptim) && (!isUnbounded) && (!isPermInf)) {
         // Apply simplex
-        [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+        var {cB, z, zc} = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
         [A, b, xB, isUnbounded, isPermInf] = arr;
         
@@ -247,7 +247,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
         } else if (isPermInf) {
             tempStr += "Problem is infeasible! ";
         } else if (isOptim) {
-            [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+            var {z, zc} = calcEntries(A, b, cj, x, xB);
 
             // Update finals before showSolution, in case there's alt sol
             finalA = copyOnAss(A);
@@ -282,6 +282,9 @@ function solveProblem() {
         [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB, sign, 
             objVarName);
     }
+
+    // Update global variables
+    updateGlobals(A, b, cj, x, xB);
 
     // Write tempStr to tableau element
     document.getElementById("tableau").innerHTML = tempStr;

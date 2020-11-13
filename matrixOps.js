@@ -102,8 +102,8 @@ function Matrix(arr) {
  * Determines the dimensions of the problem being solved.
  * 
  * @param A   Constraint coefficient matrix as 2d array.
- * @return    [m, mn, n] (m = number of constraints, n = number of decision 
- * variables excluding slack variables, mn = m + n)
+ * @return    Object containing height of A, width of A and difference 
+ * between them.
  */
 function getDims(A) {
     // Determine dimensions
@@ -112,7 +112,7 @@ function getDims(A) {
     var n = mn - m;
 
     // Return them
-    return [m, mn, n];
+    return {m: m, mn: mn, n: n};
 }
 
 /**
@@ -124,7 +124,7 @@ function getDims(A) {
  */
 function matMult(V, b) {
     // Initialize dimensionality variables
-    var m = getDims(V)[0];
+    var m = getDims(V).m;
     var n = b[0].length;
 
     // Initialize array that will store the matrix product
@@ -167,7 +167,7 @@ function matMult(V, b) {
  */
 function transpose(A) {
     // Dimensionality info
-    var [m, mn, n] = getDims(A);
+    var {m, mn} = getDims(A);
 
     // Create transpose matrix
     var AT = new Array(mn);

@@ -15,7 +15,7 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
     // Get required Booleans
     var {isFeas, isOptim, isPermInf, isUnbounded, isAltSol, befAltSol} = bools;
     // Initialize dimensionality variables
-    var [m, mn, n] = getDims(A);
+    var {m, mn} = getDims(A);
     
     // Start row
     for (let i = 0; i < m; i++) {
@@ -65,7 +65,7 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
  */
 function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
     pivRowIdx, pivColIdx) {
-    var [cB, z, zc] = calcEntries(A, b, cj, x, xB);
+    var {cB, z, zc} = calcEntries(A, b, cj, x, xB);
     var {isFeas, isOptim, isUnbounded, isPermInf} = bools;
 
     // The following is to prevent departing/entering variable

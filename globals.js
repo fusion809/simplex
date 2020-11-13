@@ -20,7 +20,7 @@ var l = 0;
  * @param cj  1d array of objective function coefficients.
  * @return    Nothing.
  */
-function updateGlobals(A, b, xB, x, cj) {
+function updateGlobals(A, b, cj, x, xB) {
     finalA = A;
     if (l == 0) {
         initialAT = transpose(A);
