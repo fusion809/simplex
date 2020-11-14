@@ -72,7 +72,7 @@ function simplex(A, b, cj, x, xB, zc) {
     var isPermInf = false;
     var isAltSol = false;
     var befAltSol = false;
-    var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+    var {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
 
     // Initialize minRat for the below loop
     var minRat = Number.POSITIVE_INFINITY;
@@ -182,7 +182,7 @@ function simplex(A, b, cj, x, xB, zc) {
 
     // If the solution is now optimal, tabulate it, otherwise proceed to next
     // iteration
-    var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+    var {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
     if (isOptim) {
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
@@ -254,7 +254,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
         [A, b, xB, isUnbounded, isPermInf] = arr;
         
         // Determine whether problem is now optimal and feasible
-        [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+        {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
 
         // Show an appropriate message if the problem is infeasible or
         // unbounded
