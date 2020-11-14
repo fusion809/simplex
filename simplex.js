@@ -254,7 +254,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
         [A, b, xB, isUnbounded, isPermInf] = arr;
         
         // Determine whether problem is now optimal and feasible
-        {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
+        var {isFeas, isOptim} = isOptAndFeas(b, zc);
 
         // Show an appropriate message if the problem is infeasible or
         // unbounded
