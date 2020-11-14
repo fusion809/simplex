@@ -36,7 +36,7 @@ function isOptAndFeas(b, zc) {
     }
 
     // Return corrected isOptim and the other outputs of minElIfLt0
-    return [minIndex, isFeas, isOptim];
+    return {minIndex: minIndex, isFeas: isFeas, isOptim: isOptim};
 }
 
 /**

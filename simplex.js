@@ -20,16 +20,20 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
     // Replace pivot row basis variable with pivot column variable
     xB[pivRowIdx] = x[pivColIdx];
 
+    // Loop over columns
     for (let i = 0; i < mn; i++) {
         // Divide pivot row by pivot element
         A[pivRowIdx][i] /= pivotEl;
 
+        // Loop over rows
         for (let j = 0; j < m; j++) {
             // b subtraction should only be done once per row
             if (j != pivRowIdx) {
+                // Only one column in b
                 if (i == 0) {
                     b[j] -= pivotCol[j] * b[pivRowIdx];
                 }
+
                 // Subtract what multiple of the corrected pivot row is 
                 // required to get zeros in all columns corresponding to
                 // basis variables
@@ -37,6 +41,8 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
             }
         }
     }
+
+    // Return updated arrays
     return [A, b, xB];
 }
 
@@ -79,19 +85,25 @@ function simplex(A, b, cj, x, xB, zc) {
         // The method for working with infeasible solutions
         pivRowIdx = minIndex;
         var k = 0;
+
         // Find minimum ratio, pivot element, pivot column index
         for (let j = 0; j < mn; j++) {
-            // The following is to prevent floating-point arithmetic from
-            // causing problems
-            var pivotRowEl = math.fraction(A[minIndex][j]);
-            pivotRowEl = pivotRowEl.s * pivotRowEl.n / pivotRowEl.d;
+            var pivotRowEl = floatCor(A[minIndex][j]);
+
+            // Pivot row element must be negative for it to be a potential 
+            // pivot element
             if (pivotRowEl < 0) {
                 ratio[j] = math.abs(zc[j] / pivotRowEl);
+
+                // Find min zj-cj to pivot row element ratio, as it is the 
+                // pivot element.
                 if (ratio[j] < minRat) {
                     minRat = ratio[j];
                     pivColIdx = j;
                     pivotEl = A[minIndex][j];
                 }
+
+                // Increment k
                 k++;
             } else {
                 ratio[j] = Number.POSITIVE_INFINITY;
@@ -109,6 +121,8 @@ function simplex(A, b, cj, x, xB, zc) {
             pivotCol[i] = A[i][pivColIdx];
         }
 
+        // Infeasible problems by definition do not satisfy the criteria as is
+        // for unboundedness
         var isUnbounded = false;
 
         // Generate the tableau before we apply simplex
@@ -220,7 +234,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
 
     // Initialize global variables
     var {z, zc} = calcEntries(A, b, cj, x, xB);
-    var [minIndex, isFeas, isOptim] = isOptAndFeas(b, zc);
+    var {isFeas, isOptim} = isOptAndFeas(b, zc);
     var isUnbounded = false;
     var isPermInf = false;
     var arr;
@@ -235,7 +249,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // Use simplex to solve the problem
     while ((!isOptim) && (!isUnbounded) && (!isPermInf)) {
         // Apply simplex
-        var {cB, z, zc} = calcEntries(A, b, cj, x, xB);
+        var {z, zc} = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
         [A, b, xB, isUnbounded, isPermInf] = arr;
         
