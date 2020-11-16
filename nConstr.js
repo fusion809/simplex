@@ -37,6 +37,16 @@ function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows, newARows2) {
  * @return         [A, b, cj, x, xB]
  */
 function addToArrs(A, b, cj, x, xB, newARows, newbRows, newcRows) {
+    // Adds new column(s) to existing A matrix for new slack(s)
+    for (let i = 0; i < A.length; i++) {
+        for (let j = 0; j < newbRows.length; j++) {
+            // Add coefficients for new slack variables to existing A and 
+            // initialA rows
+            A[i].push(0);
+            initialA[i].push(0);
+        }
+    }
+
     // Add new constraints
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
@@ -169,16 +179,7 @@ function newConstraint() {
         return [A, b, cj, x, xB, shouldDie];
     }
 
-    // Adds new column to existing A matrix
-    for (let i = 0; i < A.length; i++) {
-        for (let j = 0; j < newbRows.length; j++) {
-            // Add coefficients for new slack variables to existing A and 
-            // initialA rows
-            A[i].push(0);
-            initialA[i].push(0);
-        }
-    }
-
+    // Add new row(s) to A and b and new elements to cj, x and xB
     [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, 
         newcRows, newARows2);
 
