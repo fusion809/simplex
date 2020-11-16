@@ -1,4 +1,29 @@
 /**
+ * Add new constraint(s) to arrays of the final iteration of simplex.
+ * 
+ * @param A             Array of constraint coefficients in final tableau.
+ * @param b             Array of resource values.
+ * @param cj            Array of objective function coefficients.
+ * @param x             Array of decision variables (including slack variables).
+ * @param xB            Array of basis variables.
+ * @param newARows      New constraint coefficient rows.
+ * @param newbRows      Resource values for new constraints.
+ * @param newcRows      New objective function coefficients to be added. Only
+ * used if newcRows radio button has been clicked.
+ * @param newARows2     Same as newARows, used to update initialA, optional.
+ * @return              Updated [A, b, cj, x, xB]
+ */
+function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows, newARows2) {
+    // Correct constraints
+    [newARows, newbRows] = correctConstr(A, b, x, xB, newARows, newbRows, newARows2);
+
+    // Add new constraint elements to A, b, cj, x and xB
+    [A, b, cj, x, xB] = addToArrs(A, b, cj, x, xB, newARows, newbRows, newcRows);
+
+    return [A, b, cj, x, xB];
+}
+
+/**
  * Add new constraint rows to A, b, cj, x and xB
  * 
  * @param A        2d array of constraint coefficients.
@@ -29,6 +54,54 @@ function addToArrs(A, b, cj, x, xB, newARows, newbRows, newcRows) {
     }
 
     return [A, b, cj, x, xB];
+}
+
+/**
+ * Correct constraints, making them able to be added to the final tableau.
+ * 
+ * @param A             Array of constraint coefficients in final tableau.
+ * @param b             Array of resource values.
+ * @param x             Array of decision variables (including slack variables).
+ * @param xB            Array of basis variables.
+ * @param newARows      New constraint coefficient rows.
+ * @param newbRows      Resource values for new constraints.
+ * @param newARows2     Same as newARows, used to update initialA, optional.
+ * @return              [newARows, newbRows]
+ */
+function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
+    // Determine column indices corresponding to basis variables
+    var loc = basisIndex(x, xB);
+
+    // Loop over each new A row
+    for (let i = 0; i < newARows.length; i++) {
+        // Define newARow for this iteration, add it uncorrected to initialA
+        // then add corrected versions to A and corrected b values to the b
+        // array
+        var newARow = newARows[i];
+        if (newARows != undefined) {
+            initialA.push(newARows2[i]);
+        }
+
+        // Loop over basis variable columns looking for a column in newARow
+        // that's for a basis variable and is non-zero. Correct newARow and 
+        // newbRow accordingly.
+        for (let j = 0; j < loc.length; j++) {
+            var ARow = A[j];
+            var basisCol = loc[j];
+        
+            // Entry in the basis column on ith row
+            var basisEl = newARow[basisCol];
+
+            // If basisEl is non-zero, make it zero using row operations
+            if ( basisEl != 0) {
+                // From newARow subtract ARow[j]*basisEl
+                newARows[i] = correctionOp(newARow, ARow, basisEl);
+                newbRows[i] -= basisEl*b[j];
+             }
+        }
+    }
+
+    return [newARows, newbRows];
 }
 
 /**
@@ -107,81 +180,10 @@ function newConstraint() {
     }
 
     [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, 
-        newARows2);
+        newcRows, newARows2);
 
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";
 
     return [A, b, cj, x, xB, shouldDie];
-}
-
-/**
- * Correct constraints, making them able to be added to the final tableau.
- * 
- * @param A             Array of constraint coefficients in final tableau.
- * @param b             Array of resource values.
- * @param x             Array of decision variables (including slack variables).
- * @param xB            Array of basis variables.
- * @param newARows      New constraint coefficient rows.
- * @param newbRows      Resource values for new constraints.
- * @param newARows2     Same as newARows, used to update initialA, optional.
- * @return              [newARows, newbRows]
- */
-function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
-    // Determine column indices corresponding to basis variables
-    var loc = basisIndex(x, xB);
-
-    // Loop over each new A row
-    for (let i = 0; i < newARows.length; i++) {
-        // Define newARow for this iteration, add it uncorrected to initialA
-        // then add corrected versions to A and corrected b values to the b
-        // array
-        var newARow = newARows[i];
-        if (newARows != undefined) {
-            initialA.push(newARows2[i]);
-        }
-
-        // Loop over basis variable columns looking for a column in newARow
-        // that's for a basis variable and is non-zero. Correct newARow and 
-        // newbRow accordingly.
-        for (let j = 0; j < loc.length; j++) {
-            var ARow = A[j];
-            var basisCol = loc[j];
-        
-            // Entry in the basis column on ith row
-            var basisEl = newARow[basisCol];
-
-            // If basisEl is non-zero, make it zero using row operations
-            if ( basisEl != 0) {
-                // From newARow subtract ARow[j]*basisEl
-                newARows[i] = correctionOp(newARow, ARow, basisEl);
-                newbRows[i] -= basisEl*b[j];
-             }
-        }
-    }
-
-    return [newARows, newbRows];
-}
-
-/**
- * Add new constraint(s) to arrays of the final iteration of simplex.
- * 
- * @param A             Array of constraint coefficients in final tableau.
- * @param b             Array of resource values.
- * @param cj            Array of objective function coefficients.
- * @param x             Array of decision variables (including slack variables).
- * @param xB            Array of basis variables.
- * @param newARows      New constraint coefficient rows.
- * @param newbRows      Resource values for new constraints.
- * @param newARows2     Same as newARows, used to update initialA, optional.
- * @return              Updated [A, b, cj, x, xB]
- */
-function addConstr(A, b, cj, x, xB, newARows, newbRows, newARows2) {
-    // Correct constraints
-    [newARows, newbRows] = correctConstr(A, b, x, xB, newARows, newbRows, newARows2);
-
-    // Add new constraint elements to A, b, cj, x and xB
-    [A, b, cj, x, xB] = addToArrs(A, b, cj, x, xB, newARows, newbRows, newcRows);
-
-    return [A, b, cj, x, xB];
 }
