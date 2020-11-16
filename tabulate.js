@@ -247,12 +247,12 @@ function rowOperations(pivRowIdx, pivotCol, pivotEl) {
         // Row operations for non-pivot rows, adjusted according to the value
         // of the pivot column element for the row
         else {
-            if (pivotCol[i] == -1) {
+            if (floatCor(pivotCol[i]) == -1) {
                 tempStr += "<div style='padding: 7px;'>" + 
                  katex.renderToString("R_{" + (i + 1) + "} + " + "R_{" + 
                  pivRowIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + 
                  "</div>";
-            } else if ( pivotCol[i] < 0) {
+            } else if ( floatCor(pivotCol[i]) < 0) {
                 var fraction = math.fraction(-pivotCol[i]);
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + 
@@ -265,11 +265,11 @@ function rowOperations(pivRowIdx, pivotCol, pivotEl) {
                     fraction.n + "R_{" + pivRowIdx + "}^{'} \\rightarrow R_{" +
                     (i + 1) + "}^{'}") + "</div>";
                 }
-            } else if (pivotCol[i] == 0) {
+            } else if (floatCor(pivotCol[i]) == 0) {
                 tempStr += "<div style='padding: 7px;'>" + 
                 katex.renderToString("R_{" + (i + 1) + "} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
-            } else if (pivotCol[i] == 1) {
+            } else if (floatCor(pivotCol[i]) == 1) {
                 tempStr += "<div style='padding: 7px;'>" + 
                 katex.renderToString("R_{" + (i + 1) +  "} - " + "R_{" + 
                 pivRowIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}")
