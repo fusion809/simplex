@@ -64,6 +64,18 @@ function addVariable() {
 }
 
 /**
+ * Calculate b_{New}^{final} from finalV and b_{New}^{(0)}
+ * 
+ * @param b   Resource array.
+ * @return    b_{New}^{final}
+ */
+function bUpdate(b) {
+    // Find how b should be added to final tableau using the relationship:
+    // b_{New}^{final} = V^{final} b_{New}^{(0)}
+    return matMult(finalV, b); 
+}
+
+/**
  * Change constraint coefficients.
  * 
  * @params    None. Gets all its data from globals and the form.
@@ -190,34 +202,4 @@ function resourceChange() {
     tempStr += "Resource value(s) changed. ";
 
     return [A, b, cj, x, xB, shouldDie];  
-}
-
-/**
- * Calculate b_{New}^{final} from finalV and b_{New}^{(0)}
- * 
- * @param b   Resource array.
- * @return    b_{New}^{final}
- */
-function bUpdate(b) {
-    // Find how b should be added to final tableau using the relationship:
-    // b_{New}^{final} = V^{final} b_{New}^{(0)}
-    return matMult(finalV, b); 
-}
-
-/**
- * Create parameter object containing all final arrays.
- * 
- * @return    That object.
- */
-function setToFinals() {
-    // Initialize parameter object
-    var paramObj = {
-        A: finalA,
-        b: finalb,
-        cj: finalcj,
-        x: finalx,
-        xB: finalxB,
-    }
-
-    return paramObj;
 }

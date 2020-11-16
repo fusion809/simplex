@@ -11,6 +11,24 @@ var finalV = [[]];
 var l = 0;
 
 /**
+ * Create parameter object containing all final arrays.
+ * 
+ * @return    That object.
+ */
+function setToFinals() {
+    // Initialize parameter object
+    var paramObj = {
+        A: finalA,
+        b: finalb,
+        cj: finalcj,
+        x: finalx,
+        xB: finalxB,
+    }
+
+    return paramObj;
+}
+
+/**
  * Update global variables.
  * 
  * @param A   2d array of the LHS of constraint coefficients. 
