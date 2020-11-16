@@ -1,4 +1,16 @@
-function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds) {
+/**
+ * 
+ * @param A 
+ * @param b 
+ * @param cj 
+ * @param x 
+ * @param xB 
+ * @param sign 
+ * @param objVarName 
+ * @param intConds 
+ * @param maxz         Maximium z value thus far found for an integer solution.
+ */
+function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds, maxz) {
     for (let i = 0; i < x.length; i++) {
         if (intConds[i] == 1) {
             console.log(x[i] + " is required to be an integer.");
@@ -6,12 +18,25 @@ function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds) {
             console.log(x[i] + " is not required to be an integer.");
         }
     }
-
-    [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB);
     var [isOptim, branchVar, branchVal] = varNotInt(b, x, xB, intConds);
-    [A, b, cj, x, xB] = addBBConstr(A, b, cj, x, xB, branchVar, branchVal, 1);
-    [A, b, cj, x, xB, z, isFeas] = simplexIterator(A, b, cj, x, xB, sign, 
-        objVarName);
+
+    if (!isOptim) {
+        // Less than problem
+        var [ALt, bLt, cjLt, xLt, xBLt] = addBBConstr(A, b, cj, x, xB, branchVar, Math.floor(branchVal), 1);
+        var [ALt, bLt, cjLt, xLt, xBLt, zLt, isFeasLt] = simplexIterator(ALt, bLt, 
+            cjLt, xLt, xBLt, sign, objVarName);
+        if (isFeasLt && zLt > maxz) {
+            var [isOptimLt, branchVarLt, branchValLt] = varNotInt(bLt, xLt, xBLt, intConds);
+            if (isOptimLt) {
+                maxz = zLt;
+            }
+        }
+
+        // Greater than problem
+        var [AGt, bGt, cjGt, xGt, xBGt] = addBBConstr(A, b, cj, x, xB, branchVar, Math.ceil(branchVal), 1);
+        var [AGt, bGt, cjGt, xGt, xBGt, zGt, isFeasGt] = simplexIterator(AGt, bGt, 
+            cjGt, xGt, xBGt, sign, objVarName);
+    }
 }
 
 function varNotInt(b, x, xB, intConds) {
