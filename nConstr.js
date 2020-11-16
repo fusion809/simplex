@@ -8,17 +8,27 @@
  * @param xB            Array of basis variables.
  * @param newARows      New constraint coefficient rows.
  * @param newbRows      Resource values for new constraints.
- * @param newcRows      New objective function coefficients to be added. Only
- * used if newcRows radio button has been clicked.
+ * @param newcEnt       New objective function coefficients to be added. Only
+ * used if newcEnt radio button has been clicked.
  * @param newARows2     Same as newARows, used to update initialA, optional.
  * @return              Updated [A, b, cj, x, xB]
  */
-function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows, newARows2) {
+function addConstr(A, b, cj, x, xB, newARows, newbRows, newcEnt, newARows2) {
+    // Adds new column(s) to existing A matrix for new slack(s)
+    for (let i = 0; i < A.length; i++) {
+        for (let j = 0; j < newbRows.length; j++) {
+            // Add coefficients for new slack variables to existing A and 
+            // initialA rows
+            A[i].push(0);
+            initialA[i].push(0);
+        }
+    }
+
     // Correct constraints
     [newARows, newbRows] = correctConstr(A, b, x, xB, newARows, newbRows, newARows2);
 
     // Add new constraint elements to A, b, cj, x and xB
-    [A, b, cj, x, xB] = addToArrs(A, b, cj, x, xB, newARows, newbRows, newcRows);
+    [A, b, cj, x, xB] = addToArrs(A, b, cj, x, xB, newARows, newbRows, newcEnt);
 
     return [A, b, cj, x, xB];
 }
@@ -33,27 +43,17 @@ function addConstr(A, b, cj, x, xB, newARows, newbRows, newcRows, newARows2) {
  * @param xB       1d array of basis variables.
  * @param newARows 2d array of new rows to be added to A (corrected).
  * @param newbRows 1d array of new rows to be added to b (corrected).
- * @param newcRows 1d array of new elements to be added to c.
+ * @param newcEnt  1d array of new elements to be added to c.
  * @return         [A, b, cj, x, xB]
  */
-function addToArrs(A, b, cj, x, xB, newARows, newbRows, newcRows) {
-    // Adds new column(s) to existing A matrix for new slack(s)
-    for (let i = 0; i < A.length; i++) {
-        for (let j = 0; j < newbRows.length; j++) {
-            // Add coefficients for new slack variables to existing A and 
-            // initialA rows
-            A[i].push(0);
-            initialA[i].push(0);
-        }
-    }
-
+function addToArrs(A, b, cj, x, xB, newARows, newbRows, newcEnt) {
     // Add new constraints
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
         b.push(newbRows[i]);
         // Slack variables have zero objective function coefficients
         if (document.getElementById("newcRows").checked) {
-            cj.push(newcRows[i]);
+            cj.push(newcEnt[i]);
         } else {
             cj.push(0);
         }
@@ -88,7 +88,7 @@ function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
         // then add corrected versions to A and corrected b values to the b
         // array
         var newARow = newARows[i];
-        if (newARows != undefined) {
+        if (newARows2 != undefined) {
             initialA.push(newARows2[i]);
         }
 
@@ -146,7 +146,7 @@ function newConstraint() {
     var newARows = readA();
     var newARows2 = readA();
     var newbRows = readb();
-    var newcRows = readc();
+    var newcEnt = readc();
 
     // Initialize shouldDie Boolean
     var shouldDie = false;
@@ -159,9 +159,9 @@ function newConstraint() {
         return [A, b, cj, x, xB, shouldDie];
     }
 
-    // Return an error if the number of elements in newcRows does not match
-    // the number of elements in newbRows and the newcRows box is ticked
-    if ( (newcRows.length != newbRows.length ) && document.getElementById("newcRows").checked) {
+    // Return an error if the number of elements in newcEnt does not match
+    // the number of elements in newbRows and the newcEnt box is ticked
+    if ( (newcEnt.length != newbRows.length ) && document.getElementById("newcRows").checked) {
         shouldDie = true;
         var msg = "The number of new b rows and new entries in c must match!";
         console.error(msg);
@@ -181,7 +181,7 @@ function newConstraint() {
 
     // Add new row(s) to A and b and new elements to cj, x and xB
     [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, 
-        newcRows, newARows2);
+        newcEnt, newARows2);
 
     // Mention what's happening in output
     tempStr += "Adding new constraint(s). ";

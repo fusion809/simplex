@@ -203,6 +203,9 @@ function simplex(A, b, cj, x, xB, zc) {
  * @param cj            1d array of objective function coefficients.
  * @param x             1d array of decision variable names.
  * @param xB            1d array of basis variable names.
+ * @param sign          What the objective function has been multiplied by to
+ * make it max, either 1 (max problem) or -1 (min problem).
+ * @param objVarName    Name of the objective function (usually just a letter).
  * @return              [A, b, cj, x, xB, z]
  */
 function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
@@ -262,6 +265,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             tempStr += "Problem is unbounded! ";
         } else if (isPermInf) {
             tempStr += "Problem is infeasible! ";
+            return [A, b, cj, x, xB, z, false];
         } else if (isOptim) {
             var {z, zc} = calcEntries(A, b, cj, x, xB);
 
@@ -280,7 +284,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     }
 
     // Update final values
-    return [A, b, cj, x, xB, z];
+    return [A, b, cj, x, xB, z, true];
 }
 
 /**
@@ -292,10 +296,11 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
 function solveProblem() {
     // Obtain required problem parameters
     var [A, b, cj, x, xB, shouldDie, sign, objVarName] = getParameters();
+    var isFeas;
 
     // Solve problem using simplex iterator
     if (!shouldDie) {
-        [A, b, cj, x, xB, z] = simplexIterator(A, b, cj, x, xB, sign, 
+        [A, b, cj, x, xB, z, isFeas] = simplexIterator(A, b, cj, x, xB, sign, 
             objVarName);
     }
 
