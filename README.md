@@ -1,5 +1,5 @@
-# Simplex method
-This repository contains a webpage I have written to solve linear programming problems using the simplex method. 
+# Simplex method solver
+This repository contains a webpage I have written to solve linear programmes using the simplex method. 
 
 As of 14 November 2020 this solver:
 * Prints messages indicating whether the solution is:
@@ -8,7 +8,7 @@ As of 14 November 2020 this solver:
   * Unbounded.
 * Mentions whether a problem has alternate solutions and lists them.
 * Shows extensive working.
-* Uses USQ's MAT2200 simplex tableau layout (not sure the formal name for this layout).
+* Uses USQ's [MAT2200](https://www.usq.edu.au/course/synopses/2020/MAT2200.html) simplex tableau layout (not sure the formal name for this layout).
 * Can perform sensitivity analysis, including:
   * The adding of new constraint(s).
   * The changing of objective function coefficient(s).
