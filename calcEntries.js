@@ -43,7 +43,7 @@ function calcEntries(A, b, cj, x, xB) {
     var {m, mn} = getDims(A);
     var loc = basisIndex(x, xB);
     var cB = new Array(m);
-    var z = new Array(mn);
+    var zj = new Array(mn);
     var zc = new Array(mn);
 
     // Input validation
@@ -55,27 +55,27 @@ function calcEntries(A, b, cj, x, xB) {
     // Loop over columns of the tableau in which z appears
     for (let i = 0; i < mn + 1; i++) {
         // Initialize z at zero
-        z[i] = 0;
+        zj[i] = 0;
 
         // i = mn is the objective function value
         if (i != mn) {
             // Loop over rows calculating cB and adding up contributions to z
             for (let j = 0; j < m; j++) {
                 cB[j] = cj[loc[j]];
-                z[i] += cB[j] * A[j][i];
+                zj[i] += cB[j] * A[j][i];
             }
 
             // Calculate zj-cj row entries
-            zc[i] = z[i] - cj[i];
+            zc[i] = zj[i] - cj[i];
 
         } else {
 
             // Calculate objective function value
             for (let j = 0; j < m; j++) {
-                z[i] += cB[j] * b[j];
+                zj[i] += cB[j] * b[j];
             }
         }
     }
 
-    return {cB: cB, z: z, zc: zc};
+    return {cB: cB, zj: zj, zc: zc};
 }

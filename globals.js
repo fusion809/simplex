@@ -8,6 +8,7 @@ var finalb = [];
 var finalxB = [];
 var finalcj = [];
 var finalV = [[]];
+var finalzj = [];
 var l = 0;
 
 /**

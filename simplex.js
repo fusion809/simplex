@@ -236,7 +236,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     }
 
     // Initialize global variables
-    var {z, zc} = calcEntries(A, b, cj, x, xB);
+    var {zj, zc} = calcEntries(A, b, cj, x, xB);
     var {isFeas, isOptim} = isOptAndFeas(b, zc);
     var isUnbounded = false;
     var isPermInf = false;
@@ -252,7 +252,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // Use simplex to solve the problem
     while ((!isOptim) && (!isUnbounded) && (!isPermInf)) {
         // Apply simplex
-        var {z, zc} = calcEntries(A, b, cj, x, xB);
+        var {zj, zc} = calcEntries(A, b, cj, x, xB);
         arr = simplex(A, b, cj, x, xB, zc);
         [A, b, xB, isUnbounded, isPermInf] = arr;
         
@@ -267,7 +267,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             tempStr += "Problem is infeasible! ";
             return [A, b, cj, x, xB, z, false];
         } else if (isOptim) {
-            var {z, zc} = calcEntries(A, b, cj, x, xB);
+            var {zj, zc} = calcEntries(A, b, cj, x, xB);
 
             // Update finals before showSolution, in case there's alt sol
             finalA = copyOnAss(A);
@@ -275,11 +275,11 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             finalcj = copyOnAss(cj);
             finalx = copyOnAss(x);
             finalxB = copyOnAss(xB);
-            finalz = copyOnAss(z);
+            finalzj = copyOnAss(zj);
             finalV = extractV(A);
 
             // Show solution
-            showSolution(A, b, cj, x, xB, z, zc, sign, objVarName);
+            showSolution(A, b, cj, x, xB, zj, zc, sign, objVarName);
         }
     }
 

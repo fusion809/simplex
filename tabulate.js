@@ -65,7 +65,7 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
  */
 function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
     pivRowIdx, pivColIdx) {
-    var {cB, z, zc} = calcEntries(A, b, cj, x, xB);
+    var {cB, zj, zc} = calcEntries(A, b, cj, x, xB);
     var {isFeas, isOptim, isUnbounded, isPermInf} = bools;
 
     // The following is to prevent departing/entering variable
@@ -89,7 +89,7 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl,
     AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools);
 
     // zj row
-    zRow(pivotEl, isFeas, ratio, z);
+    zRow(pivotEl, isFeas, ratio, zj);
 
     // zj-cj row
     zcRow(zc);
@@ -352,12 +352,12 @@ function zcRow(zc) {
  * @param pivotEl  Pivot element.
  * @param isFeas   Boolean indicating whether the problem is feasible.
  * @param ratio    Array of the ratio of b to the pivot column.
- * @param z        Array of zj values.
+ * @param zj       Array of zj values.
  * @return         Nothing, simply writes the row to the tempStr global.
  */
-function zRow(pivotEl, isFeas, ratio, z) {
+function zRow(pivotEl, isFeas, ratio, zj) {
     // Calculate mn from z
-    var mn = z.length - 1;
+    var mn = zj.length - 1;
 
     // Start row
     tempStr += "<tr>";
@@ -368,10 +368,10 @@ function zRow(pivotEl, isFeas, ratio, z) {
     }
     tempStr += katexRow("z_j");
     for (let i = 0; i < mn; i++) {
-        tempStr += "<td>" + decimalToFrac(z[i]) + "</td>";
+        tempStr += "<td>" + decimalToFrac(zj[i]) + "</td>";
     }
 
     // Objective function value
-    tempStr += "<td rowspan='2'>" + decimalToFrac(z[mn]) + "</td>";
+    tempStr += "<td rowspan='2'>" + decimalToFrac(zj[mn]) + "</td>";
     tempStr += "</tr>";
 }
