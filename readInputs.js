@@ -95,15 +95,19 @@ function readNonMatForm() {
     // Create KaTeX string
     var texStr = "\\begin{aligned}\n";
     var stStr = "\\\\\n&\\mathrm{Subject\\hspace{0.1cm}to:}\\\\\n&";
+
+    // Regular expressions
     var dnReg = new RegExp(/(\d)(\n)/gi);
     var ldReg = new RegExp(/([a-zA-Z])(\d+)/gi);
-    var maxStr = "&\\mathrm{Maximize\\hspace{0.1cm}}";
-    var minStr = "&\\mathrm{Minimize\\hspace{0.1cm}}";
     var maxReg = new RegExp(/[mM]ax[imize]*[imise]*/);
     var minReg = new RegExp(/[mM]in[imize]*[imise]*/);
     var midLnReg = new RegExp(/\n[a-zA-Z .:]*\n/);
     var decVarRegg = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/g);
 
+    // Type of objective function
+    var maxStr = "&\\mathrm{Maximize\\hspace{0.1cm}}";
+    var minStr = "&\\mathrm{Minimize\\hspace{0.1cm}}";
+    
     // Replace blank/subject to lines with "Subject to:" with TeX formatting
     texStr += element.replace(midLnReg, stStr);
     texStr = texStr.replace(dnReg, 
