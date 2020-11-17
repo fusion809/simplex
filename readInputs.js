@@ -150,7 +150,7 @@ function readNonMatForm() {
     tempStr += "Problem is:<br/>"
     tempStr += "<span class=\"katex-display\">";
     tempStr += katex.renderToString(texStr);
-    tempStr += "</span><br/>";
+    tempStr += "</span>";
 
     // Name of the objective function (e.g. z)
     var objVarName = elSpArr[1].replace(/=/, '');
