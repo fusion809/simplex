@@ -127,22 +127,25 @@ function readNonMatForm() {
     });
 
     // Count up number of less than or equal to inequalities
-    if (element.match(/<=/g)) {
-        var noOfLeq = element.match(/<=/g).join("").replace(/</g, "").length;
+    var elMLeq = element.match(/<=/g);
+    if (elMLeq) {
+        var noOfLeq = elMLeq.join("").replace(/</g, "").length;
     } else {
         var noOfLeq = 0;
     }
 
     // Count up number of greater than or equal to inequalities
-    if (element.match(/>=/g)) {
-        var noOfGeq = element.match(/>=/g).join("").replace(/>/g, "").length;
+    var elMGeq = element.match(/>=/g);
+    if (elMGeq) {
+        var noOfGeq = elMGeq.join("").replace(/>/g, "").length;
     } else {
         var noOfGeq = 0;
     }
 
     // Count up equalities
-    if (element.match(/ =/g)) {
-        var noOfEq = 2*(element.match(/ =/g).join("").replace(/ /g, "").length-1);
+    var elMEq = element.match(/ =/g);
+    if (elMEq) {
+        var noOfEq = 2*(elMEq.join("").replace(/ /g, "").length-1);
     } else {
         var noOfEq = 0;
     }
@@ -150,11 +153,12 @@ function readNonMatForm() {
     // For some reason the following calculation causes us to access a 
     // non-existent element of elNLArr below
     var noOfConstr = noOfLeq + noOfGeq + noOfEq;
+    var decVarRegex = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/);
 
     // Loop over objective function coefficients array
     for (let i = 0; i < varNo; i++) {
         if (coeffsArr[i] != "") {
-            var coeffWOSign = coeffsArr[i].replace(/[a-zA-Z][a-zA-Z]*[0-9]*/, '');
+            var coeffWOSign = coeffsArr[i].replace(decVarRegex, '');
 
             // If number is omitted, the coeff = 1
             if (!coeffWOSign.match(/[0-9]/)) {
@@ -185,7 +189,7 @@ function readNonMatForm() {
 
     // Initialize arrays
     var A = new Array(noOfConstr);
-    var xB = [];
+    var xB = new Array(noOfConstr);
     var b = new Array(noOfConstr);
 
     // Number of columns in A
@@ -198,15 +202,23 @@ function readNonMatForm() {
     // Determine number of empty rows
     var noOfEmptyRows = 0;
     for (let i = 0 ; i < elNLArr.length; i++) {
-        if (elNLArr[i].match(/^\s*$/) || elNLArr[i].match(/[Ss][ubject to|t.][:]*/)) {
+        var isBlankLn = elNLArr[i].match(/^\s*$/);
+        var isStLn = elNLArr[i].match(/[Ss][ubject to|t.][:]*/);
+        if (isBlankLn || isStLn) {
             noOfEmptyRows++;
         }
     }
 
     // Loop over constraints
     while (j < noOfConstr) {
+        // Relevant vars
+        var constrLn = elNLArr[j+1+noOfEmptyRows-countOfEq];
+        var isConstrEq = constrLn.match(/ =/);
+        var isConstrLeq = constrLn.match(/<=/);
+        var isConstrGeq = constrLn.match(/>=/);
+
         // Initialize relevant rows
-        if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
+        if (isConstrEq) {
             A[j+1] = new Array(mn);
         }
         A[j] = new Array(mn);
@@ -215,13 +227,15 @@ function readNonMatForm() {
         cj.push(0);
 
         // LHS of constraint
-        var constr = elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/[<>]*=.*/, '').replace(/ /g, "");
+        var constrWoSp = constrLn.replace(/ /g, "");
+        var constrLHS = constrWoSp.replace(/[<>]*=.*/, '');
+        var constrRHS = constrWoSp.replace(/.*=/, '');
 
         // RHS of constraint
-        var resc = fracToDecimal(elNLArr[j + 1 + noOfEmptyRows-countOfEq].replace(/.*[<>]*=/, '').replace(/ /g, ""));
+        var resc = fracToDecimal(constrRHS);
 
         // Detail what is being done before initial tableau is drawn
-        if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/ =/)) {
+        if (isConstrEq) {
             tempStr += "Splitting constraint ";
             tempStr += (j+1 - countOfEq);
             tempStr += " into &leq; and &geq; constraints. &geq; constraint ";
@@ -231,7 +245,7 @@ function readNonMatForm() {
             tempStr += "<br/><br/> ";
             b[j] = resc;
             b[j+1] = -resc;
-        } else if (elNLArr[j + 1 + noOfEmptyRows - countOfEq].match(/<=/)) {
+        } else if (isConstrLeq) {
             b[j] = resc;
         } else {
             tempStr += "Multiplying constraint ";
@@ -244,10 +258,12 @@ function readNonMatForm() {
 
         // Loop over every variable, determine coefficient and add to A
         for (let i = 0; i < varNo; i++) {
+
+            // Obtain coeff of x[i] for constraint j
             var varName = x[i];
             var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
-            if (constr.match(regex)) {
-                var coeff = constr.match(regex).join("").replace(varName, "");
+            if (constrLHS.match(regex)) {
+                var coeff = constrLHS.match(regex).join("").replace(varName, "");
                 if (!coeff.match(/[0-9]/)) {
                     coeff += "1";
                 }
@@ -255,24 +271,29 @@ function readNonMatForm() {
             } else {
                 var coeff = 0;
             }
-            if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/<=/)) {
+
+            // Add coeffs to A
+            if (isConstrLeq) {
                 A[j][i] = coeff;
-            } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/>=/)) {
+            } else if (isConstrGeq) {
                 A[j][i] = -coeff;
-            } else if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
+            } else if (isConstrEq) {
                 A[j][i] = coeff;
                 A[j+1][i] = -coeff;
             }
         }
 
         // Loop over slack variable columns
-        for (let k = varNo ; k < varNo + noOfConstr; k++) {
+        for (let k = varNo ; k < mn; k++) {
+            // Slack variable for constraint
             if (j == k - varNo) {
                 A[j][k] = 1;
             } else {
                 A[j][k] = 0;
             }
-            if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
+
+            // Add slack variables in extra row if constraint is an equality
+            if (isConstrEq) {
                 if (j+1 == k - varNo) {
                     A[j+1][k] = 1;
                 } else {
@@ -282,16 +303,18 @@ function readNonMatForm() {
         }
 
         // Add slacks to x and xB
-        xB.push("s" + (j+1));
-        x.push("s" + (j+1));
+        var sj = "s" + (j+1);
+        xB[j] = sj;
+        x.push(sj);
 
         // If constraint is an equality, add additional entries to cj, x and
         // xB, increment j by 2 and countOfEq by 1. Otherwise just increment j
         // by 2.
-        if (elNLArr[j + 1 + noOfEmptyRows-countOfEq].match(/ =/)) {
+        if (isConstrEq) {
             // Second split constraint slack variable
-            xB.push("s" + (j + 2));
-            x.push("s" + (j + 2));
+            var sj1 = "s" + (j+2);
+            xB[j+1] = sj1;
+            x.push(sj1);
             cj.push(0);
 
             // Incrementing by 2 constraint counter
