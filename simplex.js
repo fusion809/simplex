@@ -246,7 +246,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     if (isOptim) {
         tempStr += "Solution is already optimal.";
         genTableau(A, b, cj, x, xB, {isFeas: isFeas, isOptim: isOptim});
-        showSolution(A, b, cj, x, xB, z, zc, sign, objVarName);
+        showSolution(A, b, cj, x, xB, zj, zc, sign, objVarName);
     }
 
     // Use simplex to solve the problem
@@ -265,7 +265,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             tempStr += "Problem is unbounded! ";
         } else if (isPermInf) {
             tempStr += "Problem is infeasible! ";
-            return [A, b, cj, x, xB, z, false];
+            return [A, b, cj, x, xB, zj, false];
         } else if (isOptim) {
             var {zj, zc} = calcEntries(A, b, cj, x, xB);
 
