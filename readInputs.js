@@ -76,8 +76,9 @@ function readInputs() {
  * @return         Nothing.
  */
 function uncheck(name) {
-    if (document.getElementById(name).checked) {
-        document.getElementById(name).checked = false;
+    var elCheck = document.getElementById(name).checked;
+    if (elCheck) {
+        elCheck = false;
     }
 }
 
