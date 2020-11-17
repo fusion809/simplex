@@ -276,6 +276,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             finalx = copyOnAss(x);
             finalxB = copyOnAss(xB);
             finalzj = copyOnAss(zj);
+            finalzc = copyOnAss(zc);
             finalV = extractV(A);
 
             // Show solution
@@ -284,7 +285,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     }
 
     // Update final values
-    return [A, b, cj, x, xB, z, true];
+    return [A, b, cj, x, xB, zj, zc, true];
 }
 
 /**
@@ -300,12 +301,12 @@ function solveProblem() {
 
     // Solve problem using simplex iterator
     if (!shouldDie) {
-        [A, b, cj, x, xB, z, isFeas] = simplexIterator(A, b, cj, x, xB, sign, 
-            objVarName);
+        [A, b, cj, x, xB, zj, zc, isFeas] = simplexIterator(A, b, cj, x, xB, 
+            sign, objVarName);
     }
 
     // Update global variables
-    updateGlobals(A, b, cj, x, xB);
+    updateGlobals(A, b, cj, x, xB, zj, zc);
 
     // Write tempStr to tableau element
     document.getElementById("tableau").innerHTML = tempStr;

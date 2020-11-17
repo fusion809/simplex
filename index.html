@@ -57,13 +57,13 @@
         <div>
             Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem".<br/><br/>
             
-            In the textbox, >= is used to denote "greater than or equal to", <= to denote "less than or equal to" and = to denote equal to. <b>Do not use &geq; and &leq; characters within your constraints.</b><br/><br/>
+            In the textbox, >= or &geq; is used to denote "greater than or equal to", <= or &leq; to denote "less than or equal to" and = to denote equal to.<br/><br/>
             
             "Maximize", "Maximise" or "Max" (case-insensitive) can be used to indicate the problem is a maximization problem, whilst "Minimize", "Minimise" or "Min" (case-insensitive) can be used to indicate it is a minimization problem.<br/><br/> 
             
             Non-negativity constraints are assumed (and should <b>not</b> be specified).<br/><br/>
 
-            You can include the phrase "Subject to" (with or without a colon) before specifying your structural constraints, but you do not need to. <b>Do not write "st." before you list structural constraints.</b><br/><br/>
+            You can include the phrase "Subject to" or "st." (with or without a colon) on a new line before specifying your structural constraints, but you do <b>not</b> need to.<br/><br/>
 
             Commas and dots cannot be used to as thousands delimiters. A dot is used to indicate the decimal place.<br/><br/>
             
@@ -188,9 +188,9 @@ s5]</textarea>
                         <textarea id="nonMatForm" style="width: 100%; height: 400px;">
 Minimize G = 200x1 + 350x2 + 430x3
     
-3x1 + 5x2 + 4x3 >= 2500
-5x1 + 4x2 + 3x3 >= 4800
-2x1 + x2 + 2x3 <= 3500
+3x1 + 5x2 + 4x3 ≥ 2500
+5x1 + 4x2 + 3x3 ≥ 4800
+2x1 + x2 + 2x3 ≤ 3500
 x1 + x2 + x3 = 2000</textarea>
                     </td>
                 </tr>

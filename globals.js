@@ -9,6 +9,7 @@ var finalxB = [];
 var finalcj = [];
 var finalV = [[]];
 var finalzj = [];
+var finalzc = [];
 var l = 0;
 
 /**
@@ -39,7 +40,7 @@ function setToFinals() {
  * @param cj  1d array of objective function coefficients.
  * @return    Nothing.
  */
-function updateGlobals(A, b, cj, x, xB) {
+function updateGlobals(A, b, cj, x, xB, zj, zc) {
     finalA = A;
     if (l == 0) {
         initialAT = transpose(A);
@@ -50,4 +51,6 @@ function updateGlobals(A, b, cj, x, xB) {
     finalxB = xB;
     finalx = x;
     finalcj = cj;
+    finalzj = zj;
+    finalzc = zc;
 }

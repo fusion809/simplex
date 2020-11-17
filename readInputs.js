@@ -90,6 +90,8 @@ function uncheck(name) {
 function readNonMatForm() {
     // Element of the text area
     var element = document.getElementById("nonMatForm").value;
+    // Deal with &geq; and &leq; chars
+    element = element.replace(/≥/g, ">=").replace(/≤/g, "<=");
     var elSpArr = element.split(" ");
     var elNLArr = element.split("\n");
     var cj = [];
@@ -196,7 +198,7 @@ function readNonMatForm() {
     // Determine number of empty rows
     var noOfEmptyRows = 0;
     for (let i = 0 ; i < elNLArr.length; i++) {
-        if (elNLArr[i].match(/^\s*$/) || elNLArr[i].match(/[Ss]ubject to/)) {
+        if (elNLArr[i].match(/^\s*$/) || elNLArr[i].match(/[Ss][ubject to|t.][:]*/)) {
             noOfEmptyRows++;
         }
     }
