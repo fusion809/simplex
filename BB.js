@@ -1,14 +1,19 @@
 /**
+ * Performs branch and bound to find solution.
  * 
- * @param A 
- * @param b 
- * @param cj 
- * @param x 
- * @param xB 
- * @param sign 
- * @param objVarName 
- * @param intConds 
+ * @param A            Constraint coefficient array.
+ * @param b            Solution array.
+ * @param cj           Objective function coefficients array.
+ * @param x            Decision variable array.
+ * @param xB           Basis variable array.
+ * @param sign         What the objective function has been multiplied by to 
+ * make the problem a max problem, either -1 or 1.
+ * @param objVarName   Name of the objective function (usually just a letter).
+ * @param intConds     Integer conditions; there is one element for each 
+ * decision variable. If equal to 1, that decision variable needs to be 
+ * integer.
  * @param maxz         Maximium z value thus far found for an integer solution.
+ * @return             [b, x, xB]
  */
 function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds, maxz) {
     for (let i = 0; i < x.length; i++) {
@@ -39,6 +44,18 @@ function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds, maxz) {
     }
 }
 
+/**
+ * Determines whether the integer conditions are satisfied.
+ * 
+ * @param b        Solution array.
+ * @param x        Decision variable array.
+ * @param xB       Basis variable array.
+ * @param intConds Integer conditions. intConds[i] indicates whether x[i] is 
+ * meant to be an integer. If it is equal to 1 the answer is yes, otherwise no.
+ * @return         If conditions are satisfied, true, otherwise [false, first 
+ * basis variable that doesn't satisfy integer conditions and solution value 
+ * for that variable]
+ */
 function varNotInt(b, x, xB, intConds) {
     var loc = basisIndex(x, xB);
     for (let i = 0 ; i < b.length; i++) {
