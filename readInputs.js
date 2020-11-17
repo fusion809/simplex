@@ -90,36 +90,84 @@ function uncheck(name) {
 function readNonMatForm() {
     // Element of the text area
     var element = document.getElementById("nonMatForm").value;
-    // Deal with &geq; and &leq; chars
     element = element.replace(/≥/g, ">=").replace(/≤/g, "<=");
+
+    // Create KaTeX string
+    var texStr = "\\begin{aligned}\n";
+    var stStr = "\\\\\n&\\mathrm{Subject\\hspace{0.1cm}to:}\\\\\n&";
+    var dnReg = new RegExp(/(\d)(\n)/gi);
+    var ldReg = new RegExp(/([a-zA-Z])(\d+)/gi);
+    var maxStr = "&\\mathrm{Maximize\\hspace{0.1cm}}";
+    var minStr = "&\\mathrm{Minimize\\hspace{0.1cm}}";
+    var maxReg = new RegExp(/[mM]ax[imize]*[imise]*/);
+    var minReg = new RegExp(/[mM]in[imize]*[imise]*/);
+    var midLnReg = new RegExp(/\n[a-zA-Z .:]*\n/);
+    var decVarRegg = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/g);
+
+    // Replace blank/subject to lines with "Subject to:" with TeX formatting
+    texStr += element.replace(midLnReg, stStr);
+    texStr = texStr.replace(dnReg, 
+        (match, number) => number + "\\\\\n&");
+    texStr = texStr.replace(ldReg, 
+        (match, letter, number) => `${letter}_${number}`);
+    texStr = texStr.replace(/<=/g, "&&\\leq").replace(/>=/g, "&&\\geq");
+    texStr = texStr.replace(/(?![<>])=/g, "&&=");
+    texStr = texStr.replace(maxReg, maxStr);
+    texStr = texStr.replace(minReg, minStr);
+
+    // Deal with &geq; and &leq; chars
     var elSpArr = element.split(" ");
     var elNLArr = element.split("\n");
-    var cj = [];
 
     // Type is = 1 if max problem, -1 otherwise
     var type = elSpArr[0];
-    if (type.match(/[mM]ax[imize]*[imise]*/) ) {
+
+    // Right-hand side of objective function
+    var objRHS = elNLArr[0].replace(/.*=/, '').replace(/ /g, "");
+
+    // Extract all decision variables from objective function
+    var x = objRHS.match(decVarRegg).join(" ").split(" ");
+    var varNo = x.length;
+
+    // Non-negativity constraints
+    texStr += "\\\\\n";
+    texStr += "&";
+    for (let i = 0; i < varNo; i++) {
+        texStr += x[i].replace(/\d+/, function(x) {
+            return "_{" + x + "}";
+        });
+        if (i < varNo - 1) {
+            texStr += ",\\hspace{0.1cm}";
+        } else {
+            texStr += " &&\\geq 0."
+        }
+    }
+
+    // End TeX string
+    texStr += "\n\\end{aligned}";
+
+    // Write texStr to tempStr;
+    tempStr += katex.renderToString(texStr);
+    tempStr += "<br/>";
+
+    if (type.match(maxReg) ) {
         type = 1;
-    } else if (type.match(/[mM]in[imize]*[imise]*/)) {
+    } else if (type.match(minReg)) {
         type = -1;
         tempStr += "Multiplying objective function by -1 to get a ";
-        tempStr += "maximization problem.<br/>";
+        tempStr += "maximization problem.<br/><br/>";
     }
+
+    // Initialize cj
+    var cj = [];
 
     // Name of the objective function (e.g. z)
     var objVarName = elSpArr[1].replace(/=/, '');
 
-    // Right-hand side of objective function
-    var objRHS = elNLArr[0].replace(/.*=/, '').replace(/ /g, "");
-    
     // Array of signs for objective function coefficients
     var signRHSArr = objRHS.match(/[+-]/g).join("");
 
-    // Extract all decision variables from objective function
-    var x = objRHS.match(/[a-zA-Z][a-zA-Z]*[0-9]*/g).join(" ").split(" ");
-    var varNo = x.length;
-
-    // Array of coefficients (without sign) with variables they correspond to
+    // Array of coefficients (w/o sign) with variables they correspond to
     var coeffsArr = objRHS.split(/[+-]/);
     // Remove any empty elements from array
     var coeffsArr = coeffsArr.filter(function(el) {
@@ -153,12 +201,12 @@ function readNonMatForm() {
     // For some reason the following calculation causes us to access a 
     // non-existent element of elNLArr below
     var noOfConstr = noOfLeq + noOfGeq + noOfEq;
-    var decVarRegex = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/);
+    var decVarReg = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/);
 
     // Loop over objective function coefficients array
     for (let i = 0; i < varNo; i++) {
         if (coeffsArr[i] != "") {
-            var coeffWOSign = coeffsArr[i].replace(decVarRegex, '');
+            var coeffWOSign = coeffsArr[i].replace(decVarReg, '');
 
             // If number is omitted, the coeff = 1
             if (!coeffWOSign.match(/[0-9]/)) {
@@ -308,8 +356,8 @@ function readNonMatForm() {
         x.push(sj);
 
         // If constraint is an equality, add additional entries to cj, x and
-        // xB, increment j by 2 and countOfEq by 1. Otherwise just increment j
-        // by 2.
+        // xB, increment j by 2 and countOfEq by 1. 
+        // Otherwise just increment j by 2.
         if (isConstrEq) {
             // Second split constraint slack variable
             var sj1 = "s" + (j+2);
