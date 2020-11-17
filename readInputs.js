@@ -147,22 +147,25 @@ function readNonMatForm() {
     texStr += "\n\\end{aligned}";
 
     // Write texStr to tempStr;
+    tempStr += "Problem is:<br/>"
+    tempStr += "<span class=\"katex-display\">";
     tempStr += katex.renderToString(texStr);
-    tempStr += "<br/>";
+    tempStr += "</span><br/>";
+
+    // Name of the objective function (e.g. z)
+    var objVarName = elSpArr[1].replace(/=/, '');
 
     if (type.match(maxReg) ) {
         type = 1;
     } else if (type.match(minReg)) {
         type = -1;
-        tempStr += "Multiplying objective function by -1 to get a ";
-        tempStr += "maximization problem.<br/><br/>";
+        tempStr += "Multiplying ";
+        tempStr += objVarName;
+        tempStr += " by -1 to get a maximization problem.<br/><br/>";
     }
 
     // Initialize cj
     var cj = [];
-
-    // Name of the objective function (e.g. z)
-    var objVarName = elSpArr[1].replace(/=/, '');
 
     // Array of signs for objective function coefficients
     var signRHSArr = objRHS.match(/[+-]/g).join("");
@@ -298,9 +301,9 @@ function readNonMatForm() {
         } else {
             tempStr += "Multiplying constraint ";
             tempStr += (j+1-countOfEq);
-            tempStr += " by minus one to replace &geq; with &leq;, which can ";
-            tempStr += "then be converted to canonical form and added to the ";
-            tempStr += "tableau.<br/><br/>";
+            tempStr += " by -1 to replace &geq; with &leq;, which can then be";
+            tempStr += " converted to canonical form and added to the tableau";
+            tempStr += ".<br/><br/>";
             b[j] = -resc;
         }
 
