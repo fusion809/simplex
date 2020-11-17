@@ -37,7 +37,8 @@ function getParameters() {
     // Extract relevant values from form
     else {
         // Set globals
-        if (document.getElementById("useNonMat").checked) {
+        dualCheck = document.getElementById("isDual").checked;
+        if (document.getElementById("useNonMat").checked || dualCheck) {
             var [A, b, cj, x, xB, shouldDie, sign, objVarName] = 
             readNonMatForm();
             uncheck("useNonMat");
@@ -150,7 +151,10 @@ function readNonMatForm() {
     // End TeX string
     texStr += "\n\\end{aligned}";
 
-    // Write texStr to tempStr;
+    // Write texStr to tempStr
+    if (dualCheck) {
+        tempStr += "<br/>Solving the dual.<br/><br/>";
+    }
     tempStr += "Problem is:<br/>"
     tempStr += "<span class=\"katex-display\">";
     tempStr += katex.renderToString(texStr);
@@ -357,7 +361,7 @@ function readNonMatForm() {
         }
 
         // Add slacks to x and xB
-        var sj = "s" + (j+1);
+        var sj = "s" + (j+1) + dualDash(dualCheck);
         xB[j] = sj;
         x.push(sj);
 
@@ -366,7 +370,7 @@ function readNonMatForm() {
         // Otherwise just increment j by 2.
         if (isConstrEq) {
             // Second split constraint slack variable
-            var sj1 = "s" + (j+2);
+            var sj1 = "s" + (j+2) + dualDash(dualCheck);
             xB[j+1] = sj1;
             x.push(sj1);
             cj.push(0);
@@ -383,4 +387,19 @@ function readNonMatForm() {
 
     // Return all data needed by getParameters()
     return [A, b, cj, x, xB, false, type, objVarName];
+}
+
+/**
+ * For dual variables return an apostrophe.
+ * 
+ * @param isDual   A Boolean representing whether the problem is a dual.
+ * @return         Empty string if isDual = false, string containing an 
+ * apostrophe otherwise.
+ */
+function dualDash(isDual) {
+    if (isDual) {
+        return "'";
+    } else {
+        return "";
+    }
 }

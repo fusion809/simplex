@@ -49,7 +49,7 @@
 
         <h2 id = "nonMat">Non-matrix form</h2>
         <div>
-            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem".<br/><br/>
+            Problems can also be entered in the more usual format in the final textbox in this webpage. If you wish to do so, you must check the circle next to "Use non-matrix format?" before pressing "Click to solve problem". If you are solving a dual problem, want this fact mentioned in the article body, and you want different dual variable names to be used, click the "Solving a dual?" button.<br/><br/>
             
             In the textbox, >= or &geq; is used to denote "greater than or equal to", <= or &leq; to denote "less than or equal to" and = to denote equal to.<br/><br/>
             
@@ -190,7 +190,12 @@ x1 + x2 + x3 = 2000</textarea>
                 </tr>
                 <tr>
                     <td width="100%" colspan="2">
-                        <input type="radio" id="useNonMat">Use non-matrix format?</input>
+                        <input type="radio" id="useNonMat">
+                            Use non-matrix format?
+                        </input>
+                        <input type="radio" id="isDual">
+                            Solving a dual?
+                        </input>
                     </td>
                 </tr>
             </table>

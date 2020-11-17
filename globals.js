@@ -10,6 +10,7 @@ var finalcj = [];
 var finalV = [[]];
 var finalzj = [];
 var finalzc = [];
+var dualCheck;
 var l = 0;
 
 /**
