@@ -107,7 +107,7 @@ function readNonMatForm() {
     // Type of objective function
     var maxStr = "&\\mathrm{Maximize\\hspace{0.1cm}}";
     var minStr = "&\\mathrm{Minimize\\hspace{0.1cm}}";
-    
+
     // Replace blank/subject to lines with "Subject to:" with TeX formatting
     texStr += element.replace(midLnReg, stStr);
     texStr = texStr.replace(dnReg, 
@@ -306,8 +306,7 @@ function readNonMatForm() {
             tempStr += "Multiplying constraint ";
             tempStr += (j+1-countOfEq);
             tempStr += " by -1 to replace &geq; with &leq;, which can then be";
-            tempStr += " converted to canonical form and added to the tableau";
-            tempStr += ".<br/><br/>";
+            tempStr += " converted to canonical form and added to the initial"; tempStr += " tableau.<br/><br/>";
             b[j] = -resc;
         }
 
