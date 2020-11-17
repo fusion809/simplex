@@ -26,10 +26,11 @@
         <script src="miscellaneous.js"></script>
         <script src="nConstr.js"></script>
         <script src="BB.js"></script>
+        <script src="eqns.js"></script>
         <link rel="icon" href="/assets/favicon.png">
     </head>
 
-    <body>
+    <body onload="renderEqns()">
         <h1>Simplex method solver <a href="https://github.com/fusion809/simplex" link="_blank"><img src="https://github.githubassets.com/favicons/favicon.svg"/></a></h1>
         
         <div>
@@ -41,14 +42,7 @@
         <div>
             Canonical matrix form is:
 
-            \[
-            \begin{aligned}
-            &\mathrm{Maximize\hspace{0.1cm}z} &&= \mathbf{c}^T \mathbf{x} \\
-            &\mathrm{Subject\hspace{0.1cm}to:}\\
-            &A\mathbf{x} &&= \mathbf{b} \\
-            &\mathbf{x} &&\geq 0
-            \end{aligned}
-            \]
+            <div id="eqn1"></div>
 
             The various matrices can be entered in using MATLAB notation. In the case of \(A\), semicolons are used to separate rows and commas or spaces to separate individual row elements. \(\mathbf{b}\), \(\mathbf{c}\), \(\mathbf{x}\) and \(x_{\mathbf{B}}\) can have individual elements separated by commas, semicolons or spaces.
         </div>
@@ -112,17 +106,7 @@
         <div>
             This webpage uses the following default example:
 
-            \[
-            \begin{aligned}
-            &\mathrm{Minimize\hspace{0.1cm}G} &&= 200x_1 + 350x_2 + 430x_3\\
-            &\mathrm{Subject\hspace{0.1cm}to:}\\
-            &3x_1 + 5x_2 + 4x_3 &&\geq 2500 \\
-            &5x_1 + 4x_2 + 3x_3 &&\geq 4800 \\
-            &2x_1 + x_2 + 2x_3 &&\leq 3500 \\
-            &x_1 + x_2 + x_3 &&= 2000 \\
-            &x_1, x_2, x_3 &&\geq 0
-            \end{aligned}
-            \]
+            <div id="eqn2"></div>
             
             to illustrate how problems should be entered into both forms. 
         </div>
