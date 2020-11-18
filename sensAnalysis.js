@@ -59,6 +59,10 @@ function addVariable() {
 
     // Print message letting the user know what is being computed
     tempStr += "Adding new variable(s). ";
+    tempStr += "Calculating new relevant entries of A using ";
+    var texStr = "\\mathbf{t}_{j, \\mathrm{New}}^{(\\mathrm{final})} = V^{(\\mathrm{final})} \\mathbf{t}_{j, \\mathrm{New}}^{(0)}";
+    tempStr += katex.renderToString(texStr);
+    tempStr += ". ";
 
     return [A, b, cj, x, xB, shouldDie];
 }
@@ -138,7 +142,11 @@ function constrCoeffsChange() {
     var A = transpose(finalAT);
 
     // Mention what's changed since previous iterations of simplex
-    tempStr += "Constraint coefficient(s) have changed. ";
+    tempStr += "Constraint coefficient(s) have changed.<br/>";
+    tempStr += "Recalculating relevant entries of A using ";
+    var texStr = "\\mathbf{t}_{j, \\mathrm{New}}^{(\\mathrm{final})} = V^{(\\mathrm{final})} \\mathbf{t}_{j, \\mathrm{New}}^{(0)}";
+    tempStr += katex.renderToString(texStr);
+    tempStr += ". ";
 
     return [A, b, cj, x, xB, shouldDie];
 }
@@ -197,7 +205,12 @@ function resourceChange() {
     }
 
     // Mentioning what's happened since previous iterations of simplex
-    tempStr += "Resource value(s) changed. ";
+    tempStr += "Resource value(s) changed.<br/>";
+    tempStr += "Updating b column using the relationship: "
+    texStr = "\\mathbf{b}^{(\\mathrm{final})}_{\\mathrm{New}} = ";
+    texStr += "V^{(\\mathrm{final})}\\mathbf{b}_{\\mathrm{New}}^{(0)}";
+    tempStr += katex.renderToString(texStr);
+    tempStr += ". ";
 
     return [A, b, cj, x, xB, shouldDie];  
 }
