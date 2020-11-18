@@ -128,9 +128,11 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
 function checkForDegn(b, xB) {
     // Formatting details for subscripts of degenerate basis variable.
     var format = {isBold: false, isRow: false, isLeftArrow: false, isDownArrow: false};
-    tempStr += "Solution is permanently degenerate in ";
     var loc = zeroIndices(b);
     var noOfZeros = loc.length;
+    if (noOfZeros > 0) {
+        tempStr += "Solution is permanently degenerate in ";
+    }
 
     // Loop through b, look for zero entry and print degeneracy message
     for (let i = 0 ; i < noOfZeros; i++) {
