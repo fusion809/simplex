@@ -112,7 +112,7 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
             tempStr += "Which gives the solution: ";
             
             // Print alternate solution
-            printSolution(b, xB, x, zmn, mn, n, sign, objVarName, true);
+            printSolution(b, xB, x, zc, zmn, mn, n, sign, objVarName, true);
             checkForDegn(b, xB);
         }
     } 
@@ -163,24 +163,16 @@ function zeroIndices(b) {
 }
 
 /**
- * Print solution, including decision variables and if not an alternate 
- * solution, the objective function value.
+ * Print decision variable values.
  * 
- * @param b          1d of the basis variable values.
- * @param xB         1d array of basis variables.
- * @param x          1d array of decision variables.
- * @param zmn        Objective function value.
- * @param mn         Number of columns in A.
- * @param n          Number of decision variables not including slack variables.
- * @param sign       What the objective function has been multiplied by to make
- * it a maximization problem.
- * @param objVarName Objective function name (e.g. z).
- * @param isAlt      A Boolean that indicates whether the solution being 
- * displayed is an alternate solution.
- * @return           Nothing, adds to the tempStr.
+ * @param b     1d array of solution values.
+ * @param x     1d array of decision variables, including slacks.
+ * @param xB    1d array of basis variables.
+ * @param mn    Length of x.
+ * @param isAlt Is this an alternate solution? (Boolean)
+ * @return      Nothing.
  */
-function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
-    // Non-basic variable counter
+function printDecVarValues(b, x, xB, mn, isAlt) {
     for (let i = 0 ; i < mn; i++) {
         // Where in xB x[i] is, if it is in there
         var loc = basisIndex(xB, [x[i]]);
@@ -204,8 +196,18 @@ function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
             tempStr += " and ";
         }
     }
+}
 
-    // Objective function variable
+/**
+ * Print objective function.
+ * 
+ * @param objVarName  Objective variable name.
+ * @param sign        -1 if originally entered as a min problem, 1 otherwise.
+ * @param zmn         Objective function value.    
+ * @param isAlt       Is this an alternate solution? (Boolean)
+ * @return            Nothing.
+ */
+function printObjFn(objVarName, sign, zmn, isAlt) {
     if (!isAlt) {
         tempStr += " and ";
         tempStr += subscripts(objVarName, 
@@ -216,7 +218,60 @@ function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
         tempStr += decimalToFrac(sign*zmn) + ". ";
     } else {
         tempStr += ". ";
+    }    
+}
+
+/**
+ * Print dual variables.
+ * 
+ * @param xB  Basis variable names in 1d array.
+ * @param zc  1d array of zj-cj values.
+ * @param n   Number of decision variables (excluding slacks).
+ * @return    Nothing.
+ */
+function printDuals(xB, zc, n) {
+    for (let i = 0 ; i < xB.length; i++) {
+        if (i == 0) {
+            tempStr += "Dual variable #" + (i+1) + " = ";
+        } else if (i < xB.length - 1) {
+            tempStr += ", #" + (i+1) + " = ";
+        } else {
+            tempStr += " and #" + (i+1) + " = ";
+        }
+        tempStr += decimalToFrac(zc[n+i]);
+        if (i == xB.length-1) {
+            tempStr += ". ";
+        }
     }
+}
+
+/**
+ * Print solution, including decision variables and if not an alternate 
+ * solution, the objective function value.
+ * 
+ * @param b          1d of the basis variable values.
+ * @param xB         1d array of basis variables.
+ * @param x          1d array of decision variables.
+ * @param zc         1d array of zj-cj values.
+ * @param zmn        Objective function value.
+ * @param mn         Number of columns in A.
+ * @param n          Number of decision variables not including slack variables.
+ * @param sign       What the objective function has been multiplied by to make
+ * it a maximization problem.
+ * @param objVarName Objective function name (e.g. z).
+ * @param isAlt      A Boolean that indicates whether the solution being 
+ * displayed is an alternate solution.
+ * @return           Nothing, adds to the tempStr.
+ */
+function printSolution(b, xB, x, zc, zmn, mn, n, sign, objVarName, isAlt) {
+    // Non-basic variable counter
+    printDecVarValues(b, x, xB, mn, isAlt);
+
+    // Objective function variable
+    printObjFn(objVarName, sign, zmn, isAlt);
+
+    // Dual variables
+    printDuals(xB, zc, n);
 }
 
 /**
@@ -241,7 +296,7 @@ function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
     var {mn, n} = getDims(A);
     
     // Display values of non-basic variables and z
-    printSolution(b, xB, x, z[mn], mn, n, sign, objVarName, false);
+    printSolution(b, xB, x, zc, z[mn], mn, n, sign, objVarName, false);
 
     // Check for permanent degeneracy
     checkForDegn(b, xB);
