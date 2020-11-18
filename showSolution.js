@@ -181,50 +181,41 @@ function zeroIndices(b) {
  */
 function printSolution(b, xB, x, zmn, mn, n, sign, objVarName, isAlt) {
     // Non-basic variable counter
-    var k = 0;
+    for (let i = 0 ; i < mn; i++) {
+        // Where in xB x[i] is, if it is in there
+        var loc = basisIndex(xB, [x[i]]);
 
-    // Values of basis variables
-    for (let i = 0 ; i < xB.length; i++) {
-        tempStr += subscripts(xB[i], {isBold: false, isLeftArrow: false, 
-            isDownArrow: false, notRow: true}) + " = " + decimalToFrac(b[i]) + ", ";
+        // Print variable name = 
+        tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
+            isDownArrow: false, notRow: true});
+        tempStr += " = ";
+        
+        // Value of the variable
+        if (!find(xB, x[i])) {
+            tempStr += 0; // Non-basic variables = 0
+        } else {
+            tempStr += decimalToFrac(b[loc[0]]);
+        }
+
+        // Punctuation
+        if (i < mn - 2) {
+            tempStr += ", ";
+        } else if (isAlt && i < mn -1) {
+            tempStr += " and ";
+        }
     }
 
-    // Values of non-basic variables
-    for (let i = 0 ; i < mn; i++) {
-        if (!find(xB, x[i])) {
-            // Punctuation for the list of variables
-            if (k != 0) { 
-                if (!( ( k==n-1) && (isAlt))) {
-                    tempStr += ", ";
-                } else {
-                    tempStr += " and ";
-                }
-            }
-
-            // All non-basic variables are equal to 0
-            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
-                isDownArrow: false, notRow: true}) + " = " + 0;               
-            
-            // k is our count of how many non-basic variables we've printed
-            k++;
-
-            // Final entry in sentence
-            if (k == n) {
-                // If this isn't an alternate solution that's being printed, 
-                // show z value also. Otherwise just print full stop.
-                if (!isAlt) {
-                    tempStr += " and ";
-                    tempStr += subscripts(objVarName, 
-                        {isBold: false, isLeftArrow: false, 
-                            isDownArrow: false, notRow: true});
-                    tempStr += " ";
-                    tempStr += katex.renderToString(" = ") + " ";
-                    tempStr += decimalToFrac(sign*zmn) + ". ";
-                } else {
-                    tempStr += ". ";
-                }
-            }
-        }
+    // Objective function variable
+    if (!isAlt) {
+        tempStr += " and ";
+        tempStr += subscripts(objVarName, 
+            {isBold: false, isLeftArrow: false, isDownArrow: false, 
+                notRow: true});
+        tempStr += " ";
+        tempStr += katex.renderToString(" = ") + " ";
+        tempStr += decimalToFrac(sign*zmn) + ". ";
+    } else {
+        tempStr += ". ";
     }
 }
 
