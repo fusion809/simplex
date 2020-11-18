@@ -147,22 +147,6 @@ function checkForDegn(b, xB) {
 }
 
 /**
- * Return a 1d array of where in b zeros are found.
- * 
- * @param b   Array for which the location of zeros is to be determined.
- * @return    1d array of indices (integers).
- */
-function zeroIndices(b) {
-    var loc = [];
-    for (let i = 0 ; i < b.length; i++) {
-        if (floatCor(b[i]) == 0) {
-            loc.push(i);
-        }
-    }
-    return loc;
-}
-
-/**
  * Print decision variable values.
  * 
  * @param b     1d array of solution values.
@@ -199,29 +183,6 @@ function printDecVarValues(b, x, xB, mn, isAlt) {
 }
 
 /**
- * Print objective function.
- * 
- * @param objVarName  Objective variable name.
- * @param sign        -1 if originally entered as a min problem, 1 otherwise.
- * @param zmn         Objective function value.    
- * @param isAlt       Is this an alternate solution? (Boolean)
- * @return            Nothing.
- */
-function printObjFn(objVarName, sign, zmn, isAlt) {
-    if (!isAlt) {
-        tempStr += " and ";
-        tempStr += subscripts(objVarName, 
-            {isBold: false, isLeftArrow: false, isDownArrow: false, 
-                notRow: true});
-        tempStr += " ";
-        tempStr += katex.renderToString(" = ") + " ";
-        tempStr += decimalToFrac(sign*zmn) + ". ";
-    } else {
-        tempStr += ". ";
-    }    
-}
-
-/**
  * Print dual variables.
  * 
  * @param xB  Basis variable names in 1d array.
@@ -243,6 +204,29 @@ function printDuals(xB, zc, n) {
             tempStr += ". ";
         }
     }
+}
+
+/**
+ * Print objective function.
+ * 
+ * @param objVarName  Objective variable name.
+ * @param sign        -1 if originally entered as a min problem, 1 otherwise.
+ * @param zmn         Objective function value.    
+ * @param isAlt       Is this an alternate solution? (Boolean)
+ * @return            Nothing.
+ */
+function printObjFn(objVarName, sign, zmn, isAlt) {
+    if (!isAlt) {
+        tempStr += " and ";
+        tempStr += subscripts(objVarName, 
+            {isBold: false, isLeftArrow: false, isDownArrow: false, 
+                notRow: true});
+        tempStr += " ";
+        tempStr += katex.renderToString(" = ") + " ";
+        tempStr += decimalToFrac(sign*zmn) + ". ";
+    } else {
+        tempStr += ". ";
+    }    
 }
 
 /**
@@ -306,4 +290,20 @@ function showSolution(A, b, cj, x, xB, z, zc, sign, objVarName) {
 
     // New empty row
     tempStr += "<br/>";
+}
+
+/**
+ * Return a 1d array of where in b zeros are found.
+ * 
+ * @param b   Array for which the location of zeros is to be determined.
+ * @return    1d array of indices (integers).
+ */
+function zeroIndices(b) {
+    var loc = [];
+    for (let i = 0 ; i < b.length; i++) {
+        if (floatCor(b[i]) == 0) {
+            loc.push(i);
+        }
+    }
+    return loc;
 }
