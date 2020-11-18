@@ -36,16 +36,18 @@ function setToFinals() {
  * 
  * @param A   2d array of the LHS of constraint coefficients. 
  * @param b   1d array of the RHS of the constraints.
- * @param xB  1d array of basis variables as strings.
- * @param x   1d array of decision variables as strings.
  * @param cj  1d array of objective function coefficients.
+ * @param x   1d array of decision variables as strings.
+ * @param xB  1d array of basis variables as strings.
+ * @param zj  1d array of zj values.
+ * @param zc  1d array of zc values.
  * @return    Nothing.
  */
 function updateGlobals(A, b, cj, x, xB, zj, zc) {
     finalA = A;
     if (l == 0) {
         initialAT = transpose(A);
-        initialA = transpose(initialAT);
+        initialA = copyOnAss(A);
     }
     l++;
     finalb = b;
