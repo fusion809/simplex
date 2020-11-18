@@ -42,6 +42,7 @@ function getParameters() {
             var [A, b, cj, x, xB, shouldDie, sign, objVarName] = 
             readNonMatForm();
             uncheck("useNonMat");
+            uncheck("isDual");
         } else {
             var [A, b, cj, x, xB] = readInputs();
         }
