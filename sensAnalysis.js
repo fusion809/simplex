@@ -99,8 +99,6 @@ function constrCoeffsChange() {
     
     // Obtain current arrays from the last iteration of simplex
     var {b, cj, x, xB} = setToFinals();
-    console.log(b);
-    console.log(xB);
     
     // Determine the location of basis variables within x
     var loc = basisIndex(x, xB);
