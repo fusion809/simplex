@@ -174,10 +174,12 @@ function printDecVarValues(b, x, xB, mn, isAlt) {
         }
 
         // Punctuation
-        if (i < mn - 2) {
-            tempStr += ", ";
-        } else if (isAlt && i < mn -1) {
+        if (isAlt && i == mn - 2) {
             tempStr += " and ";
+        } else if (!isAlt || isAlt && i < mn - 2) {
+            tempStr += ", ";
+        } else if (isAlt && i == mn - 1) {
+            tempStr += ". ";
         }
     }
 }
@@ -224,8 +226,6 @@ function printObjFn(objVarName, sign, zmn, isAlt) {
         tempStr += " ";
         tempStr += katex.renderToString(" = ") + " ";
         tempStr += decimalToFrac(sign*zmn) + ". ";
-    } else {
-        tempStr += ". ";
     }    
 }
 
