@@ -1,0 +1,4 @@
+Min G = 10y1 + 10y2
+Subject to:
+3y1 - y2 >= 1
+-y1 + 3y2 >= 1
