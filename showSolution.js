@@ -113,6 +113,7 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
             
             // Print alternate solution
             printSolution(b, xB, x, zmn, mn, n, sign, objVarName, true);
+            checkForDegn(b, xB);
         }
     } 
 }
@@ -127,14 +128,38 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
 function checkForDegn(b, xB) {
     // Formatting details for subscripts of degenerate basis variable.
     var format = {isBold: false, isRow: false, isLeftArrow: false, isDownArrow: false};
+    tempStr += "Solution is permanently degenerate in ";
+    var loc = zeroIndices(b);
+    var noOfZeros = loc.length;
 
     // Loop through b, look for zero entry and print degeneracy message
-    for (let i = 0 ; i < b.length; i++) {
-        if (floatCor(b[i]) == 0) {
-            tempStr += "Solution is permanently degenerate in ";
-            tempStr += subscripts(xB[i], format) + ". ";
+    for (let i = 0 ; i < noOfZeros; i++) {
+        var j = loc[i];
+        tempStr += subscripts(xB[j], format);
+        if (i == noOfZeros-2) {
+            tempStr += " and ";
+        } else if (i < noOfZeros-2) {
+            tempStr += ", ";
+        } else {
+            tempStr += ". ";
         }
     }
+}
+
+/**
+ * Return a 1d array of where in b zeros are found.
+ * 
+ * @param b   Array for which the location of zeros is to be determined.
+ * @return    1d array of indices (integers).
+ */
+function zeroIndices(b) {
+    var loc = [];
+    for (let i = 0 ; i < b.length; i++) {
+        if (floatCor(b[i]) == 0) {
+            loc.push(i);
+        }
+    }
+    return loc;
 }
 
 /**

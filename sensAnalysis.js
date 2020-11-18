@@ -206,7 +206,7 @@ function resourceChange() {
 
     // Mentioning what's happened since previous iterations of simplex
     tempStr += "Resource value(s) changed.<br/>";
-    tempStr += "Updating b column using the relationship: "
+    tempStr += "Updating the b column using the relationship: "
     texStr = "\\mathbf{b}^{(\\mathrm{final})}_{\\mathrm{New}} = ";
     texStr += "V^{(\\mathrm{final})}\\mathbf{b}_{\\mathrm{New}}^{(0)}";
     tempStr += katex.renderToString(texStr);

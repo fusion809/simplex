@@ -88,6 +88,7 @@ function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
         // then add corrected versions to A and corrected b values to the b
         // array
         var newARow = newARows[i];
+        var texStr = "R_{" + (A.length + i + 1) + "}";
         if (newARows2 != undefined) {
             initialA.push(newARows2[i]);
         }
@@ -105,12 +106,25 @@ function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
             // If basisEl is non-zero, make it zero using row operations
             if ( basisEl != 0) {
                 // From newARow subtract ARow[j]*basisEl
+                if (basisEl == 1) {
+                    texStr += " - R_{" + (j+1) + "}";
+                } else if (basisEl == -1) {
+                    texStr += " + R_{" + (j+1) + "}";
+                } else if (basisEl > 0) {
+                    texStr += " - " + decimalToFrac(basisEl) + "R_{" + (j+1) 
+                    + "}";
+                } else if (basisEl < 0) {
+                    texStr += " + " + decimalToFrac(-basisEl) + "R_{" + (j+1) 
+                    + "}";
+                }
                 newARows[i] = correctionOp(newARow, ARow, basisEl);
                 newbRows[i] -= basisEl*b[j];
              }
         }
+        texStr += "\\rightarrow R_{" + (A.length + i + 1) + "}'"
+        tempStr += katex.renderToString(texStr);
+        tempStr += "<br/>";
     }
-
     return [newARows, newbRows];
 }
 
@@ -179,12 +193,14 @@ function newConstraint() {
         return [A, b, cj, x, xB, shouldDie];
     }
 
+    // Mention what's happening in output
+    tempStr += "<br/>Adding new constraint(s). First step is to correct newly ";
+    tempStr += "rows using row operations so that they can be added to the ";
+    tempStr += "final tableau.<br/>";
+
     // Add new row(s) to A and b and new elements to cj, x and xB
     [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRows, 
         newcEnt, newARows2);
-
-    // Mention what's happening in output
-    tempStr += "Adding new constraint(s). ";
 
     return [A, b, cj, x, xB, shouldDie];
 }
