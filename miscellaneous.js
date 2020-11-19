@@ -69,6 +69,7 @@ function newSlackVariable(x) {
 /**
  * A number new slack variables whose name starts with the letter part of 
  * the final slack variable in x
+ * 
  * @param x        1d x array that ends in the slack variables of the problem.
  * @param number   Number of new slack variables to be returned.
  * @return         1d array of new slack variables to be added.
