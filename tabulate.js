@@ -56,14 +56,14 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
  * @param xB          1d array of basis variable names.
  * @param bools       Relevant Booleans that determine some of the 
  * characteristics of the tableau.
- * @param pivotCol    Pivot column.
+ * @param pivCol    Pivot column.
  * @param ratio       Ratio array used to decide entering/departing variables.
- * @param pivotEl     Pivot element.
+ * @param pivEl     Pivot element.
  * @param pivRowIdx   Pivot row index.
  * @param pivColIdx   Pivot column index.
  * @return            Nothing, simply writes the tableaux to HTML.
  */
-function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+function genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
     pivRowIdx, pivColIdx) {
     var {cB, zj, zc} = calcEntries(A, b, cj, x, xB);
     var {isFeas, isOptim, isUnbounded, isPermInf} = bools;
@@ -89,21 +89,21 @@ function genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl,
     AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools);
 
     // zj row
-    zRow(pivotEl, isFeas, ratio, zj);
+    zRow(pivEl, isFeas, ratio, zj);
 
     // zj-cj row
     zcRow(zc);
 
     // Ratio row
-    ratRow(pivotEl, ratio, bools)
+    ratRow(pivEl, ratio, bools)
 
     // End tableau
     tempStr += "</table>";
 
     // Show row operations
-    if (!isOptim && !isUnbounded && !isNaN(pivRowIdx) && !isNaN(pivotEl) && 
+    if (!isOptim && !isUnbounded && !isNaN(pivRowIdx) && !isNaN(pivEl) && 
     !isPermInf) {
-        rowOperations(pivRowIdx, pivotCol, pivotEl);
+        rowOperations(pivRowIdx, pivCol, pivEl);
     }
 }
 
@@ -165,14 +165,14 @@ function objectiveRow(cj) {
 /**
  * Adds ratio row to tempStr.
  * 
- * @param pivotEl       Pivot element.
+ * @param pivEl       Pivot element.
  * @param ratio         Ratio of zj-cj to the elements of the pivot row.
  * @param bools         Object containing relevant Booleans.
  * @return              Nothing, the row is just written to tempStr.
  */
-function ratRow(pivotEl, ratio, bools) {
+function ratRow(pivEl, ratio, bools) {
     var {isFeas, isPermInf} = bools;
-    if (ratio != undefined && !isNaN(pivotEl) && !isFeas && !isPermInf) {
+    if (ratio != undefined && !isNaN(pivEl) && !isFeas && !isPermInf) {
         // Gathering dimensionality data
         var mn = ratio.length;
 
@@ -204,32 +204,32 @@ function removeTableaux() {
  * Show row operations.
  * 
  * @param pivRowIdx Pivot row index.
- * @param pivotCol  Pivot column.
- * @param pivotEl   Pivot element.
+ * @param pivCol  Pivot column.
+ * @param pivEl   Pivot element.
  * @return          Nothing, adds the row operations to tempStr.
  */
-function rowOperations(pivRowIdx, pivotCol, pivotEl) {
+function rowOperations(pivRowIdx, pivCol, pivEl) {
     // Row numbers start at 1 not 0
     pivRowIdx++;
 
     // Initialize dimensionality variable
-    var m = pivotCol.length;
+    var m = pivCol.length;
 
     // Loop over rows and write the operations to be performed to them to 
     // tempStr
     for (let i = 0; i < m; i++) {
         // Pivot row operation
         if (pivRowIdx - 1 == i) {
-            if (pivotEl == 1) {
+            if (pivEl == 1) {
                 tempStr += "<div style='padding: 7px;'>" + 
                  katex.renderToString("R_{" + pivRowIdx + "} \\rightarrow R_{" 
                  + pivRowIdx + "}^{'}") + "</div>";
-            } else if (pivotEl == -1) {
+            } else if (pivEl == -1) {
                 tempStr += "<div style='padding: 7px;'>" + 
                  katex.renderToString("-R_{" + pivRowIdx + "} \\rightarrow R_{"
                  + pivRowIdx + "}^{'}") + "</div>";
             } else {
-                var fraction = math.fraction(1/pivotEl);
+                var fraction = math.fraction(1/pivEl);
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + 
                      katex.renderToString(sign(fraction.s) + "\\dfrac{" + 
@@ -247,13 +247,13 @@ function rowOperations(pivRowIdx, pivotCol, pivotEl) {
         // Row operations for non-pivot rows, adjusted according to the value
         // of the pivot column element for the row
         else {
-            if (floatCor(pivotCol[i]) == -1) {
+            if (floatCor(pivCol[i]) == -1) {
                 tempStr += "<div style='padding: 7px;'>" + 
                  katex.renderToString("R_{" + (i + 1) + "} + " + "R_{" + 
                  pivRowIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}") + 
                  "</div>";
-            } else if ( floatCor(pivotCol[i]) < 0) {
-                var fraction = math.fraction(-pivotCol[i]);
+            } else if ( floatCor(pivCol[i]) < 0) {
+                var fraction = math.fraction(-pivCol[i]);
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + 
                      katex.renderToString("R_{" + (i + 1) + "} + \\dfrac{" + 
@@ -265,19 +265,19 @@ function rowOperations(pivRowIdx, pivotCol, pivotEl) {
                     fraction.n + "R_{" + pivRowIdx + "}^{'} \\rightarrow R_{" +
                     (i + 1) + "}^{'}") + "</div>";
                 }
-            } else if (floatCor(pivotCol[i]) == 0) {
+            } else if (floatCor(pivCol[i]) == 0) {
                 tempStr += "<div style='padding: 7px;'>" + 
                 katex.renderToString("R_{" + (i + 1) + "} \\rightarrow R_{" + 
                 (i + 1) + "}^{'}") + "</div>";
-            } else if (floatCor(pivotCol[i]) == 1) {
+            } else if (floatCor(pivCol[i]) == 1) {
                 tempStr += "<div style='padding: 7px;'>" + 
                 katex.renderToString("R_{" + (i + 1) +  "} - " + "R_{" + 
                 pivRowIdx + "}^{'} \\rightarrow R_{" + (i + 1) + "}^{'}")
                  + "</div>";
             }
-            // pivotCol[i] > 0 and not equal to 1
+            // pivCol[i] > 0 and not equal to 1
             else {
-                var fraction = math.fraction(pivotCol[i]);
+                var fraction = math.fraction(pivCol[i]);
                 if (fraction.d != 1) {
                     tempStr += "<div style='padding: 7px;'>" + 
                      katex.renderToString("R_{" + (i + 1) + "} - \\dfrac{" + 
@@ -349,19 +349,19 @@ function zcRow(zc) {
 /**
  * Write zj row to tempStr.
  * 
- * @param pivotEl  Pivot element.
+ * @param pivEl  Pivot element.
  * @param isFeas   Boolean indicating whether the problem is feasible.
  * @param ratio    Array of the ratio of b to the pivot column.
  * @param zj       Array of zj values.
  * @return         Nothing, simply writes the row to the tempStr global.
  */
-function zRow(pivotEl, isFeas, ratio, zj) {
+function zRow(pivEl, isFeas, ratio, zj) {
     // Calculate mn from z
     var mn = zj.length - 1;
 
     // Start row
     tempStr += "<tr>";
-    if (ratio != undefined && !isNaN(pivotEl) && !isFeas) {
+    if (ratio != undefined && !isNaN(pivEl) && !isFeas) {
         tempStr += "<td rowspan='3'></td>";
     } else {
         tempStr += "<td rowspan='2'></td>";

@@ -1,4 +1,41 @@
 /**
+ * Check the dimensions of specified arrays to ensure they match.
+ * 
+ * @param A   2d array of constraint coefficients.
+ * @param b   1d array of constraint RHS.
+ * @param cj  1d array of objective function coefficients.
+ * @param x   1d array of decision variables as strings (including slacks).
+ * @param xB  1d array of basis variables as they appear in the tableau.
+ * @return    Nothing.
+ */
+function dimsCheck(A, b, cj, x, xB) {
+    if (b.length != xB.length ) {
+        console.error("The lengths of b and xB do not match!");
+        return;
+    } else if (A.length != b.length) {
+        var msg = "The number of rows in A does not match the number of rows";
+        msg += "in b!";
+        console.error(msg);
+        return;
+    } else if (A.length != xB.length) {
+        var msg = "xB has a number of elements that exceeds the number of";
+        msg += " elements in A!";
+        console.error(msg);
+        return;
+    } else if (A[0].length != x.length) {
+        var msg = "A has a number of columns that exceeds the number of";
+        msg += " elements in x!";
+        console.error(msg);
+        return;
+    } else if (A[0].length != cj.length) {
+        var msg = "A has a number of columns that exceeds the number of ";
+        msg += "elements in c."
+        console.error(msg);
+        return; 
+    }
+}
+
+/**
  * Determines the dimensions of the problem being solved.
  * 
  * @param A   Constraint coefficient matrix as 2d array.

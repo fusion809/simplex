@@ -9,26 +9,76 @@
  */
 function findColRat(A, b, pivColIdx) {
     // Initialize globals
-    var pivotCol = new Array(b.length);
+    var pivCol = new Array(b.length);
     var ratio = new Array(b.length);
     var noOfInvRats = 0; // Number of invalid ratios
 
     // Loop over every element of b
     for (let i = 0; i < b.length; i++) {
-        pivotCol[i] = A[i][pivColIdx];
+        pivCol[i] = A[i][pivColIdx];
         // Following is to prevent floating point arithmetic errors from 
         // causing problems
-        var pivotColCor = floatCor(pivotCol[i]);
-        if (pivotColCor <= 0) {
+        var pivColCor = floatCor(pivCol[i]);
+        if (pivColCor <= 0) {
             ratio[i] = Number.POSITIVE_INFINITY;
             noOfInvRats++;
         } else {
-            ratio[i] = b[i] / pivotCol[i];
+            ratio[i] = b[i] / pivCol[i];
         }
     }
 
     // Return object of values
-    return {noOfInvRats: noOfInvRats, pivotCol: pivotCol, ratio: ratio};
+    return {noOfInvRats: noOfInvRats, pivCol: pivCol, ratio: ratio};
+}
+
+/**
+ * Find pivots for an infeasible problem.
+ * 
+ * @param A        2d array of constraint coefficients.
+ * @param zc       1d array of zj-cj values.
+ * @param minIndex Index of the minimum b value.
+ * @param m        Number of rows in A.
+ * @param mn       Number of columns in A.
+ * @return         [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx]
+ */
+function findInfPivots(A, zc, minIndex, m, mn) {
+    // The method for working with infeasible solutions
+    var pivRowIdx = minIndex;
+    var k = 0;
+    var minRat = Number.POSITIVE_INFINITY;
+    var ratio = new Array(mn);
+    var pivCol = new Array(m);
+
+    // Find minimum ratio, pivot element, pivot column index
+    for (let j = 0; j < mn; j++) {
+        var pivRowEl = floatCor(A[minIndex][j]);
+
+        // Pivot row element must be negative for it to be a potential 
+        // pivot element
+        if (pivRowEl < 0) {
+            ratio[j] = math.abs(zc[j] / pivRowEl);
+
+            // Find min zj-cj to pivot row element ratio, as it is the 
+            // pivot element.
+            if (ratio[j] < minRat) {
+                minRat = ratio[j];
+                pivColIdx = j;
+                pivEl = A[minIndex][j];
+            }
+
+            // Increment k
+            k++;
+        } else {
+            ratio[j] = Number.POSITIVE_INFINITY;
+        }
+    }
+
+    // Create pivCol for updating A
+    for (let i = 0; i < m; i++) {
+        pivCol[i] = A[i][pivColIdx];
+    }
+    
+    return [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx];
 }
 
 /**
@@ -46,7 +96,7 @@ function findPivots(A, b, zc) {
     var pivColIdx = minEl(zc, true, false);
 
     // Find pivot
-    var {noOfInvRats, pivotCol, ratio} = findColRat(A, b, pivColIdx);
+    var {noOfInvRats, pivCol, ratio} = findColRat(A, b, pivColIdx);
 
     // If all ratios for pivot column are invalid, problem is unbounded
     if (noOfInvRats == b.length) {
@@ -57,16 +107,17 @@ function findPivots(A, b, zc) {
 
     // Pivot row has the lowest non-negative ratio
     var pivRowIdx = minEl(ratio, false, true);
-    var pivotEl = pivotCol[pivRowIdx];
+    var pivEl = pivCol[pivRowIdx];
 
-    return [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded];
+    return [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded];
 }
 
 /**
- * Find the index of the smallest element or smallest nonNegitive element in a 1d 
- * array.
+ * Find the index of the smallest element or smallest nonNegitive element in a 
+ * 1d array.
  * 
- * @param vec       1d array to find the smallest element/nonNegitive element in.
+ * @param vec       1d array to find the smallest element/nonNegitive element 
+ * in.
  * @param isNeg     A Boolean that indicates whether the element must be 
  * negative.
  * @param isNonNeg  A Boolean that decides whether the element must be 

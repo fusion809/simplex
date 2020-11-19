@@ -175,7 +175,8 @@ function newConstraint() {
 
     // Return an error if the number of elements in newcEnt does not match
     // the number of elements in newbRows and the newcEnt box is ticked
-    if ( (newcEnt.length != newbRows.length ) && document.getElementById("newcRows").checked) {
+    if ( (newcEnt.length != newbRows.length ) && 
+    document.getElementById("newcRows").checked) {
         shouldDie = true;
         var msg = "The number of new b rows and new entries in c must match!";
         console.error(msg);

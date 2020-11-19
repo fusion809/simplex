@@ -7,15 +7,15 @@
  * @param xB         1d basis variable array.
  * @param pivColIdx  Pivot column index.
  * @param pivRowIdx  Pivot row index.
- * @param pivotEl    Pivot element.
- * @param pivotCol   Pivot column.
+ * @param pivEl    Pivot element.
+ * @param pivCol   Pivot column.
  * @param mn         Number of columns in A.
  * @param m          Number of rows in A.
  * @return           Updated A, b, xB.
  */
-function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
+function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, pivCol, mn, m) {
     // Divide pivot row by pivot element
-    b[pivRowIdx] /= pivotEl;
+    b[pivRowIdx] /= pivEl;
 
     // Replace pivot row basis variable with pivot column variable
     xB[pivRowIdx] = x[pivColIdx];
@@ -23,7 +23,7 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
     // Loop over columns
     for (let i = 0; i < mn; i++) {
         // Divide pivot row by pivot element
-        A[pivRowIdx][i] /= pivotEl;
+        A[pivRowIdx][i] /= pivEl;
 
         // Loop over rows
         for (let j = 0; j < m; j++) {
@@ -31,13 +31,13 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, pivotCol, mn, m) {
             if (j != pivRowIdx) {
                 // Only one column in b
                 if (i == 0) {
-                    b[j] -= pivotCol[j] * b[pivRowIdx];
+                    b[j] -= pivCol[j] * b[pivRowIdx];
                 }
 
                 // Subtract what multiple of the corrected pivot row is 
                 // required to get zeros in all columns corresponding to
                 // basis variables
-                A[j][i] -= pivotCol[j] * A[pivRowIdx][i];
+                A[j][i] -= pivCol[j] * A[pivRowIdx][i];
             }
         }
     }
@@ -66,7 +66,7 @@ function simplex(A, b, cj, x, xB, zc) {
     // Initialize pivot variables
     var pivRowIdx;
     var pivColIdx;
-    var pivotEl;
+    var pivEl;
     
     // Initialize Booleans
     var isPermInf = false;
@@ -74,51 +74,14 @@ function simplex(A, b, cj, x, xB, zc) {
     var befAltSol = false;
     var {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
 
-    // Initialize minRat for the below loop
-    var minRat = Number.POSITIVE_INFINITY;
-
-    // Initialize relevant arrays
-    var pivotCol = new Array(m);
-    var ratio = new Array(zc.length);
-
     if (!isFeas) {
-        // The method for working with infeasible solutions
-        pivRowIdx = minIndex;
-        var k = 0;
-
-        // Find minimum ratio, pivot element, pivot column index
-        for (let j = 0; j < mn; j++) {
-            var pivotRowEl = floatCor(A[minIndex][j]);
-
-            // Pivot row element must be negative for it to be a potential 
-            // pivot element
-            if (pivotRowEl < 0) {
-                ratio[j] = math.abs(zc[j] / pivotRowEl);
-
-                // Find min zj-cj to pivot row element ratio, as it is the 
-                // pivot element.
-                if (ratio[j] < minRat) {
-                    minRat = ratio[j];
-                    pivColIdx = j;
-                    pivotEl = A[minIndex][j];
-                }
-
-                // Increment k
-                k++;
-            } else {
-                ratio[j] = Number.POSITIVE_INFINITY;
-            }
-        }
+        [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx] = 
+        findInfPivots(A, zc, minIndex, m, mn);
 
         // If k is still 0 then no elements of A[minIndex] that were less than
         // 0 were found
         if (k == 0) {
             isPermInf = true;
-        }
-
-        // Create pivotCol for updating A
-        for (let i = 0; i < m; i++) {
-            pivotCol[i] = A[i][pivColIdx];
         }
 
         // Infeasible problems by definition do not satisfy the criteria as is
@@ -128,7 +91,7 @@ function simplex(A, b, cj, x, xB, zc) {
         // Generate the tableau before we apply simplex
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, pivRowIdx,
+        genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, pivRowIdx,
             pivColIdx);
 
         // Time to exit function if permanently infeasible, as there's no way
@@ -145,17 +108,17 @@ function simplex(A, b, cj, x, xB, zc) {
 
         // Scale pivot row
         for (let i = 0; i < mn; i++) {
-            A[pivRowIdx][i] /= pivotEl;
+            A[pivRowIdx][i] /= pivEl;
         }
-        b[pivRowIdx] /= pivotEl;
+        b[pivRowIdx] /= pivEl;
 
         // Update other rows
         for (let i = 0; i < m; i++) {
             if (i != pivRowIdx) {
                 for (let j = 0; j < mn; j++) {
-                    A[i][j] -= pivotCol[i] * A[pivRowIdx][j];
+                    A[i][j] -= pivCol[i] * A[pivRowIdx][j];
                 }
-                b[i] -= pivotCol[i] * b[pivRowIdx];
+                b[i] -= pivCol[i] * b[pivRowIdx];
             }
         }
     } else if (!isOptim) {
@@ -165,18 +128,18 @@ function simplex(A, b, cj, x, xB, zc) {
 
         // Obtain pivot information
         var arr = findPivots(A, b, zc);
-        [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
+        [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
 
         // Tabulate previous iteration
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+        genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
             pivRowIdx, pivColIdx);
 
         // Apply feasible problem simplex algorithm
         if (pivRowIdx != -1) {
-            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
-               pivotCol, mn, m);
+            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, 
+               pivCol, mn, m);
         }
     }
 
@@ -186,7 +149,7 @@ function simplex(A, b, cj, x, xB, zc) {
     if (isOptim) {
         var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
             isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+        genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
             pivRowIdx, pivColIdx);
     }
 
@@ -210,30 +173,7 @@ function simplex(A, b, cj, x, xB, zc) {
  */
 function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // Error messages
-    if (b.length != xB.length ) {
-        console.error("The lengths of b and xB do not match!");
-        return;
-    } else if (A.length != b.length) {
-        var msg = "The number of rows in A does not match the number of rows";
-        msg += "in b!";
-        console.error(msg);
-        return;
-    } else if (A[0].length != x.length) {
-        var msg = "A has a number of columns that exceeds the number of";
-        msg += " elements in x!";
-        console.error(msg);
-        return;
-    } else if (A.length != xB.length) {
-        var msg = "xB has a number of elements that exceeds the number of";
-        msg += " elements in A!";
-        console.error(msg);
-        return;
-    } else if (cj.length != A[0].length) {
-        var msg = "A has a number of columns that exceeds the number of ";
-        msg += "elements in c."
-        console.error(msg);
-        return; 
-    }
+    dimsCheck(A, b, cj, x, xB);
 
     // Initialize global variables
     var {zj, zc} = calcEntries(A, b, cj, x, xB);

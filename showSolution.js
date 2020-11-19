@@ -77,10 +77,10 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
             var [pivColIdx, pivRowIdx] = arrOfPivIdxs[i];
 
             // Find ratios for b to pivot column
-            var {pivotCol, ratio} = findColRat(A, b, pivColIdx);
+            var {pivCol, ratio} = findColRat(A, b, pivColIdx);
 
             // Determine the pivot element
-            var pivotEl = A[pivRowIdx][pivColIdx];
+            var pivEl = A[pivRowIdx][pivColIdx];
 
             // Define vars for genTableau
             var format = {isBold: false, isLeftArrow: false, 
@@ -94,20 +94,20 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
             tempStr += subscripts(x[pivColIdx], format) + " enter it. ";  
 
             // Generate tableau showing the entering/leaving vars
-            genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+            genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
                 pivRowIdx, pivColIdx);
 
             // Show row operations
-            rowOperations(pivRowIdx, pivotCol, pivotEl);
+            rowOperations(pivRowIdx, pivCol, pivEl);
                 
             // Perform row operations
-            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivotEl, 
-                pivotCol, mn, m);
+            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, 
+                pivCol, mn, m);
 
             // Generate tableau of alternate solution
             bools.isAltSol = true;
             bools.befAltSol = false;
-            genTableau(A, b, cj, x, xB, bools, pivotCol, ratio, pivotEl, 
+            genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
                 pivRowIdx, pivColIdx); 
             tempStr += "Which gives the solution: ";
             
