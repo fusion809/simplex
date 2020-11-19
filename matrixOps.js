@@ -66,6 +66,7 @@ function matMult(V, b) {
  * @return         Matrix object with attributes matrix, height and width.
  */
 function Matrix(arr) {
+    // Variable declarations
     this.matrix = arr;
     this.height = arr.length;
     if (arr[0].length == undefined) {
