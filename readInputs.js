@@ -1,4 +1,19 @@
 /**
+ * For dual variables return an apostrophe.
+ * 
+ * @param isDual   A Boolean representing whether the problem is a dual.
+ * @return         Empty string if isDual = false, string containing an 
+ * apostrophe otherwise.
+ */
+function dualDash(isDual) {
+    if (isDual) {
+        return "'";
+    } else {
+        return "";
+    }
+}
+
+/**
  * Obtain and return parameters of the problem from the form.
  * 
  * @params    None.
@@ -69,18 +84,6 @@ function readInputs() {
     var x = readx();
 
     return [A, b, cj, x, xB];
-}
-
-/**
- * Uncheck specified radio button if it is checked.
- * 
- * @param name     Name of the radio button's HTML element.
- * @return         Nothing.
- */
-function uncheck(name) {
-    if (document.getElementById(name).checked) {
-        document.getElementById(name).checked = false;
-    }
 }
 
 /**
@@ -171,6 +174,10 @@ function readNonMatForm() {
         tempStr += "Multiplying ";
         tempStr += objVarName;
         tempStr += " by -1 to get a maximization problem.<br/><br/>";
+    } else {
+        var msg = "Odd, your problem doesn't seem to be either a maximization";
+        msg += " or minimization problem";
+        console.error(msg);
     }
 
     // Initialize cj
@@ -262,8 +269,11 @@ function readNonMatForm() {
     // Determine number of empty rows
     var noOfEmptyRows = 0;
     for (let i = 0 ; i < elNLArr.length; i++) {
-        var isBlankLn = elNLArr[i].match(/^\s*$/);
-        var isStLn = elNLArr[i].match(/[Ss][ubject to|t.][:]*/);
+        var line = elNLArr[i];
+        var isBlankLn = line.match(/^\s*$/);
+        var isStLn = line.match(/[Ss][ubject to|t.][:]*/);
+
+        // Class either blank lines or st. lines as empty rows
         if (isBlankLn || isStLn) {
             noOfEmptyRows++;
         }
@@ -311,7 +321,8 @@ function readNonMatForm() {
             tempStr += "Multiplying constraint ";
             tempStr += (j+1-countOfEq);
             tempStr += " by -1 to replace &geq; with &leq;, which can then be";
-            tempStr += " converted to canonical form and added to the initial"; tempStr += " tableau.<br/><br/>";
+            tempStr += " converted to canonical form and added to the initial";
+            tempStr += " tableau.<br/><br/>";
             b[j] = -resc;
         }
 
@@ -391,16 +402,13 @@ function readNonMatForm() {
 }
 
 /**
- * For dual variables return an apostrophe.
+ * Uncheck specified radio button if it is checked.
  * 
- * @param isDual   A Boolean representing whether the problem is a dual.
- * @return         Empty string if isDual = false, string containing an 
- * apostrophe otherwise.
+ * @param name     Name of the radio button's HTML element.
+ * @return         Nothing.
  */
-function dualDash(isDual) {
-    if (isDual) {
-        return "'";
-    } else {
-        return "";
+function uncheck(name) {
+    if (document.getElementById(name).checked) {
+        document.getElementById(name).checked = false;
     }
 }

@@ -1,4 +1,32 @@
 /**
+ * Extract the V matrix from the A matrix.
+ * 
+ * @param A   Constraint decision variable coefficient matrix.
+ * @return    V
+ */
+function extractV(A) {
+    // Determine dimensionality
+    var m = A.length;
+    var mn = A[0].length;
+    var n = mn - m;
+
+    // Initialize array
+    var V = new Array(m);
+
+    for (let i = 0; i < m; i++) {
+        // Add second dimension to array
+        V[i] = new Array(m);
+        
+        // Obtain V's elements from A
+        for (let j = 0; j < m; j++) {
+            V[i][j] = A[i][n + j];
+        }
+    }
+
+    return V;
+}
+
+/**
  * Create a 1d array from numerical data in HTML element specified by name.
  * 
  * @param name     Name of the element you want to get the data from (string).
@@ -58,29 +86,6 @@ function read1dStrArr(name) {
     }
 
     return arr;
-}
-
-/**
- * Determine A from HTML form and return it
- * 
- * @params    None.
- * @return    A, the 2d array of constraint coefficients.
- */
-function readA() {
-    // Obtain HTML element for A
-    var htmlEl = document.getElementById("A").value;
-
-    // Both semicolons and spaces/commas separate elements, array is 2d
-    var testFor2D = htmlEl.match(/[0-9][, ]*[0-9]/) && htmlEl.match(/[;]/);
-
-    // Extract data from form
-    if (testFor2D) {
-        var A = read2dNumArr("A");
-    } else {
-        var A = [read1dNumArr("A")];
-    }
-
-    return A;
 }
 
 /**
@@ -152,6 +157,29 @@ function read2dNumArr(name) {
 }
 
 /**
+ * Determine A from HTML form and return it
+ * 
+ * @params    None.
+ * @return    A, the 2d array of constraint coefficients.
+ */
+function readA() {
+    // Obtain HTML element for A
+    var htmlEl = document.getElementById("A").value;
+
+    // Both semicolons and spaces/commas separate elements, array is 2d
+    var testFor2D = htmlEl.match(/[0-9][, ]*[0-9]/) && htmlEl.match(/[;]/);
+
+    // Extract data from form
+    if (testFor2D) {
+        var A = read2dNumArr("A");
+    } else {
+        var A = [read1dNumArr("A")];
+    }
+
+    return A;
+}
+
+/**
  * Create b array from data in the b field in the input table.
  * 
  * @params    None.
@@ -169,34 +197,6 @@ function readb() {
  */
 function readc() {
     return read1dNumArr("c");
-}
-
-/**
- * Extract the V matrix from the A matrix.
- * 
- * @param A   Constraint decision variable coefficient matrix.
- * @return    V
- */
-function extractV(A) {
-    // Determine dimensionality
-    var m = A.length;
-    var mn = A[0].length;
-    var n = mn - m;
-
-    // Initialize array
-    var V = new Array(m);
-
-    for (let i = 0; i < m; i++) {
-        // Add second dimension to array
-        V[i] = new Array(m);
-        
-        // Obtain V's elements from A
-        for (let j = 0; j < m; j++) {
-            V[i][j] = A[i][n + j];
-        }
-    }
-
-    return V;
 }
 
 /**

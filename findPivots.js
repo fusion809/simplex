@@ -1,35 +1,4 @@
 /**
- * Returns pivot element, column, column index, row index and an array of
- * adjusted ratios between b and pivot column entries.
- * 
- * @param A   2d array of constraint coefficients.
- * @param b   1d array of the RHS of constraints.
- * @param zc  zj-cj contained within 1d array.
- * @return    Pivot element, pivot column, pivot column index, pivot row index 
- * and 1d ratio array.
- */
-function findPivots(A, b, zc) {
-    // Pivot column is the one with the most negative entry of zj-cj
-    var pivColIdx = minEl(zc, true, false);
-
-    // Find pivot
-    var {noOfInvRats, pivotCol, ratio} = findColRat(A, b, pivColIdx);
-
-    // If all ratios for pivot column are invalid, problem is unbounded
-    if (noOfInvRats == b.length) {
-        var isUnbounded = true;
-    } else {
-        var isUnbounded = false;
-    }
-
-    // Pivot row has the lowest non-negative ratio
-    var pivRowIdx = minEl(ratio, false, true);
-    var pivotEl = pivotCol[pivRowIdx];
-
-    return [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded];
-}
-
-/**
  * Calculate column of ratios between b and the pivot column entries.
  * 
  * @param A             2d LHS constraint coefficients array.
@@ -60,6 +29,37 @@ function findColRat(A, b, pivColIdx) {
 
     // Return object of values
     return {noOfInvRats: noOfInvRats, pivotCol: pivotCol, ratio: ratio};
+}
+
+/**
+ * Returns pivot element, column, column index, row index and an array of
+ * adjusted ratios between b and pivot column entries.
+ * 
+ * @param A   2d array of constraint coefficients.
+ * @param b   1d array of the RHS of constraints.
+ * @param zc  zj-cj contained within 1d array.
+ * @return    Pivot element, pivot column, pivot column index, pivot row index 
+ * and 1d ratio array.
+ */
+function findPivots(A, b, zc) {
+    // Pivot column is the one with the most negative entry of zj-cj
+    var pivColIdx = minEl(zc, true, false);
+
+    // Find pivot
+    var {noOfInvRats, pivotCol, ratio} = findColRat(A, b, pivColIdx);
+
+    // If all ratios for pivot column are invalid, problem is unbounded
+    if (noOfInvRats == b.length) {
+        var isUnbounded = true;
+    } else {
+        var isUnbounded = false;
+    }
+
+    // Pivot row has the lowest non-negative ratio
+    var pivRowIdx = minEl(ratio, false, true);
+    var pivotEl = pivotCol[pivRowIdx];
+
+    return [pivotEl, pivotCol, pivColIdx, pivRowIdx, ratio, isUnbounded];
 }
 
 /**
