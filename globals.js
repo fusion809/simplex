@@ -1,17 +1,21 @@
 // Initialize globals
-var tempStr = "";
-var finalA = [[]];
-var initialA = [[]];
-var initialAT = [[]];
-var initialb = [];
-var finalb = [];
-var finalxB = [];
-var finalcj = [];
-var finalV = [[]];
-var finalzj = [];
-var finalzc = [];
 var dualCheck;
 var l = 0;
+var tempStr = "";
+
+// 1d array
+var initialb = [];
+var finalb = [];
+var finalx = [];
+var finalxB = [];
+var finalzj = [];
+var finalzc = [];
+
+// 2d arrays
+var finalA = [[]];
+var finalV = [[]];
+var initialA = [[]];
+var initialAT = [[]];
 
 /**
  * Create parameter object containing all final arrays.
