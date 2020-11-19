@@ -210,14 +210,7 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             var {zj, zc} = calcEntries(A, b, cj, x, xB);
 
             // Update finals before showSolution, in case there's alt sol
-            finalA = copyOnAss(A);
-            finalb = copyOnAss(b);
-            finalcj = copyOnAss(cj);
-            finalx = copyOnAss(x);
-            finalxB = copyOnAss(xB);
-            finalzj = copyOnAss(zj);
-            finalzc = copyOnAss(zc);
-            finalV = extractV(A);
+            updateFinals(A, b, cj, x, xB, zj, zc);
 
             // Show solution
             showSolution(A, b, cj, x, xB, zj, zc, sign, objVarName);
@@ -244,9 +237,6 @@ function solveProblem() {
         [A, b, cj, x, xB, zj, zc, isFeas] = simplexIterator(A, b, cj, x, xB, 
             sign, objVarName);
     }
-
-    // Update global variables
-    updateGlobals(A, b, cj, x, xB, zj, zc);
 
     // Write tempStr to tableau element
     document.getElementById("tableau").innerHTML = tempStr;

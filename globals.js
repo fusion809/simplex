@@ -30,13 +30,29 @@ function setToFinals() {
         cj: finalcj,
         x: finalx,
         xB: finalxB,
+        zj: finalzj,
+        zc: finalzc
     }
 
     return paramObj;
 }
 
 /**
- * Update global variables.
+ * Update initial A global variables.
+ * 
+ * @param A   2d array of the LHS of constraint coefficients. 
+ * @return    Nothing.
+ */
+function updateAInitials(A) {
+    if (l == 0) {
+        initialAT = transpose(A);
+        initialA = copyOnAss(A);
+    }
+    l++;
+}
+
+/**
+ * Update final global variables.
  * 
  * @param A   2d array of the LHS of constraint coefficients. 
  * @param b   1d array of the RHS of the constraints.
@@ -47,17 +63,13 @@ function setToFinals() {
  * @param zc  1d array of zc values.
  * @return    Nothing.
  */
-function updateGlobals(A, b, cj, x, xB, zj, zc) {
-    finalA = A;
-    if (l == 0) {
-        initialAT = transpose(A);
-        initialA = copyOnAss(A);
-    }
-    l++;
-    finalb = b;
-    finalxB = xB;
-    finalx = x;
-    finalcj = cj;
-    finalzj = zj;
-    finalzc = zc;
+function updateFinals(A, b, cj, x, xB, zj, zc) {
+    finalA = copyOnAss(A);
+    finalb = copyOnAss(b);
+    finalcj = copyOnAss(cj);
+    finalV = extractV(A);
+    finalx = copyOnAss(x);
+    finalxB = copyOnAss(xB);
+    finalzc = copyOnAss(zc);
+    finalzj = copyOnAss(zj);
 }

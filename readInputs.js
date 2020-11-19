@@ -64,7 +64,7 @@ function getParameters() {
     }
 
     // Update globals
-    updateGlobals(A, b, cj, x, xB);
+    updateAInitials(A);
 
     // Uncheck buttons
     return [A, b, cj, x, xB, shouldDie, sign, objVarName];
