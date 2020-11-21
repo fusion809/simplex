@@ -76,7 +76,7 @@ function simplex(A, b, cj, x, xB, zc) {
 
     if (!isFeas) {
         [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx] = 
-        findInfPivots(A, zc, minIndex, m, mn);
+        findInfPivots(A, zc, minIndex, pivColIdx, m, mn);
 
         // If k is still 0 then no elements of A[minIndex] that were less than
         // 0 were found

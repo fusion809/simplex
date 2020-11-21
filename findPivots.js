@@ -41,13 +41,14 @@ function findColRat(A, b, pivColIdx) {
  * @param mn       Number of columns in A.
  * @return         [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx]
  */
-function findInfPivots(A, zc, minIndex, m, mn) {
+function findInfPivots(A, zc, minIndex, pivColIdx, m, mn) {
     // The method for working with infeasible solutions
     var pivRowIdx = minIndex;
     var k = 0;
     var minRat = Number.POSITIVE_INFINITY;
     var ratio = new Array(mn);
     var pivCol = new Array(m);
+    var pivEl;
 
     // Find minimum ratio, pivot element, pivot column index
     for (let j = 0; j < mn; j++) {

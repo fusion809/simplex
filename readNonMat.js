@@ -1,27 +1,133 @@
 /**
- * Check LP type, writing appropriate messages to tempStr, print error
- * message if type does not seem properly defined.
+ * Add problem to numerical arrays.
  * 
- * @param maxReg      Maximization problem regex.
- * @param minReg      Minimization problem regex.
- * @param objVarName  Objective variable name.
- * @param type        What apepars before objVarName in problem statement.
- * @return            -1 for minimization problem, 1 for maximization problems.
+ * @param cj            Objective function coefficient array.
+ * @param x             Decision variable array.
+ * @param elNLArr       Array of newline-separated elements of form element.
+ * @param dualCheck     Boolean of whether dual variable radio button has been 
+ * checked.
+ * @param noOfEmptyRows Number of empty rows in the form.
+ * @param noOfConstr    Number of constraints.
+ * @param varNo         Number of decision variables (w/o slacks).
+ * @param mn            varNo + noOfConstr
+ * @return              [A, b, cj, x, xB]
  */
-function probTypeCheck(maxReg, minReg, objVarName, type) {
-    if (type.match(maxReg) ) {
-        type = 1;
-    } else if (type.match(minReg)) {
-        type = -1;
-        tempStr += "Multiplying ";
-        tempStr += objVarName;
-        tempStr += " by -1 to get a maximization problem.<br/><br/>";
-    } else {
-        var msg = "Odd, your problem doesn't seem to be either a maximization";
-        msg += " or minimization problem";
-        console.error(msg);
+function addConstrToArr(cj, x, elNLArr, dualCheck, noOfEmptyRows, 
+    noOfConstr, varNo, mn) {
+    var j = 0;
+    var countOfEq = 0;
+    var A = new Array(noOfConstr);
+    var b = new Array(noOfConstr);
+    var xB = new Array(noOfConstr);
+
+    while (j < noOfConstr) {
+        // Relevant vars
+        var constrLn = elNLArr[j+1+noOfEmptyRows-countOfEq];
+        var isConstrEq = constrLn.match(/ =/);
+        var isConstrLeq = constrLn.match(/<=/);
+        var isConstrGeq = constrLn.match(/>=/);
+
+        // Initialize relevant rows
+        if (isConstrEq) {
+            A[j+1] = new Array(mn);
+        }
+        A[j] = new Array(mn);
+
+        // Add slack entries
+        cj[j+varNo] = 0;
+
+        // LHS of constraint
+        var constrWoSp = constrLn.replace(/ /g, "");
+        var constrLHS = constrWoSp.replace(/[<>]*=.*/, '');
+        var constrRHS = constrWoSp.replace(/.*=/, '');
+
+        // RHS of constraint
+        var resc = fracToDecimal(constrRHS);
+
+        // Detail what is being done before initial tableau is drawn
+        if (isConstrEq) {
+            equalConstrMsg(j, countOfEq);
+            b[j] = resc;
+            b[j+1] = -resc;
+        } else if (isConstrLeq) {
+            b[j] = resc;
+        } else {
+            geqConstrMsg(j, countOfEq);            
+            b[j] = -resc;
+        }
+
+        // Loop over every variable, determine coefficient and add to A
+        for (let i = 0; i < varNo; i++) {
+
+            // Obtain coeff of x[i] for constraint j
+            var varName = x[i];
+            var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
+            if (constrLHS.match(regex)) {
+                var coeff = constrLHS.match(regex).join("").replace(varName, "");
+                if (!coeff.match(/[0-9]/)) {
+                    coeff += "1";
+                }
+                coeff = fracToDecimal(coeff);
+            } else {
+                var coeff = 0;
+            }
+
+            // Add coeffs to A
+            if (isConstrLeq) {
+                A[j][i] = coeff;
+            } else if (isConstrGeq) {
+                A[j][i] = -coeff;
+            } else if (isConstrEq) {
+                A[j][i] = coeff;
+                A[j+1][i] = -coeff;
+            }
+        }
+
+        // Loop over slack variable columns
+        for (let k = varNo ; k < mn; k++) {
+            // Slack variable for constraint
+            if (j == k - varNo) {
+                A[j][k] = 1;
+            } else {
+                A[j][k] = 0;
+            }
+
+            // Add slack variables in extra row if constraint is an equality
+            if (isConstrEq) {
+                if (j+1 == k - varNo) {
+                    A[j+1][k] = 1;
+                } else {
+                    A[j+1][k] = 0;
+                }
+            }
+        }
+
+        // Add slacks to x and xB
+        var sj = "s" + (j+1) + dualDash(dualCheck);
+        xB[j] = sj;
+        x.push(sj);
+
+        // If constraint is an equality, add additional entries to cj, x and
+        // xB, increment j by 2 and countOfEq by 1. 
+        // Otherwise just increment j by 2.
+        if (isConstrEq) {
+            // Second split constraint slack variable
+            var sj1 = "s" + (j+2) + dualDash(dualCheck);
+            xB[j+1] = sj1;
+            x.push(sj1);
+            cj[varNo+j+1] = 0;
+
+            // Incrementing by 2 constraint counter
+            j += 2;
+
+            // Increment equality constraint count
+            countOfEq++;
+        } else {
+            j++;
+        }
     }
-    return type;
+
+    return [A, b, cj, x, xB];
 }
 
 /**
@@ -118,6 +224,32 @@ function printEqn(element, midLnReg, dnReg, ldReg, maxReg, minReg, x, varNo,
 }
 
 /**
+ * Check LP type, writing appropriate messages to tempStr, print error
+ * message if type does not seem properly defined.
+ * 
+ * @param maxReg      Maximization problem regex.
+ * @param minReg      Minimization problem regex.
+ * @param objVarName  Objective variable name.
+ * @param type        What apepars before objVarName in problem statement.
+ * @return            -1 for minimization problem, 1 for maximization problems.
+ */
+function probTypeCheck(maxReg, minReg, objVarName, type) {
+    if (type.match(maxReg) ) {
+        type = 1;
+    } else if (type.match(minReg)) {
+        type = -1;
+        tempStr += "Multiplying ";
+        tempStr += objVarName;
+        tempStr += " by -1 to get a maximization problem.<br/><br/>";
+    } else {
+        var msg = "Odd, your problem doesn't seem to be either a maximization";
+        msg += " or minimization problem";
+        console.error(msg);
+    }
+    return type;
+}
+
+/**
  * Read problem in non-matrix form.
  * 
  * @params    None, reads inputs from "nonMatForm" textarea.
@@ -160,9 +292,6 @@ function readNonMatForm() {
     // Check the type of the constraint
     type = probTypeCheck(maxReg, minReg, objVarName, type);
 
-    // Initialize cj
-    var cj = [];
-
     // Array of signs for objective function coefficients
     var signRHSArr = objRHS.match(/[+-]/g).join("");
 
@@ -200,6 +329,9 @@ function readNonMatForm() {
     // For some reason the following calculation causes us to access a 
     // non-existent element of elNLArr below
     var noOfConstr = noOfLeq + noOfGeq + noOfEq;
+    // Number of columns in A
+    var mn = varNo + noOfConstr;
+    var cj = new Array(mn);
     var decVarReg = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/);
 
     // Loop over objective function coefficients and add them to cj array
@@ -230,21 +362,9 @@ function readNonMatForm() {
             }
             
             // Add to cj
-            cj.push(type*coeff);
+            cj[i] = type*coeff;
         }
     }
-
-    // Initialize arrays
-    var A = new Array(noOfConstr);
-    var xB = new Array(noOfConstr);
-    var b = new Array(noOfConstr);
-
-    // Number of columns in A
-    var mn = varNo + noOfConstr;
-
-    // Counter variables
-    var j = 0;
-    var countOfEq = 0;
 
     // Determine number of empty rows
     var noOfEmptyRows = 0;
@@ -260,112 +380,8 @@ function readNonMatForm() {
     }
 
     // Loop over constraints
-    while (j < noOfConstr) {
-        // Relevant vars
-        var constrLn = elNLArr[j+1+noOfEmptyRows-countOfEq];
-        var isConstrEq = constrLn.match(/ =/);
-        var isConstrLeq = constrLn.match(/<=/);
-        var isConstrGeq = constrLn.match(/>=/);
-
-        // Initialize relevant rows
-        if (isConstrEq) {
-            A[j+1] = new Array(mn);
-        }
-        A[j] = new Array(mn);
-
-        // Add slack entries
-        cj.push(0);
-
-        // LHS of constraint
-        var constrWoSp = constrLn.replace(/ /g, "");
-        var constrLHS = constrWoSp.replace(/[<>]*=.*/, '');
-        var constrRHS = constrWoSp.replace(/.*=/, '');
-
-        // RHS of constraint
-        var resc = fracToDecimal(constrRHS);
-
-        // Detail what is being done before initial tableau is drawn
-        if (isConstrEq) {
-            equalConstrMsg(j, countOfEq);
-            b[j] = resc;
-            b[j+1] = -resc;
-        } else if (isConstrLeq) {
-            b[j] = resc;
-        } else {
-            geqConstrMsg(j, countOfEq);            
-            b[j] = -resc;
-        }
-
-        // Loop over every variable, determine coefficient and add to A
-        for (let i = 0; i < varNo; i++) {
-
-            // Obtain coeff of x[i] for constraint j
-            var varName = x[i];
-            var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
-            if (constrLHS.match(regex)) {
-                var coeff = constrLHS.match(regex).join("").replace(varName, "");
-                if (!coeff.match(/[0-9]/)) {
-                    coeff += "1";
-                }
-                coeff = fracToDecimal(coeff);
-            } else {
-                var coeff = 0;
-            }
-
-            // Add coeffs to A
-            if (isConstrLeq) {
-                A[j][i] = coeff;
-            } else if (isConstrGeq) {
-                A[j][i] = -coeff;
-            } else if (isConstrEq) {
-                A[j][i] = coeff;
-                A[j+1][i] = -coeff;
-            }
-        }
-
-        // Loop over slack variable columns
-        for (let k = varNo ; k < mn; k++) {
-            // Slack variable for constraint
-            if (j == k - varNo) {
-                A[j][k] = 1;
-            } else {
-                A[j][k] = 0;
-            }
-
-            // Add slack variables in extra row if constraint is an equality
-            if (isConstrEq) {
-                if (j+1 == k - varNo) {
-                    A[j+1][k] = 1;
-                } else {
-                    A[j+1][k] = 0;
-                }
-            }
-        }
-
-        // Add slacks to x and xB
-        var sj = "s" + (j+1) + dualDash(dualCheck);
-        xB[j] = sj;
-        x.push(sj);
-
-        // If constraint is an equality, add additional entries to cj, x and
-        // xB, increment j by 2 and countOfEq by 1. 
-        // Otherwise just increment j by 2.
-        if (isConstrEq) {
-            // Second split constraint slack variable
-            var sj1 = "s" + (j+2) + dualDash(dualCheck);
-            xB[j+1] = sj1;
-            x.push(sj1);
-            cj.push(0);
-
-            // Incrementing by 2 constraint counter
-            j += 2;
-
-            // Increment equality constraint count
-            countOfEq++;
-        } else {
-            j++;
-        }
-    }
+    [A, b, cj, x, xB] = addConstrToArr(cj, x, elNLArr, dualCheck, 
+        noOfEmptyRows, noOfConstr, varNo, mn);
 
     // Return all data needed by getParameters()
     return [A, b, cj, x, xB, false, type, objVarName];
