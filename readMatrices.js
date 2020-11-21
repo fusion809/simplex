@@ -2,7 +2,7 @@
  * Extract the V matrix from the A matrix.
  * 
  * @param A   Constraint decision variable coefficient matrix.
- * @return    V
+ * @return    V, square matrix of coefficients of slack variables.
  */
 function extractV(A) {
     // Determine dimensionality
@@ -13,6 +13,7 @@ function extractV(A) {
     // Initialize array
     var V = new Array(m);
 
+    // Loop over rows in A (and hence V)
     for (let i = 0; i < m; i++) {
         // Add second dimension to array
         V[i] = new Array(m);
@@ -75,11 +76,11 @@ function read1dNumArr(name) {
 function read1dStrArr(name) {
     var htmlEl = document.getElementById(name).value.split(/[,;\s][\s]*/);
     var arr = [];
+    var el;
 
     // Loop over each element of htmlEl, and add what needs to be added to arr
     for (let i = 0; i < htmlEl.length; i++) {
-        var el = htmlEl[i].replace(/\[/, '').replace(/\]/, '');
-        var el = el.replace(/"/g, '');
+        el = htmlEl[i].replace(/\[/, '').replace(/\]/, '').replace(/"/g, '');
         if (/[_a-zA-Z0-9]+/.test(el)) {
             arr.push(el);
         }
