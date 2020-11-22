@@ -50,17 +50,17 @@ function read1dNumArr(name) {
             var msg = "b has unsuitable elements in it. Remember b is meant";
             msg += " to be full of members separated by commas, spaces or ";
             msg += "semicolons."
-            console.error(msg);
+            alert(msg);
         } else if (name == "c") {
             var msg = "c has unsuitable elements in it. Remember c is meant";
             msg += " to be full of numbers separated by commas, spaces or ";
             msg += "semicolons.";
-            console.error(msg);
+            alert(msg);
         } else if (name == "A") {
             var msg = "A has unsuitable elements in it. Remember A is meant";
             msg += " to be full of numbers separated by commas, spaces or ";
             msg += "semicolons.";
-            console.error(msg);
+            alert(msg);
         }
     }
 
@@ -121,7 +121,7 @@ function read2dNumArr(name) {
             
             // Input validation
             if ((len != undefined) && (A[k].length != len)) {
-                console.error("A row length mismatch! For some reason your A matrix has rows of different lengths!");
+                alert("A row length mismatch! For some reason your A matrix has rows of different lengths!");
                 throw console.error("A's rows must be equal in length!");
             }
             len = A[k].length;
@@ -144,14 +144,14 @@ function read2dNumArr(name) {
             var msg = "A has unsuitable elements in it. Remember A is ";
             msg += "meant to be full of numbers separated by commas, ";
             msg += "spaces or semicolons.";
-            console.error(msg);
+            alert(msg);
         }
     }
 
     // Input validation for final row
     if ((len != undefined) && (A[k].length != len)) {
-        console.error("A row length mismatch! For some reason your A matrix has rows of different lengths!");
-        throw console.error("A's rows must be equal in length!");
+        alert("A row length mismatch! For some reason your A matrix has rows of different lengths!");
+        console.error("A's rows must be equal in length!");
     }
 
     return A;

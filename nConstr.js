@@ -169,7 +169,7 @@ function newConstraint() {
     // error
     if (newARows.length != newbRows.length) {
         shouldDie = true;
-        console.error("An equal number of rows must be added to A and b!");
+        alert("An equal number of rows must be added to A and b!");
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -179,7 +179,7 @@ function newConstraint() {
     document.getElementById("newcRows").checked) {
         shouldDie = true;
         var msg = "The number of new b rows and new entries in c must match!";
-        console.error(msg);
+        alert(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -190,7 +190,7 @@ function newConstraint() {
         var msg = "Remember your new A rows must have a number of columns ";
         msg += "equal to that of the old A matrix plus the number of new ";
         msg += "constraints!";
-        console.error(msg);
+        alert(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 

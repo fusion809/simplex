@@ -26,19 +26,19 @@ function addVariable() {
     if (newACols.length != m) {
         var msg = "The newly entered A does not have the same number of ";
         msg += "rows as the original A";
-        console.error(msg);
+        alert(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
     } else if (newcRows.length != newACols[0].length) {
         var msg = "The number of elements in the c field does not equal the ";
         msg += "number of columns in the A field.";
-        console.error(msg);
+        alert(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
     } else if (newcRows.length != newxRows.length) {
         var msg = "The number of elements in the c field does not equal the ";
         msg += "number of elements in the x field.";
-        console.error(msg);
+        alert(msg);
         shouldDie = true;
         return [A, b, cj, x, xB, shouldDie];
     }
@@ -115,7 +115,7 @@ function constrCoeffsChange() {
         shouldDie = true;
         var msg = "The dimensions of the new A do not match the dimensions";
         msg += " of A in the final tableau.";
-        console.error(msg);
+        alert(msg);
         return [A, b, cj, x, xB, shouldDie];
     }
 
@@ -132,7 +132,7 @@ function constrCoeffsChange() {
                     // variables have been modified
                     var msg = "If the coefficients of basic variables change,";
                     msg += " you must solve the problem from scratch again!";
-                    console.error(msg);
+                    alert(msg);
                     shouldDie = true;
                     return [A, b, cj, x, xB, shouldDie];
                 }
@@ -171,7 +171,7 @@ function objectiveChange() {
     // of decision variables
     if (cj.length != x.length) {
         shouldDie = true;
-        console.error("c and x do not match in length!");
+        alert("c and x do not match in length!");
         return [A, b, cj, x, xB, shouldDie];        
     }
 
@@ -200,7 +200,7 @@ function resourceChange() {
     // New b array should have the same number of rows as A
     if (b.length != A.length) {
         shouldDie = true;
-        console.error("A and b do not match in their row length!");
+        alert("A and b do not match in their row length!");
         return [A, b, cj, x, xB, shouldDie];
     }
 

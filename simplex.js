@@ -141,7 +141,14 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     // If problem is already optimal, just tabulate the solution
     if (isOptim) {
         tempStr += "Solution is already optimal.";
+
+        // Draw final tableau
         genTableau(A, b, cj, x, xB, {isFeas: isFeas, isOptim: isOptim});
+
+        // Update finals before showSolution, in case there's alt sol
+        updateFinals(A, b, cj, x, xB, zj, zc);
+
+        // Show solution
         showSolution(A, b, cj, x, xB, zj, zc, sign, objVarName);
     }
 

@@ -48,7 +48,7 @@ function calcEntries(A, b, cj, x, xB) {
 
     // Input validation
     if (m != xB.length) {
-        console.error("Length of A does not match the length of xB in calcEntries.");
+        alert("Length of A does not match the length of xB in calcEntries.");
         return;
     }
 

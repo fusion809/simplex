@@ -10,27 +10,27 @@
  */
 function dimsCheck(A, b, cj, x, xB) {
     if (b.length != xB.length ) {
-        console.error("The lengths of b and xB do not match!");
+        alert("The lengths of b and xB do not match!");
         return;
     } else if (A.length != b.length) {
         var msg = "The number of rows in A does not match the number of rows";
         msg += "in b!";
-        console.error(msg);
+        alert(msg);
         return;
     } else if (A.length != xB.length) {
         var msg = "xB has a number of elements that exceeds the number of";
         msg += " elements in A!";
-        console.error(msg);
+        alert(msg);
         return;
     } else if (A[0].length != x.length) {
         var msg = "A has a number of columns that exceeds the number of";
         msg += " elements in x!";
-        console.error(msg);
+        alert(msg);
         return;
     } else if (A[0].length != cj.length) {
         var msg = "A has a number of columns that exceeds the number of ";
         msg += "elements in c."
-        console.error(msg);
+        alert(msg);
         return; 
     }
 }

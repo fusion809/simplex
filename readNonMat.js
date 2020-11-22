@@ -244,7 +244,7 @@ function probTypeCheck(maxReg, minReg, objVarName, type) {
     } else {
         var msg = "Odd, your problem doesn't seem to be either a maximization";
         msg += " or minimization problem";
-        console.error(msg);
+        alert(msg);
     }
     return type;
 }
