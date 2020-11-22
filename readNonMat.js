@@ -332,12 +332,11 @@ function readNonMatForm() {
     // Number of columns in A
     var mn = varNo + noOfConstr;
     var cj = new Array(mn);
-    var decVarReg = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/);
 
     // Loop over objective function coefficients and add them to cj array
     for (let i = 0; i < varNo; i++) {
         if (coeffsArr[i] != "") {
-            var coeffWOSign = coeffsArr[i].replace(decVarReg, '');
+            var coeffWOSign = coeffsArr[i].replace(decVarRegg, '');
 
             // If number is omitted, the coeff = 1
             if (!coeffWOSign.match(/[0-9]/)) {
@@ -385,4 +384,35 @@ function readNonMatForm() {
 
     // Return all data needed by getParameters()
     return [A, b, cj, x, xB, false, type, objVarName];
+}
+
+function timeEx(func) {
+    var start = new Date();
+    start = start.getMilliseconds();
+
+    func();
+
+    var end = new Date();
+    end = end.getMilliseconds();
+
+    var diff = end-start;
+    // console.log("That took " + diff + " ms");
+    return diff;
+}
+
+function meanTime(func, N) {
+    var sum = 0;
+    var diff;
+    var diffFirst;
+    for (let i = 0 ; i < N; i++) {
+        diff = timeEx(func);
+        console.log(diff);
+        if (i == 0) {
+            diffFirst = diff;
+        }
+        sum += diff;
+    }
+    var avg = sum / N;
+
+    return [diffFirst, sum, avg];
 }
