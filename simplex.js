@@ -87,40 +87,6 @@ function simplex(A, b, cj, x, xB, zc) {
         // Infeasible problems by definition do not satisfy the criteria as is
         // for unboundedness
         var isUnbounded = false;
-
-        // Generate the tableau before we apply simplex
-        var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
-            isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, pivRowIdx,
-            pivColIdx);
-
-        // Time to exit function if permanently infeasible, as there's no way
-        // to solve the problem
-        if (isPermInf) {
-            return [A, b, xB, isUnbounded, isPermInf];
-        }
-
-        // Update the basis, must be done after genTableau is run otherwise
-        // genTableau will give an error as the way we check whether entering
-        // and departing variables should be indicated is to see whether the
-        // following as an equality holds.
-        xB[pivRowIdx] = x[pivColIdx];
-
-        // Scale pivot row
-        for (let i = 0; i < mn; i++) {
-            A[pivRowIdx][i] /= pivEl;
-        }
-        b[pivRowIdx] /= pivEl;
-
-        // Update other rows
-        for (let i = 0; i < m; i++) {
-            if (i != pivRowIdx) {
-                for (let j = 0; j < mn; j++) {
-                    A[i][j] -= pivCol[i] * A[pivRowIdx][j];
-                }
-                b[i] -= pivCol[i] * b[pivRowIdx];
-            }
-        }
     } else if (!isOptim) {
         // Method for working with non-optimal, but feasible solutions
         // If the problem is feasible, it's not permanently infeasible
@@ -129,28 +95,24 @@ function simplex(A, b, cj, x, xB, zc) {
         // Obtain pivot information
         var arr = findPivots(A, b, zc);
         [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
-
-        // Tabulate previous iteration
-        var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
-            isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
-            pivRowIdx, pivColIdx);
-
-        // Apply feasible problem simplex algorithm
-        if (pivRowIdx != -1) {
-            [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, 
-               pivCol, mn, m);
-        }
     }
 
-    // If the solution is now optimal, tabulate it, otherwise proceed to next
-    // iteration
-    var {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
-    if (isOptim) {
-        var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
-            isAltSol, befAltSol);
-        genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
-            pivRowIdx, pivColIdx);
+    // Tabulate previous iteration
+    var bools = new Bools(isFeas, isOptim, isUnbounded, isPermInf,
+        isAltSol, befAltSol);
+    genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
+        pivRowIdx, pivColIdx);
+
+    // Time to exit function if permanently infeasible, as there's no way
+    // to solve the problem
+    if (isPermInf) {
+        return [A, b, xB, isUnbounded, isPermInf];
+    }
+
+    // Apply feasible problem simplex algorithm
+    if (pivRowIdx >= 0 && pivRowIdx < m) {
+        [A, b, xB] = rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, 
+            pivCol, mn, m);
     }
 
     // Return data needed by simplexIterator
@@ -230,7 +192,6 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
 function solveProblem() {
     // Obtain required problem parameters
     var [A, b, cj, x, xB, shouldDie, sign, objVarName] = getParameters();
-    var isFeas;
 
     // Solve problem using simplex iterator
     if (!shouldDie) {

@@ -366,7 +366,28 @@ function readNonMatForm() {
     }
 
     // Determine number of empty rows
+    var noOfEmptyRows = calcNoOfEmptyRows(elNLArr);
+
+    // Loop over constraints
+    [A, b, cj, x, xB] = addConstrToArr(cj, x, elNLArr, dualCheck, 
+        noOfEmptyRows, noOfConstr, varNo, mn);
+
+    // Return all data needed by getParameters()
+    return [A, b, cj, x, xB, false, type, objVarName];
+}
+
+/**
+ * Calculate number of empty rows.
+ * 
+ * @param elNLArr  Array of new line-separated components of the nonMatForm 
+ * HTML element.
+ * @return         noOfEmptyRows.
+ */
+function calcNoOfEmptyRows(elNLArr) {
+    // Initialize var
     var noOfEmptyRows = 0;
+
+    // Count up number of empty or irrelevant rows
     for (let i = 0 ; i < elNLArr.length; i++) {
         var line = elNLArr[i];
         var isBlankLn = line.match(/^\s*$/);
@@ -378,41 +399,6 @@ function readNonMatForm() {
         }
     }
 
-    // Loop over constraints
-    [A, b, cj, x, xB] = addConstrToArr(cj, x, elNLArr, dualCheck, 
-        noOfEmptyRows, noOfConstr, varNo, mn);
-
-    // Return all data needed by getParameters()
-    return [A, b, cj, x, xB, false, type, objVarName];
-}
-
-function timeEx(func) {
-    var start = new Date();
-    start = start.getMilliseconds();
-
-    func();
-
-    var end = new Date();
-    end = end.getMilliseconds();
-
-    var diff = end-start;
-    // console.log("That took " + diff + " ms");
-    return diff;
-}
-
-function meanTime(func, N) {
-    var sum = 0;
-    var diff;
-    var diffFirst;
-    for (let i = 0 ; i < N; i++) {
-        diff = timeEx(func);
-        console.log(diff);
-        if (i == 0) {
-            diffFirst = diff;
-        }
-        sum += diff;
-    }
-    var avg = sum / N;
-
-    return [diffFirst, sum, avg];
+    // Return it
+    return noOfEmptyRows;
 }
