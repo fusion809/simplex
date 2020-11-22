@@ -62,11 +62,6 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, pivCol, mn, m) {
 function simplex(A, b, cj, x, xB, zc) {
     // Initialize dimensionality variables
     var {m, mn} = getDims(A);
-
-    // Initialize pivot variables
-    var pivRowIdx;
-    var pivColIdx;
-    var pivEl;
     
     // Initialize Booleans
     var isPermInf = false;
@@ -75,7 +70,7 @@ function simplex(A, b, cj, x, xB, zc) {
     var {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
 
     if (!isFeas) {
-        [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx] = 
+        var [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx] = 
         findInfPivots(A, zc, minIndex, pivColIdx, m, mn);
 
         // If k is still 0 then no elements of A[minIndex] that were less than
@@ -94,7 +89,7 @@ function simplex(A, b, cj, x, xB, zc) {
 
         // Obtain pivot information
         var arr = findPivots(A, b, zc);
-        [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
+        var [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
     }
 
     // Tabulate previous iteration
@@ -142,7 +137,6 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
     var {isFeas, isOptim} = isOptAndFeas(b, zc);
     var isUnbounded = false;
     var isPermInf = false;
-    var arr;
 
     // If problem is already optimal, just tabulate the solution
     if (isOptim) {
@@ -153,11 +147,12 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
 
     // Use simplex to solve the problem
     while ((!isOptim) && (!isUnbounded) && (!isPermInf)) {
-        // Apply simplex
-        var {zj, zc} = calcEntries(A, b, cj, x, xB);
-        arr = simplex(A, b, cj, x, xB, zc);
+        var arr = simplex(A, b, cj, x, xB, zc);
         [A, b, xB, isUnbounded, isPermInf] = arr;
-        
+
+        // Calculate zj and zj-cj
+        var {zj, zc} = calcEntries(A, b, cj, x, xB);
+
         // Determine whether problem is now optimal and feasible
         var {isFeas, isOptim} = isOptAndFeas(b, zc);
 
@@ -169,10 +164,11 @@ function simplexIterator(A, b, cj, x, xB, sign, objVarName) {
             tempStr += "Problem is infeasible! ";
             return [A, b, cj, x, xB, zj, false];
         } else if (isOptim) {
-            var {zj, zc} = calcEntries(A, b, cj, x, xB);
-
             // Update finals before showSolution, in case there's alt sol
             updateFinals(A, b, cj, x, xB, zj, zc);
+
+            // Tabulate solution
+            genTableau(A, b, cj, x, xB, {isFeas: isFeas, isOptim: isOptim});
 
             // Show solution
             showSolution(A, b, cj, x, xB, zj, zc, sign, objVarName);
