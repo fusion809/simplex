@@ -106,5 +106,7 @@ function updAAftCoeffChg(AT, finalAT, initialAT, loc, m, mn) {
             }
         }
     }
+
+    // Return transpose of corrected array
     return transpose(finalAT);
 }

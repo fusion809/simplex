@@ -159,12 +159,12 @@ function Matrix(arr) {
         return index;
     }
 
-    // Multiply matrix with arr2
+    // Right-multiply matrix with arr2
     this.mult = function(arr2) {
         var result = new Array(this.height);
 
         for (let i = 0; i < this.height; i++) {
-
+            // Use a different algorithm for 2d arr2
             if (arr2.width > 1) {
                 result[i] = new Array(arr2.width);
                 for (let j = 0 ; j < arr2.width; j++) {

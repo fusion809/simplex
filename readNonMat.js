@@ -193,7 +193,7 @@ function geqConstrMsg(j, countOfEq) {
  * 
  * @param element    HTML element in which equation has been entered.
  * @param midLnReg   Blank/subject to line regex.
- * @param dnReg      End of line regex.
+ * @param NLReg      End of line regex.
  * @param dcnReg      Decision variable regex.
  * @param maxReg     Maximum problem regex.
  * @param minReg     Minimum problem regex.
@@ -202,7 +202,7 @@ function geqConstrMsg(j, countOfEq) {
  * @param dualCheck  Whether the user has checked the radio button for that.
  * @return           Nothing.
  */
-function printEqn(element, midLnReg, dnReg, dcnReg, maxReg, minReg, x, varNo,
+function printEqn(element, midLnReg, NLReg, dcnReg, maxReg, minReg, x, varNo,
     dualCheck) {
     // Type of objective function
     var maxStr = "&\\mathrm{Maximize\\hspace{0.1cm}}";
@@ -214,7 +214,7 @@ function printEqn(element, midLnReg, dnReg, dcnReg, maxReg, minReg, x, varNo,
 
     // Replace blank/subject to lines with "Subject to:" with TeX formatting
     texStr += element.replace(midLnReg, stStr);
-    texStr = texStr.replace(dnReg, 
+    texStr = texStr.replace(NLReg, 
         (match, number) => number + "\\\\\n&");
     texStr = texStr.replace(dcnReg, 
         (match, letter, number) => `${letter}_${number}`);
@@ -288,7 +288,7 @@ function readNonMatForm() {
     element = element.replace(/≥/g, ">=").replace(/≤/g, "<=");
 
     // Regular expressions
-    var dnReg = new RegExp(/(\d)\s*(\n)/gi);
+    var NLReg = new RegExp(/(\d)\s*(\n)/gi);
     var dcnReg = new RegExp(/([a-zA-Z])(\d+)/gi);
     var maxReg = new RegExp(/[mM]ax[imize]*[imise]*/);
     var minReg = new RegExp(/[mM]in[imize]*[imise]*/);
@@ -314,7 +314,7 @@ function readNonMatForm() {
     var varNo = x.length;
 
     // TeX eqn
-    printEqn(element, midLnReg, dnReg, dcnReg, maxReg, minReg, x, varNo, 
+    printEqn(element, midLnReg, NLReg, dcnReg, maxReg, minReg, x, varNo, 
         dualCheck);
 
     // Name of the objective function (e.g. z)

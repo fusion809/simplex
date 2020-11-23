@@ -1,26 +1,3 @@
-
-
-/**
- * Time the execution of the non-argument function specified.
- * 
- * @param func     A function that takes no arguments and whose execution is to
- * be timed.
- * @return         Take taken to execute func.
- */
-function timeEx(func) {
-    var start = new Date();
-    start = start.getMilliseconds();
-
-    func();
-
-    var end = new Date();
-    end = end.getMilliseconds();
-
-    var diff = end-start;
-    // console.log("That took " + diff + " ms");
-    return diff;
-}
-
 /**
  * Returns how long it took to run func() the first time, the total time 
  * taken after N runs and the average of those N runs. 
@@ -45,4 +22,25 @@ function meanTime(func, N) {
     var avg = sum / N;
 
     return [diffFirst, sum, avg];
+}
+
+/**
+ * Time the execution of the non-argument function specified.
+ * 
+ * @param func     A function that takes no arguments and whose execution is to
+ * be timed.
+ * @return         Take taken to execute func.
+ */
+function timeEx(func) {
+    var start = new Date();
+    start = start.getMilliseconds();
+
+    func();
+
+    var end = new Date();
+    end = end.getMilliseconds();
+
+    var diff = end-start;
+    // console.log("That took " + diff + " ms");
+    return diff;
 }
