@@ -391,7 +391,7 @@ function calcNoOfEmptyRows(elNLArr) {
     for (let i = 0 ; i < elNLArr.length; i++) {
         var line = elNLArr[i];
         var isBlankLn = line.match(/^\s*$/);
-        var isStLn = line.match(/[Ss][ubject to|t.][:]*/);
+        var isStLn = line.match(/[Ss](ubject to|t)/);
 
         // Class either blank lines or st. lines as empty rows
         if (isBlankLn || isStLn) {
