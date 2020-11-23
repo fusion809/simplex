@@ -69,6 +69,7 @@ function simplex(A, b, cj, x, xB, zc) {
     var befAltSol = false;
     var {minIndex, isFeas, isOptim} = isOptAndFeas(b, zc);
 
+    // Adjust algorithm used depending on whether problem is feasible or not
     if (!isFeas) {
         var [k, pivCol, ratio, pivEl, pivColIdx, pivRowIdx] = 
         findInfPivots(A, zc, minIndex, pivColIdx, m, mn);
@@ -88,8 +89,8 @@ function simplex(A, b, cj, x, xB, zc) {
         isPermInf = false;
 
         // Obtain pivot information
-        var arr = findPivots(A, b, zc);
-        var [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = arr;
+        var [pivEl, pivCol, pivColIdx, pivRowIdx, ratio, isUnbounded] = 
+        findPivots(A, b, zc);
     }
 
     // Tabulate previous iteration
