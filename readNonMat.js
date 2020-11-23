@@ -194,7 +194,7 @@ function geqConstrMsg(j, countOfEq) {
  * @param element    HTML element in which equation has been entered.
  * @param midLnReg   Blank/subject to line regex.
  * @param dnReg      End of line regex.
- * @param ldReg      Decision variable regex.
+ * @param dcnReg      Decision variable regex.
  * @param maxReg     Maximum problem regex.
  * @param minReg     Minimum problem regex.
  * @param x          Decision variable array.
@@ -202,7 +202,7 @@ function geqConstrMsg(j, countOfEq) {
  * @param dualCheck  Whether the user has checked the radio button for that.
  * @return           Nothing.
  */
-function printEqn(element, midLnReg, dnReg, ldReg, maxReg, minReg, x, varNo,
+function printEqn(element, midLnReg, dnReg, dcnReg, maxReg, minReg, x, varNo,
     dualCheck) {
     // Type of objective function
     var maxStr = "&\\mathrm{Maximize\\hspace{0.1cm}}";
@@ -216,7 +216,7 @@ function printEqn(element, midLnReg, dnReg, ldReg, maxReg, minReg, x, varNo,
     texStr += element.replace(midLnReg, stStr);
     texStr = texStr.replace(dnReg, 
         (match, number) => number + "\\\\\n&");
-    texStr = texStr.replace(ldReg, 
+    texStr = texStr.replace(dcnReg, 
         (match, letter, number) => `${letter}_${number}`);
     texStr = texStr.replace(/<=/g, "&&\\leq").replace(/>=/g, "&&\\geq");
     texStr = texStr.replace(/(?![<>])=/g, "&&=");
@@ -288,12 +288,16 @@ function readNonMatForm() {
     element = element.replace(/≥/g, ">=").replace(/≤/g, "<=");
 
     // Regular expressions
-    var dnReg = new RegExp(/(\d)(\n)/gi);
-    var ldReg = new RegExp(/([a-zA-Z])(\d+)/gi);
+    var dnReg = new RegExp(/(\d)\s*(\n)/gi);
+    var dcnReg = new RegExp(/([a-zA-Z])(\d+)/gi);
     var maxReg = new RegExp(/[mM]ax[imize]*[imise]*/);
     var minReg = new RegExp(/[mM]in[imize]*[imise]*/);
     var midLnReg = new RegExp(/\n[a-zA-Z .:]*\n/);
     var decVarRegg = new RegExp(/[a-zA-Z][a-zA-Z]*[0-9]*/g);
+    var nonNegReg = new RegExp(/\n\s*[a-zA-Z]\d+,[ ][a-zA-Z]\d+.*(>=|≥)[ ]0.*$/);
+
+    // Remove non-negativity constraints
+    element = element.replace(nonNegReg, "");
 
     // Deal with &geq; and &leq; chars
     var elSpArr = element.split(" ");
@@ -310,7 +314,7 @@ function readNonMatForm() {
     var varNo = x.length;
 
     // TeX eqn
-    printEqn(element, midLnReg, dnReg, ldReg, maxReg, minReg, x, varNo, 
+    printEqn(element, midLnReg, dnReg, dcnReg, maxReg, minReg, x, varNo, 
         dualCheck);
 
     // Name of the objective function (e.g. z)
