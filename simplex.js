@@ -7,8 +7,8 @@
  * @param xB         1d basis variable array.
  * @param pivColIdx  Pivot column index.
  * @param pivRowIdx  Pivot row index.
- * @param pivEl    Pivot element.
- * @param pivCol   Pivot column.
+ * @param pivEl      Pivot element.
+ * @param pivCol     Pivot column.
  * @param mn         Number of columns in A.
  * @param m          Number of rows in A.
  * @return           Updated A, b, xB.

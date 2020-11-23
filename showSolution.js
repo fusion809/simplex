@@ -78,11 +78,16 @@ function printDuals(xB, zc, n) {
 function printObjFn(objVarName, sign, zmn, isAlt) {
     if (!isAlt) {
         tempStr += " and ";
+
+        // Format objective function variable so that if numbers appear in it
+        // they will appear as subscripts
         tempStr += subscripts(objVarName, 
             {isBold: false, isLeftArrow: false, isDownArrow: false, 
                 notRow: true});
         tempStr += " ";
         tempStr += katex.renderToString(" = ") + " ";
+
+        // sign is used to correct the sign of the objective function
         tempStr += decimalToFrac(sign*zmn) + ". ";
     }    
 }
