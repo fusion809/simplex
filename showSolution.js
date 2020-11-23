@@ -45,7 +45,9 @@ function printDecVarValues(b, x, xB, mn, isAlt) {
  * @return    Nothing.
  */
 function printDuals(xB, zc, n) {
+    // For every basis variable there is a dual variable
     for (let i = 0 ; i < xB.length; i++) {
+        // Adjust message to which iteration it is
         if (i == 0) {
             tempStr += "Dual variable #" + (i+1) + " = ";
         } else if (i < xB.length - 1) {
@@ -53,7 +55,11 @@ function printDuals(xB, zc, n) {
         } else {
             tempStr += " and #" + (i+1) + " = ";
         }
+
+        // Value of dual
         tempStr += decimalToFrac(zc[n+i]);
+
+        // Full stop at end
         if (i == xB.length-1) {
             tempStr += ". ";
         }

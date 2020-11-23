@@ -20,6 +20,7 @@ function dualDash(isDual) {
  * @return    [A, b, cj, x, xB, shouldDie]
  */
 function getParameters() {
+    // Initialize globals
     var shouldDie = false;
     var objVarName = "z";
     var sign = +1;

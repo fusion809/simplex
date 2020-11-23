@@ -8,17 +8,21 @@
  * and average of those times in an array.
  */
 function meanTime(func, N) {
+    // Initialize globals
     var sum = 0;
     var diff;
     var diffFirst;
+
+    // Repeat running timeEx for N times
     for (let i = 0 ; i < N; i++) {
         diff = timeEx(func);
-        console.log(diff);
         if (i == 0) {
             diffFirst = diff;
         }
         sum += diff;
     }
+
+    // Determine avg
     var avg = sum / N;
 
     return [diffFirst, sum, avg];
@@ -32,15 +36,18 @@ function meanTime(func, N) {
  * @return         Take taken to execute func.
  */
 function timeEx(func) {
+    // Start time
     var start = new Date();
     start = start.getMilliseconds();
 
     func();
 
+    // End time
     var end = new Date();
     end = end.getMilliseconds();
 
+    // Difference
     var diff = end-start;
-    // console.log("That took " + diff + " ms");
+
     return diff;
 }
