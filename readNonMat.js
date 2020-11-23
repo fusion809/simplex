@@ -131,6 +131,33 @@ function addConstrToArr(cj, x, elNLArr, dualCheck, noOfEmptyRows,
 }
 
 /**
+ * Calculate number of empty rows.
+ * 
+ * @param elNLArr  Array of new line-separated components of the nonMatForm 
+ * HTML element.
+ * @return         noOfEmptyRows.
+ */
+function calcNoOfEmptyRows(elNLArr) {
+    // Initialize var
+    var noOfEmptyRows = 0;
+
+    // Count up number of empty or irrelevant rows
+    for (let i = 0 ; i < elNLArr.length; i++) {
+        var line = elNLArr[i];
+        var isBlankLn = line.match(/^\s*$/);
+        var isStLn = line.match(/[Ss](ubject to|t)/);
+
+        // Class either blank lines or st. lines as empty rows
+        if (isBlankLn || isStLn) {
+            noOfEmptyRows++;
+        }
+    }
+
+    // Return it
+    return noOfEmptyRows;
+}
+
+/**
  * Prints equality constraint message (about what's being done to the 
  * constraint).
  * 
@@ -374,31 +401,4 @@ function readNonMatForm() {
 
     // Return all data needed by getParameters()
     return [A, b, cj, x, xB, false, type, objVarName];
-}
-
-/**
- * Calculate number of empty rows.
- * 
- * @param elNLArr  Array of new line-separated components of the nonMatForm 
- * HTML element.
- * @return         noOfEmptyRows.
- */
-function calcNoOfEmptyRows(elNLArr) {
-    // Initialize var
-    var noOfEmptyRows = 0;
-
-    // Count up number of empty or irrelevant rows
-    for (let i = 0 ; i < elNLArr.length; i++) {
-        var line = elNLArr[i];
-        var isBlankLn = line.match(/^\s*$/);
-        var isStLn = line.match(/[Ss](ubject to|t)/);
-
-        // Class either blank lines or st. lines as empty rows
-        if (isBlankLn || isStLn) {
-            noOfEmptyRows++;
-        }
-    }
-
-    // Return it
-    return noOfEmptyRows;
 }
