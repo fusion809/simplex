@@ -101,10 +101,8 @@ function genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl,
     tempStr += "</table>";
 
     // Show row operations
-    if (!isOptim && !isUnbounded && !isNaN(pivRowIdx) && !isNaN(pivEl) && 
-    !isPermInf) {
-        rowOperations(pivRowIdx, pivCol, pivEl);
-    }
+    !isOptim && !isUnbounded && !isNaN(pivRowIdx) && !isNaN(pivEl) && 
+    !isPermInf && rowOperations(pivRowIdx, pivCol, pivEl);
 }
 
 /**
@@ -120,16 +118,14 @@ function headerRow(x, pivColIdx, bools) {
     tempStr += "<tr>";
     tempStr += katexRow("c_{\\mathbf{B}}");
     tempStr += katexRow("x_{\\mathbf{B}}");
-    for (let i = 0; i < x.length; i++) {
-        if (i != pivColIdx || isPermInf || isAltSol) {
-            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
-                isDownArrow: false, notRow: false});
-        } else {
-            tempStr += subscripts(x[i], {isBold: true, isLeftArrow: false, 
-                isDownArrow: true, notRow: false});
-        }
-    }
+
+    // Generate columns for each decision variable including slack variables
+    xCols(x, pivColIdx, isPermInf, isAltSol);
+
+    // b column
     tempStr += katexRow("\\mathbf{b}");
+
+    // Ratio col
     if (isFeas && !isOptim || befAltSol) {
         tempStr += "<td>" + katex.renderToString("\\mathrm{Ratio}") + "</td>";
     }
@@ -324,6 +320,27 @@ function subscripts(decVar, format) {
         return katex.renderToString(corrected);
     } else {
         return katexRow(corrected);
+    }
+}
+
+/**
+ * Generate columns for each decision variable, including slacks.
+ * 
+ * @param x          Decision variable array.
+ * @param pivColIdx  Pivot column index.
+ * @param isPermInf  Is it permanently infeasible?
+ * @param isAltSol   Is an alternate solution?
+ * @return           Nothing.
+ */
+function xCols(x, pivColIdx, isPermInf, isAltSol) {
+    for (let i = 0; i < x.length; i++) {
+        if (i != pivColIdx || isPermInf || isAltSol) {
+            tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 
+                isDownArrow: false, notRow: false});
+        } else {
+            tempStr += subscripts(x[i], {isBold: true, isLeftArrow: false, 
+                isDownArrow: true, notRow: false});
+        }
     }
 }
 
