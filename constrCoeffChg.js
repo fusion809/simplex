@@ -89,13 +89,16 @@ function constrCoeffsDimsChk(finm, finmn, m, mn) {
 function updAAftCoeffChg(AT, finalAT, initialAT, loc, m, mn) {
     // Multiply non-basis elements of A by V from final simplex iteration
     for (let j = 0; j < mn; j++) {
+
         // V matrix to update non-basis variable coefficients in A
         if (!find(loc, j)) {
             finalAT[j] = matMult(finalV, AT[j]);
         } else {
+
             // Test for whether basis variable coeffs have changed
             for (let i = 0; i < m; i++) {
                 if (AT[j][i] != initialAT[j][i]) {
+                    
                     // Return an error if elements of A corresponding to basis 
                     // variables have been modified
                     var msg = "If the coefficients of basic variables change,";

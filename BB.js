@@ -11,17 +11,27 @@
  * @param sign     -1 if greater than constraint, 1 for less than constraint.
  */
 function addBBConstr(A, b, cj, x, xB, decVar, val, sign) {
+    // Cols in A before constraint was added
     var {mn} = getDims(A);
-    var loc = basisIndex(x, [decVar]);
+    var loc = basisIndex(x, [decVar]); // Which column of x decVar is found in
 
     // Create new row to add to A
     var newARow = new Array(mn+1);
+
+    // Loop over elements in new A row
     for (let i = 0; i < mn + 1; i++) {
+
+        // Element corresponding to decVar should equal sign (-1 for >=, 
+        // 1 for <=) 
         if (i == loc[0]) {
             newARow[i] = sign;
-        } else if (i == mn) {
+        } 
+        // Slack variable coefficient
+        else if (i == mn) {
             newARow[i] = 1;
-        } else {
+        } 
+        // All other elements should = 0
+        else {
             newARow[i] = 0;
         }
     }
@@ -31,6 +41,7 @@ function addBBConstr(A, b, cj, x, xB, decVar, val, sign) {
     var newbRow = [sign*val];
     var newcEnt = [0];
 
+    // Add constraint to A, b, cj, x and xB
     [A, b, cj, x, xB] = addConstr(A, b, cj, x, xB, newARows, newbRow, newcEnt);
     return [A, b, cj, x, xB];
 }
@@ -53,6 +64,7 @@ function addBBConstr(A, b, cj, x, xB, decVar, val, sign) {
  * @return             [b, x, xB]
  */
 function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds, maxz) {
+    // Mention what integer constraints the user has specified
     for (let i = 0; i < x.length; i++) {
         if (intConds[i] == 1) {
             console.log(x[i] + " is required to be an integer.");
@@ -60,6 +72,8 @@ function branchAndBound(A, b, cj, x, xB, sign, objVarName, intConds, maxz) {
             console.log(x[i] + " is not required to be an integer.");
         }
     }
+
+    // isOptim = false if not all integer constraints are satisfied
     var [isOptim, branchVar, branchVal] = varNotInt(b, x, xB, intConds);
 
     if (!isOptim) {

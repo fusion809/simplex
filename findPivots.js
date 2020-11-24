@@ -15,10 +15,14 @@ function findColRat(A, b, pivColIdx) {
 
     // Loop over every element of b
     for (let i = 0; i < b.length; i++) {
+        // pivot column
         pivCol[i] = A[i][pivColIdx];
+
         // Following is to prevent floating point arithmetic errors from 
         // causing problems
         var pivColCor = floatCor(pivCol[i]);
+
+        // Set ratio and count up number of invalid ratios
         if (pivColCor <= 0) {
             ratio[i] = Number.POSITIVE_INFINITY;
             noOfInvRats++;

@@ -114,8 +114,10 @@ function checkForAltSol(A, b, cj, x, xB, zmn, zc, sign, objVarName) {
 function genArrPivIdxs(A, b, x, xB, zc, mn) {
     // Initialize array of pivot indices
     var arrOfPivIdxs = [];
+
     // Loop over each element in zc looking for zc = 0 for a non-basis variable
     for (let i = 0; i < mn; i++) {
+
         // A correction to prevent floating-point errors from messing up 
         // following comparison
         var zcCor = floatCor(zc[i]);
@@ -123,6 +125,7 @@ function genArrPivIdxs(A, b, x, xB, zc, mn) {
         // zj-cj must equal zero for non-basis variable column and the column
         // must have a positive aij value.
         if (!find(xB, x[i]) && (zcCor == 0) && AColPos(A, b, i)[1]) {
+            
             // Display message in HTML to indicate which variable can enter 
             // the basis.
             var pivRowIdx = AColPos(A, b, i)[0];

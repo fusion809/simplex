@@ -65,6 +65,7 @@ function AbRows(A, b, xB, cB, ratio, pivRowIdx, pivColIdx, bools) {
  */
 function genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl, 
     pivRowIdx, pivColIdx) {
+    // Initialize relevant globals
     var {cB, zj, zc} = calcEntries(A, b, cj, x, xB);
     var {isFeas, isOptim, isUnbounded, isPermInf} = bools;
 
@@ -114,7 +115,10 @@ function genTableau(A, b, cj, x, xB, bools, pivCol, ratio, pivEl,
  * @return              Nothing, changes are written to the tempStr global.
  */
 function headerRow(x, pivColIdx, bools) {
+    // Extract relevant Booleans
     var {isFeas, isOptim, isPermInf, isAltSol, befAltSol} = bools;
+
+    // Add non-variable initial elements of row
     tempStr += "<tr>";
     tempStr += katexRow("c_{\\mathbf{B}}");
     tempStr += katexRow("x_{\\mathbf{B}}");
@@ -214,6 +218,7 @@ function rowOperations(pivRowIdx, pivCol, pivEl) {
     // Loop over rows and write the operations to be performed to them to 
     // tempStr
     for (let i = 0; i < m; i++) {
+
         // Pivot row operation
         if (pivRowIdx - 1 == i) {
             if (pivEl == 1) {
@@ -333,6 +338,8 @@ function subscripts(decVar, format) {
  * @return           Nothing.
  */
 function xCols(x, pivColIdx, isPermInf, isAltSol) {
+    // Loop over elements of x, display them with subscripts
+    // If pivot column and isPermInf = isAltSol = false show down arrow
     for (let i = 0; i < x.length; i++) {
         if (i != pivColIdx || isPermInf || isAltSol) {
             tempStr += subscripts(x[i], {isBold: false, isLeftArrow: false, 

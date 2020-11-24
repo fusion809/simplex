@@ -22,13 +22,16 @@ function rowOps(A, b, x, xB, pivColIdx, pivRowIdx, pivEl, pivCol, mn, m) {
 
     // Loop over columns
     for (let i = 0; i < mn; i++) {
+        
         // Divide pivot row by pivot element
         A[pivRowIdx][i] /= pivEl;
 
         // Loop over rows
         for (let j = 0; j < m; j++) {
+
             // b subtraction should only be done once per row
             if (j != pivRowIdx) {
+
                 // Only one column in b
                 if (i == 0) {
                     b[j] -= pivCol[j] * b[pivRowIdx];

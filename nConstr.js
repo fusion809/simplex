@@ -51,14 +51,18 @@ function addToArrs(A, b, cj, x, xB, newARows, newbRows, newcEnt) {
     for (let i = 0; i < newARows.length; i++) {
         A.push(newARows[i]);
         b.push(newbRows[i]);
+
         // Slack variables have zero objective function coefficients
         if (document.getElementById("newcRows").checked) {
             cj.push(newcEnt[i]);
         } else {
             cj.push(0);
         }
+
         // Add new slack variables
         var newSlackVar = newSlackVariable(x);
+
+        // Add to x and xB
         x.push(newSlackVar);
         xB.push(newSlackVar);
     }
@@ -84,6 +88,7 @@ function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
 
     // Loop over each new A row
     for (let i = 0; i < newARows.length; i++) {
+
         // Define newARow for this iteration, add it uncorrected to initialA
         // then add corrected versions to A and corrected b values to the b
         // array
@@ -105,6 +110,7 @@ function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
 
             // If basisEl is non-zero, make it zero using row operations
             if ( basisEl != 0) {
+
                 // From newARow subtract ARow[j]*basisEl
                 if (basisEl == 1) {
                     texStr += " - R_{" + (j+1) + "}";
@@ -117,11 +123,17 @@ function correctConstr(A, b, x, xB, newARows, newbRows, newARows2) {
                     texStr += " + " + decimalToFrac(-basisEl) + "R_{" + (j+1) 
                     + "}";
                 }
+
+                // Row corrections
                 newARows[i] = correctionOp(newARow, ARow, basisEl);
                 newbRows[i] -= basisEl*b[j];
              }
         }
+        
+        // Right arrow and RHS
         texStr += "\\rightarrow R_{" + (A.length + i + 1) + "}'"
+
+        // Render
         tempStr += katex.renderToString(texStr);
         tempStr += "<br/>";
     }
