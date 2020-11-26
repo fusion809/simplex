@@ -21,7 +21,10 @@ function decimalToFrac(number) {
  * @return         Decimal.
  */
 function fracToDecimal(str) {
+    // Extract fraction from string
     var fraction = math.fraction(str);
+
+    // Extract number from fraction object
     return fraction.s * fraction.n/fraction.d;
 }
 

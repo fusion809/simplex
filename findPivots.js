@@ -131,11 +131,13 @@ function findPivots(A, b, zc) {
  * value.
  */
 function minEl(vec, isNeg, isNonNeg) {
+    // Initialize vars
     var min = Number.POSITIVE_INFINITY;
     var index = -1;
 
     // Loop over elements of vec
     for (let i = 0; i < vec.length; i++) {
+
         // Conditions for following test
         var nonNegReq = (!isNonNeg || vec[i] >= 0);
         var negReq = (!isNeg || vec[i] < 0);
