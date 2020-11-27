@@ -40,6 +40,7 @@ function basisIndex(x, xB) {
  * @return       [cB, zj, zj-cj]
  */
 function calcEntries(A, b, cj, x, xB) {
+    // Initialize globals
     var {m, mn} = getDims(A);
     var loc = basisIndex(x, xB);
     var cB = new Array(m);
