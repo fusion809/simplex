@@ -61,7 +61,7 @@ function addConstrToArr(cj, x, elNLArr, dualCheck, noOfEmptyRows,
 
             // Obtain coeff of x[i] for constraint j
             var varName = x[i];
-            var regex = new RegExp(`[+-]*[0-9/]*${varName}`);
+            var regex = new RegExp(`[+-]*[0-9./]*${varName}`);
             if (constrLHS.match(regex)) {
                 var coeff = constrLHS.match(regex).join("").replace(varName, "");
                 if (!coeff.match(/[0-9]/)) {
