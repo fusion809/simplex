@@ -81,3 +81,15 @@ function newSlackVariables(x, number) {
     }
     return newxBRows;
 }
+
+/* The below block of code was adapted from:
+https://stackoverflow.com/a/24490947/1876983
+* It allows radio boxes to be unchecked if the user is pressing Ctrl
+*/
+document.addEventListener('click', function(e){
+    if (e.ctrlKey == true && 
+        e.target.type == "radio" && 
+        e.target.checked == true) {
+        e.target.checked = false;
+    }
+ });
